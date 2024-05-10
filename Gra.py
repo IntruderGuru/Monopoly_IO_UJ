@@ -1,8 +1,12 @@
 import pygame
 import os
+import random
 from PIL import Image
+from Gracz import Gracz
 
 KWOTA_POCZATKOWA = 10000
+MIN_LICZBA_GRACZY = 2
+MAX_LICZBA_GRACZY = 5
 
 class Gra:
 
@@ -12,17 +16,69 @@ class Gra:
         self.liczbaGraczy = 0
 
     def przygotujGraczy(self):
-        #how many players input
-        self.liczbaGraczy = 4
 
-        # for i in range(1, self.liczbaGraczy + 1):
-        #     gracz = Gracz(i, self.kwotaPoczatkowa)
-        #     self.gracze.append(gracz)
+        while True:
+            self.liczbaGraczy = int(input("Podaj liczbe graczy: "))
+            if self.liczbaGraczy >= MIN_LICZBA_GRACZY and self.liczbaGraczy <= MAX_LICZBA_GRACZY:
+                break
+            else:
+                print("niepoprawna ilosc graczy")
+
+        self.aktualnyGracz = random.randint(1, self.liczbaGraczy)
+
+        #dodawanie graczy (wymaga implementacji klasy Gracz)
+        for i in range(1 , self.liczbaGraczy + 1):
+            gracz = Gracz(i, self.kwotaPoczatkowa)
+            self.gracze.append(gracz)
+    
+
+    def tura(self):
+
+        #wybieranie nastepnego gracza w kolejce
+        #warning! zapetli sie gdy kazdy gracz bedzie uwieziony (trzeba wymyslic co wtedy robimy i czy bedzie taka sutuacja)
+        while True:
+            if not self.gracze[self.aktualnyGracz - 1].uwiezienie:
+                break
+            else:
+                print("here")
+                self.gracze[self.aktualnyGracz - 1].liczbaPostojow -= 1
+                self.aktualnyGracz = (self.aktualnyGracz + 1) % self.liczbaGraczy
+
+        print("ruch gracza:", self.aktualnyGracz)
+
+        sumaOczek = 0
+        for i in range(3):
+            kostkaPierwsza = random.randint(1, 6)
+            kostkaDruga = random.randint(1, 6)
+            sumaOczek += (kostkaPierwsza + kostkaDruga)
+
+            print("kostka pierwsza:", kostkaPierwsza, ", kostka druga:", kostkaDruga)
+            print("suma:", sumaOczek)
+
+            if(kostkaPierwsza + kostkaDruga == 7):
+                input("siodemka, rzuc jeszcze raz, (wpisz cokolwiek):")
+            else:
+                input("nastepny gracz, (wpisz cokolwiek):")
+
+            print()
+
+            if kostkaPierwsza + kostkaDruga != 7:
+                break
+            elif kostkaPierwsza + kostkaDruga == 7 and i == 3: #koniec tury, gracz idzie do wiezienia
+                print("idziesz do wiezienia")
+                self.gracze[self.aktualnyGracz - 1].uwiezienie = True
+                return
+
+
+        #zapetlenie ggraczy
+        self.aktualnyGracz += 1
+        if self.aktualnyGracz == self.liczbaGraczy + 1:
+            self.aktualnyGracz = 1
 
 
 
 
-#main loop module
+#MAIN GAME MODULE
 pygame.init() 
 
 os.environ['SDL_VIDEO_CENTERED']  = '1'
@@ -45,9 +101,9 @@ def maluj():
     pygame.display.update()
 
 
+backgroundColor = (255, 255, 255)
 gra = Gra()
 gra.przygotujGraczy()
-backgroundColor = (255, 255, 255)
 
 running = True
 while running:
@@ -59,6 +115,7 @@ while running:
 
     screen.fill(backgroundColor)        
     maluj()
+    gra.tura()
 
 
 pygame.quit()
