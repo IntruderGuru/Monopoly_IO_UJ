@@ -40,7 +40,6 @@ class Gra:
             if not self.gracze[self.aktualnyGracz - 1].uwiezienie:
                 break
             else:
-                print("here")
                 self.gracze[self.aktualnyGracz - 1].liczbaPostojow -= 1
                 self.aktualnyGracz = (self.aktualnyGracz + 1) % self.liczbaGraczy
 
@@ -64,7 +63,7 @@ class Gra:
 
             if kostkaPierwsza + kostkaDruga != 7:
                 break
-            elif kostkaPierwsza + kostkaDruga == 7 and i == 3: #koniec tury, gracz idzie do wiezienia
+            elif kostkaPierwsza + kostkaDruga == 7 and i == 2: #koniec tury, gracz idzie do wiezienia
                 print("idziesz do wiezienia")
                 self.gracze[self.aktualnyGracz - 1].uwiezienie = True
                 return
@@ -119,3 +118,4 @@ while running:
 
 
 pygame.quit()
+
