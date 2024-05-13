@@ -14,6 +14,10 @@ class Gra:
         self.gracze = []        
         self.kwotaPoczatkowa = KWOTA_POCZATKOWA
         self.liczbaGraczy = 0
+        self.sumaOczek = 0
+        self.kolejnyRzutKostka = False
+
+    
 
     def przygotujGraczy(self):
 
@@ -26,53 +30,64 @@ class Gra:
 
         self.aktualnyGracz = random.randint(1, self.liczbaGraczy)
 
-        #dodawanie graczy (wymaga implementacji klasy Gracz)
         for i in range(1 , self.liczbaGraczy + 1):
             gracz = Gracz(i, self.kwotaPoczatkowa)
             self.gracze.append(gracz)
-    
 
-    def tura(self):
 
-        #wybieranie nastepnego gracza w kolejce
-        #warning! zapetli sie gdy kazdy gracz bedzie uwieziony (trzeba wymyslic co wtedy robimy i czy bedzie taka sutuacja)
+    def wybierzKolejnegoGracza(self):
+        self.sumaOczek = 0
         while True:
             if not self.gracze[self.aktualnyGracz - 1].uwiezienie:
                 break
             else:
-                self.gracze[self.aktualnyGracz - 1].liczbaPostojow -= 1
+                self.gracze[self.aktualnyGracz - 1].odczekajJednaTure()
                 self.aktualnyGracz = (self.aktualnyGracz + 1) % self.liczbaGraczy
+                self.sumaOczek = 0
 
+
+    def analizujRzut(self, kostkaPierwsza, kostkaDruga):
+
+        if(kostkaPierwsza + kostkaDruga == 7):
+            self.kolejnyRzutKostka = True
+            print("siodemka, rzuc jeszcze raz")
+        else:
+            self.kolejnyRzutKostka = False
+            print("nastepny gracz")
+
+        print()
+
+        #koniec tury, gracz idzie do wiezienia
+        if self.sumaOczek == 21:
+            print("idziesz do wiezienia")
+            self.gracze[self.aktualnyGracz - 1].uwiezienie = True
+            self.kolejnyRzutKostka = False
+            return
+
+
+
+    def tura(self):
+
+        #wybieranie nastepnego gracza w kolejce 
+        if not self.kolejnyRzutKostka:
+            self.wybierzKolejnegoGracza()
+        
         print("ruch gracza:", self.aktualnyGracz)
 
-        sumaOczek = 0
-        for i in range(3):
-            kostkaPierwsza = random.randint(1, 6)
-            kostkaDruga = random.randint(1, 6)
-            sumaOczek += (kostkaPierwsza + kostkaDruga)
+        kostkaPierwsza = random.randint(1, 6)
+        kostkaDruga = random.randint(1, 6)
+        self.sumaOczek += (kostkaPierwsza + kostkaDruga)
 
-            print("kostka pierwsza:", kostkaPierwsza, ", kostka druga:", kostkaDruga)
-            print("suma:", sumaOczek)
+        print("kostka pierwsza:", kostkaPierwsza, ", kostka druga:", kostkaDruga)
+        print("suma:", self.sumaOczek)
+        
+        self.analizujRzut(kostkaPierwsza, kostkaDruga)
 
-            if(kostkaPierwsza + kostkaDruga == 7):
-                input("siodemka, rzuc jeszcze raz, (wpisz cokolwiek):")
-            else:
-                input("nastepny gracz, (wpisz cokolwiek):")
-
-            print()
-
-            if kostkaPierwsza + kostkaDruga != 7:
-                break
-            elif kostkaPierwsza + kostkaDruga == 7 and i == 2: #koniec tury, gracz idzie do wiezienia
-                print("idziesz do wiezienia")
-                self.gracze[self.aktualnyGracz - 1].uwiezienie = True
-                return
-
-
-        #zapetlenie ggraczy
-        self.aktualnyGracz += 1
-        if self.aktualnyGracz == self.liczbaGraczy + 1:
-            self.aktualnyGracz = 1
+        #zapetlenie graczy
+        if not self.kolejnyRzutKostka:
+            self.aktualnyGracz += 1
+            if self.aktualnyGracz == self.liczbaGraczy + 1:
+                self.aktualnyGracz = 1
 
 
 
@@ -95,7 +110,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Monopoly")
 
 
-def maluj():
+def wyswietlaj():
     screen.blit(BOARD, (boardOffset, boardOffset))
     pygame.display.update()
 
@@ -111,11 +126,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             break
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                gra.tura()
+
 
     screen.fill(backgroundColor)        
-    maluj()
-    gra.tura()
+    wyswietlaj()
 
 
 pygame.quit()
-
