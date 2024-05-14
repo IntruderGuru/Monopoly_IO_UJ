@@ -4,12 +4,13 @@ import random
 from PIL import Image
 from Gracz import Gracz
 
+
 KWOTA_POCZATKOWA = 10000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 
-class Gra:
 
+class Gra:
     def __init__(self):
         self.gracze = []        
         self.kwotaPoczatkowa = KWOTA_POCZATKOWA
@@ -17,10 +18,7 @@ class Gra:
         self.sumaOczek = 0
         self.kolejnyRzutKostka = False
 
-    
-
-    def przygotujGraczy(self):
-
+    def przygotuj_graczy(self):
         while True:
             self.liczbaGraczy = int(input("Podaj liczbe graczy: "))
             if self.liczbaGraczy >= MIN_LICZBA_GRACZY and self.liczbaGraczy <= MAX_LICZBA_GRACZY:
@@ -30,7 +28,7 @@ class Gra:
 
         self.aktualnyGracz = random.randint(1, self.liczbaGraczy)
 
-        for i in range(1 , self.liczbaGraczy + 1):
+        for i in range(1, self.liczbaGraczy + 1):
             gracz = Gracz(i, self.kwotaPoczatkowa)
             self.gracze.append(gracz)
 
@@ -90,49 +88,69 @@ class Gra:
                 self.aktualnyGracz = 1
 
 
+class Main:
+    _SEC_TO_MS = 1000
+    _backgroundColor = pygame.color.THECOLORS["white"]
+    _gra = Gra()
+
+    def __init__(self):
+        self._running = True
+        self._delta_time = 0
+        self._clock = pygame.time.Clock()
+
+        pygame.init()
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+        self._screen_info = pygame.display.Info()
+        self._screen_width = self._screen_info.current_w
+        self._screen_height = self._screen_info.current_h
+
+        self._board_png = pygame.image.load("board.png")
+        board_img = Image.open("board.png")
+
+        self._board_height, self._board_width = board_img.size
+        self._boardOffset = (self._screen_height - self._board_height) / 2
+
+        self._screen = pygame.display.set_mode((self._screen_width, self._screen_height), pygame.RESIZABLE)
+
+        pygame.display.set_caption("Monopoly")
+
+    def __del__(self):
+        pygame.quit()
+        del self._gra
+
+    def _wyswietlaj(self):
+        self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
+        pygame.display.update()
+
+    def _petla_zdarzen(self, events_list):
+        for event in events_list:
+            if event.type == pygame.QUIT:
+                self._running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self._gra.tura()
+
+    def _aktualizuj(self, delta_time):
+        self._screen.fill(self._backgroundColor)
+
+    # zwraca roznice czasu pomiedzy tyknieciami zegara gry w sekundach(float) wychodzi ulamek
+    def _aktualizuj_delta_time(self):
+        self._delta_time = self._clock.get_time() / self._SEC_TO_MS
+
+    def _petla_gry(self):
+        while self._running:
+            self._aktualizuj_delta_time()
+            self._petla_zdarzen(pygame.event.get())
+            self._aktualizuj(delta_time=self._delta_time)
+            self._wyswietlaj()
+
+    def start(self):
+        self._gra.przygotuj_graczy()
+        self._petla_gry()
 
 
-#MAIN GAME MODULE
-pygame.init() 
-
-os.environ['SDL_VIDEO_CENTERED']  = '1'
-info = pygame.display.Info() #pobieram info o rozmiarze ekarnu
-
-WIDTH = info.current_w
-HEIGHT = info.current_h
-BOARD = pygame.image.load("board.png")
-image = Image.open("board.png")
-BOARD_HEIGHT, BOARD_WIDTH = image.size
-offset = 10
-boardOffset = (HEIGHT - BOARD_HEIGHT) / 2
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-pygame.display.set_caption("Monopoly")
-
-
-def wyswietlaj():
-    screen.blit(BOARD, (boardOffset, boardOffset))
-    pygame.display.update()
-
-
-backgroundColor = (255, 255, 255)
-gra = Gra()
-gra.przygotujGraczy()
-
-running = True
-while running:
-    #check if user wants to quit
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            break
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                gra.tura()
-
-
-    screen.fill(backgroundColor)        
-    wyswietlaj()
-
-
-pygame.quit()
+if __name__ == "__main__":
+    game_runner = Main()
+    game_runner.start()
