@@ -133,10 +133,13 @@ class Main:
                     self._gra.tura()
 
     def _aktualizuj(self, delta_time):
+        # trick do IDE, aby unikna warningu o nieuzyciu zmiennej
+        _delta_time = delta_time
         self._screen.fill(self._backgroundColor)
 
     # zwraca roznice czasu pomiedzy tyknieciami zegara gry w sekundach(float) wychodzi ulamek
     def _aktualizuj_delta_time(self):
+        self._clock.tick(60)
         self._delta_time = self._clock.get_time() / self._SEC_TO_MS
 
     def _petla_gry(self):
