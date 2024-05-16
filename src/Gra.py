@@ -90,7 +90,7 @@ class Gra:
 
 class Main:
     _SEC_TO_MS = 1000
-    _backgroundColor = pygame.color.THECOLORS["white"]
+    _background_color = pygame.color.THECOLORS["white"]
     _gra = Gra()
 
     def __init__(self):
@@ -105,8 +105,8 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._board_png = pygame.image.load("board.png")
-        board_img = Image.open("board.png")
+        self._board_png = pygame.image.load("../graphics/board.png")
+        board_img = Image.open("../graphics/board.png")
 
         self._board_height, self._board_width = board_img.size
         self._boardOffset = (self._screen_height - self._board_height) / 2
@@ -132,10 +132,11 @@ class Main:
                 if event.key == pygame.K_SPACE:
                     self._gra.tura()
 
+
     def _aktualizuj(self, delta_time):
         # trick do IDE, aby unikna warningu o nieuzyciu zmiennej
         _delta_time = delta_time
-        self._screen.fill(self._backgroundColor)
+        self._screen.fill(self._background_color)
 
     # zwraca roznice czasu pomiedzy tyknieciami zegara gry w sekundach(float) wychodzi ulamek
     def _aktualizuj_delta_time(self):
