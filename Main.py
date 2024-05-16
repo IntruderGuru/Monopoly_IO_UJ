@@ -3,6 +3,7 @@ import pygame
 
 from PIL import Image
 from src.Gra import Gra
+from src.Pionek import Pionek
 
 
 class Main:
@@ -14,6 +15,7 @@ class Main:
         self._running = True
         self._delta_time = 0
         self._clock = pygame.time.Clock()
+        self.pionek = Pionek(0, pygame.color.THECOLORS["black"], "path")
 
         pygame.init()
         os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -38,6 +40,7 @@ class Main:
 
     def _wyswietlaj(self):
         self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
+        self.pionek.wyswietlaj(self._screen)
         pygame.display.update()
 
     def _petla_zdarzen(self, events_list):

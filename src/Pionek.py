@@ -1,5 +1,6 @@
 import pygame
 
+
 class Pionek:
     MIN_LICZBA_OCZEK = 2
     MAX_LICZBA_OCZEK = 12
@@ -18,3 +19,6 @@ class Pionek:
             return True
 
         return False
+
+    def wyswietlaj(self, window: pygame.Surface):
+        pygame.draw.rect(window, self.color, )
