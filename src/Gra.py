@@ -91,9 +91,9 @@ class Gra:
 class Main:
     _SEC_TO_MS = 1000
     _background_color = pygame.color.THECOLORS["white"]
-    _gra = Gra()
 
     def __init__(self):
+        self._gra = Gra()
         self._running = True
         self._delta_time = 0
         self._clock = pygame.time.Clock()
@@ -129,19 +129,22 @@ class Main:
                 self._running = False
                 break
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    self._gra.tura()
+                match event.key:
+                    case pygame.K_SPACE:
+                        self._gra.tura()
 
+                    case pygame.K_ESCAPE:
+                        self._running = False
 
     def _aktualizuj(self, delta_time):
         # trick do IDE, aby unikna warningu o nieuzyciu zmiennej
         _delta_time = delta_time
-        self._screen.fill(self._background_color)
+        self._screen.fill(Main._background_color)
 
     # zwraca roznice czasu pomiedzy tyknieciami zegara gry w sekundach(float) wychodzi ulamek
     def _aktualizuj_delta_time(self):
         self._clock.tick(60)
-        self._delta_time = self._clock.get_time() / self._SEC_TO_MS
+        self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
 
     def _petla_gry(self):
         while self._running:
