@@ -146,7 +146,7 @@ class Gra:
             self.messages.append("Gracz musi iść na pole 30 (więzienie)")
             # gracz.pozycja = 30
             gracz.uwiezienie = True
-            # pole = self.board[30]
+            #  pole = self.board[30],
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
