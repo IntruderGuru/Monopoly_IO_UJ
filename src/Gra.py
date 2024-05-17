@@ -9,7 +9,7 @@ MAX_LICZBA_GRACZY = 5
 class Gra:
     def __init__(self):
         self.gracze = []        
-        self.kwotaPoczatkowa = KWOTA_POCZATKOWA
+        self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self.liczbaGraczy = 0
         self.sumaOczek = 0
         self.kolejnyRzutKostka = False
@@ -25,7 +25,7 @@ class Gra:
         self.aktualnyGracz = random.randint(1, self.liczbaGraczy)
 
         for i in range(1, self.liczbaGraczy + 1):
-            gracz = Gracz(i, self.kwotaPoczatkowa)
+            gracz = Gracz(i, self._kwota_poczatkowa)
             self.gracze.append(gracz)
 
 
