@@ -10,52 +10,52 @@ class Gra:
     def __init__(self):
         self.gracze = []        
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
-        self.liczbaGraczy = 0
-        self.sumaOczek = 0
-        self.kolejnyRzutKostka = False
+        self._liczba_graczy = 0
+        self._suma_oczek = 0
+        self._kolejny_rzut_kostka = False
 
     def przygotuj_graczy(self):
         while True:
-            self.liczbaGraczy = int(input("Podaj liczbe graczy: "))
-            if self.liczbaGraczy >= MIN_LICZBA_GRACZY and self.liczbaGraczy <= MAX_LICZBA_GRACZY:
+            self._liczba_graczy = int(input("Podaj liczbe graczy: "))
+            if self._liczba_graczy >= MIN_LICZBA_GRACZY and self._liczba_graczy <= MAX_LICZBA_GRACZY:
                 break
             else:
                 print("niepoprawna ilosc graczy")
 
-        self.aktualnyGracz = random.randint(1, self.liczbaGraczy)
+        self._aktualny_gracz = random.randint(1, self._liczba_graczy)
 
-        for i in range(1, self.liczbaGraczy + 1):
+        for i in range(1, self._liczba_graczy + 1):
             gracz = Gracz(i, self._kwota_poczatkowa)
             self.gracze.append(gracz)
 
 
     def wybierzKolejnegoGracza(self):
-        self.sumaOczek = 0
+        self._suma_oczek = 0
         while True:
-            if not self.gracze[self.aktualnyGracz - 1].uwiezienie:
+            if not self.gracze[self._aktualny_gracz - 1].uwiezienie:
                 break
             else:
-                self.gracze[self.aktualnyGracz - 1].odczekajJednaTure()
-                self.aktualnyGracz = (self.aktualnyGracz + 1) % self.liczbaGraczy
-                self.sumaOczek = 0
+                self.gracze[self._aktualny_gracz - 1].odczekajJednaTure()
+                self._aktualny_gracz = (self._aktualny_gracz + 1) % self._liczba_graczy
+                self._suma_oczek = 0
 
 
-    def analizujRzut(self, kostkaPierwsza, kostkaDruga):
+    def analizujRzut(self, kostka_pierwsza, kostka_druga):
 
-        if(kostkaPierwsza + kostkaDruga == 7):
-            self.kolejnyRzutKostka = True
+        if(kostka_pierwsza + kostka_druga == 7):
+            self._kolejny_rzut_kostka = True
             print("siodemka, rzuc jeszcze raz")
         else:
-            self.kolejnyRzutKostka = False
+            self._kolejny_rzut_kostka = False
             print("nastepny gracz")
 
         print()
 
         #koniec tury, gracz idzie do wiezienia
-        if self.sumaOczek == 21:
+        if self._suma_oczek == 21:
             print("idziesz do wiezienia")
-            self.gracze[self.aktualnyGracz - 1].uwiezienie = True
-            self.kolejnyRzutKostka = False
+            self.gracze[self._aktualny_gracz - 1].uwiezienie = True
+            self._kolejny_rzut_kostka = False
             return
 
 
@@ -63,23 +63,23 @@ class Gra:
     def tura(self):
 
         #wybieranie nastepnego gracza w kolejce 
-        if not self.kolejnyRzutKostka:
+        if not self._kolejny_rzut_kostka:
             self.wybierzKolejnegoGracza()
         
-        print("ruch gracza:", self.aktualnyGracz)
+        print("ruch gracza:", self._aktualny_gracz)
 
-        kostkaPierwsza = random.randint(1, 6)
-        kostkaDruga = random.randint(1, 6)
-        self.sumaOczek += (kostkaPierwsza + kostkaDruga)
+        kostka_pierwsza = random.randint(1, 6)
+        kostka_druga = random.randint(1, 6)
+        self._suma_oczek += (kostka_pierwsza + kostka_druga)
 
-        print("kostka pierwsza:", kostkaPierwsza, ", kostka druga:", kostkaDruga)
-        print("suma:", self.sumaOczek)
+        print("kostka pierwsza:", kostka_pierwsza, ", kostka druga:", kostka_druga)
+        print("suma:", self._suma_oczek)
         
-        self.analizujRzut(kostkaPierwsza, kostkaDruga)
+        self.analizujRzut(kostka_pierwsza, kostka_druga)
 
         #zapetlenie graczy
-        if not self.kolejnyRzutKostka:
-            self.aktualnyGracz += 1
-            if self.aktualnyGracz == self.liczbaGraczy + 1:
-                self.aktualnyGracz = 1
+        if not self._kolejny_rzut_kostka:
+            self._aktualny_gracz += 1
+            if self._aktualny_gracz == self._liczba_graczy + 1:
+                self._aktualny_gracz = 1
 
