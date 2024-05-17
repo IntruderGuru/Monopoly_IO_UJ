@@ -27,21 +27,21 @@ class Pionek:
         self.wymiary.top = top
 
     def _ktore_pole_w_rzedzie(self):
-        return (self.numer_pola % 10) * 76.8
+        return ((self.numer_pola % 10) + 1) * 76.8
 
     def _zmien_pozycje(self):
         match self.kierunek:
             case Kierunek.Prawo:
-                self._zmien_left_top(self._ktore_pole_w_rzedzie(), self.wymiary.top)
+                self._zmien_left_top(23.2 + self._ktore_pole_w_rzedzie(), self.wymiary.top)
 
             case Kierunek.Dol:
-                self._zmien_left_top(self.wymiary.left, self._ktore_pole_w_rzedzie())
+                self._zmien_left_top(self.wymiary.left, 23.2 + self._ktore_pole_w_rzedzie())
 
             case Kierunek.Lewo:
-                self._zmien_left_top(768 - self._ktore_pole_w_rzedzie(), self.wymiary.top)
+                self._zmien_left_top(868. - self._ktore_pole_w_rzedzie(), self.wymiary.top)
 
             case Kierunek.Gora:
-                self._zmien_left_top(self.wymiary.left, 768 - self._ktore_pole_w_rzedzie())
+                self._zmien_left_top(self.wymiary.left, 868. - self._ktore_pole_w_rzedzie())
 
     def zmien_grafike(self) -> bool:
         pass
