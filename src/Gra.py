@@ -123,10 +123,10 @@ class Gra:
             self._kolejny_rzut_kostka = False
 
     def przesun_gracza(self, gracz, ruch):
-        stara_pozycja = gracz.pozycja
+        stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
-        gracz.pozycja = nowa_pozycja
-
+        # gracz.pozycja = nowa_pozycja
+        gracz.pionek.numer_pola = nowa_pozycja
         gracz.pionek.przesun(ruch)
 
         self.messages.append(
@@ -144,8 +144,9 @@ class Gra:
 
         elif pole.typ == "idz_do_wiezienia":
             self.messages.append("Gracz musi iść na pole 30 (więzienie)")
-            gracz.pozycja = 30
+            # gracz.pozycja = 30
             gracz.uwiezienie = True
+            # pole = self.board[30]
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
