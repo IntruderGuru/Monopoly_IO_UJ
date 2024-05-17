@@ -61,6 +61,20 @@ class Main:
                     # Test ruchu pionka
                     case pygame.K_LEFT:
                         self.pionek.przesun(1)
+            elif event.type == pygame.VIDEORESIZE:
+                self._screen_width = event.w
+                self._screen_height = event.h
+
+                self._board_png = pygame.image.load("graphics/board.png")
+                self._board_png = pygame.transform.scale(self._board_png, (7/8 * self._screen_height, 7/8 * self._screen_height))
+                #board_img = Image.open("graphics/board.png")
+
+                self._board_rect = self._board_png.get_rect()
+                #self._board_height, self._board_width = board_img.size
+                self._boardOffset = (self._screen_height - self._board_rect.height) / 2
+
+                self._screen = pygame.display.set_mode((self._screen_width, self._screen_height), pygame.RESIZABLE)
+
 
     def _aktualizuj(self, delta_time):
         # trick do IDE, aby unikna warningu o nieuzyciu zmiennej
