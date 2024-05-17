@@ -56,6 +56,10 @@ class Main:
                     case pygame.K_ESCAPE:
                         self._running = False
 
+                    # Test ruchu pionka
+                    case pygame.K_LEFT:
+                        self.pionek.przesun(1)
+
     def _aktualizuj(self, delta_time):
         # trick do IDE, aby unikna warningu o nieuzyciu zmiennej
         _delta_time = delta_time
