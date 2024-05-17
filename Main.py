@@ -18,25 +18,21 @@ class Main:
         self.pionek = Pionek(0, pygame.color.THECOLORS["black"], "path")
 
         pygame.init()
-        os.environ["SDL_VIDEO_CENTERED"] = "1"
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
 
         self._screen_info = pygame.display.Info()
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
         self._board_png = pygame.image.load("graphics/board.png")
-        self._board_png = pygame.transform.scale(
-            self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
-        )
-        # board_img = Image.open("graphics/board.png")
+        self._board_png = pygame.transform.scale(self._board_png, (7/8 * self._screen_height, 7/8 * self._screen_height))
+        #board_img = Image.open("graphics/board.png")
 
         self._board_rect = self._board_png.get_rect()
-        # self._board_height, self._board_width = board_img.size
+        #self._board_height, self._board_width = board_img.size
         self._boardOffset = (self._screen_height - self._board_rect.height) / 2
 
-        self._screen = pygame.display.set_mode(
-            (self._screen_width, self._screen_height), pygame.RESIZABLE
-        )
+        self._screen = pygame.display.set_mode((self._screen_width, self._screen_height), pygame.RESIZABLE)
 
         pygame.display.set_caption("Monopoly")
 
