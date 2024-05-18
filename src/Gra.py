@@ -2,6 +2,7 @@ import random
 import pygame
 from src.Gracz import Gracz
 from src.Pole import Pole
+from src.Posiadlosc import *
 from src.Pionek import Pionek
 
 KWOTA_POCZATKOWA = 10000
@@ -32,51 +33,46 @@ class Gra:
 
     def stworz_plansze(self):
         board = []
-        typy_pol = [
-            "start",  # 0
-            "posiadlosc_czerwona",  # 1
-            "karta_szansy",  # 2
-            "posiadlosc_czerwona",  # 3
-            "posiadlosc_czerwona",  # 4
-            "pojedyncza_posiadlosc",  # 5
-            "posiadlosc_zolta",  # 6
-            "posiadlosc_zolta",  # 7
-            "inna_posiadlosc",  # 8
-            "idz_do_wiezienia",  # 9
-            "posiadlosc_zolta",  # 10
-            "posiadlosc_zielona",  # 11
-            "posiadlosc_zielona",  # 12
-            "karta_szansy",  # 13
-            "posiadlosc_zielona",  # 14
-            "pojedyncza_posiadlosc",  # 15
-            "karta_szansy",  # 16
-            "posiadlosc_niebieska",  # 17
-            "podatek_dochodowy",  # 18
-            "posiadlosc_niebieska",  # 19
-            "parking",  # 20
-            "posiadlosc_brazowa",  # 21
-            "karta_szansy",  # 22
-            "posiadlosc_brazowa",  # 23
-            "podatek_dochodowy",  # 24
-            "pojedyncza_posiadlosc",  # 25
-            "posiadlosc_niebieska",  # 26
-            "karta_szansy",  # 27
-            "posiadlosc_niebieska",  # 28
-            "posiadlosc_niebieska",  # 29
-            "wiezienie",  # 30
-            "posiadlosc_rozowa",  # 31
-            "inna_posiadlosc",  # 32
-            "posiadlosc_rozowa",  # 33
-            "posiadlosc_rozowa",  # 34
-            "pojedyncza_posiadlosc",  # 35
-            "posiadlosc_pomaranczowa",  # 36
-            "karta_szansy",  # 37
-            "posiadlosc_pomaranczowa",  # 38
-            "posiadlosc_pomaranczowa",  # 39
-        ]
-
-        for numer, typ in enumerate(typy_pol):
-            board.append(Pole(numer, typ))
+        board.append(Pole(0, "Start"))
+        board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
+        board.append(Pole(2, "Szansa"))
+        board.append(Posiadlosc(3, "Bistro \"Świetlica\"", 600, 40, 300, 500))
+        board.append(Pole(4, "Podatek dochodowy"))
+        board.append(PosiadloscKolo(5, "KNRSI", 2000, 250, 1000))
+        board.append(Posiadlosc(6, "Parking", 1000, 60, 500, 500))
+        board.append(Pole(7, "Szansa"))
+        board.append(Posiadlosc(8, "Winda", 1000, 60, 500, 500))
+        board.append(Posiadlosc(9, "Szatnia", 1200, 80, 500, 500))
+        board.append(Pole(10, "Wiezienie"))
+        board.append(Posiadlosc(11,"Sala 1073 (sieci)", 1400, 100, 700, 1000))
+        board.append(PosiadloscPozaWmii(12,"Drążki za wydziałem", 1500, 0, 750))
+        board.append(Posiadlosc(13, "Sala 0056 (laby)", 1400, 100, 700, 1000))
+        board.append(Posiadlosc(14, "Sala 1072 (macbooki)", 1600, 120, 800, 1000))
+        board.append(PosiadloscKolo(15, "KNMF", 2000, 250, 1000))
+        board.append(Posiadlosc(16, "Ślimak", 1800, 140, 900, 1000))
+        board.append(Pole(17, "Szansa"))
+        board.append(Posiadlosc(18, "Serwerownia", 1800, 140, 900, 1000))
+        board.append(Posiadlosc(19, "Pokój samorządu", 2000, 160, 1000, 1000))
+        board.append(Pole(20, "Parking"))
+        board.append(Posiadlosc(21, "Recepcja", 2200, 180, 1100, 1500))
+        board.append(Pole(22, "Szansa"))
+        board.append(Posiadlosc(23, "Dziekanat", 2200, 180, 1100, 1500))
+        board.append(Posiadlosc(24, "Muzeum komputerów", 2400, 200, 1200, 1500))
+        board.append(PosiadloscKolo(25, "KMS", 2000, 250, 1000))
+        board.append(Posiadlosc(26, "Mural", 2600, 220, 1300, 1500))
+        board.append(Posiadlosc(27, "Pomnik Kopernika", 2600, 220, 1300, 1500))
+        board.append(PosiadloscPozaWmii(28,"Przejście przez WZIKS", 1500, 0, 750))
+        board.append(Posiadlosc(29, "Fontanna", 2800, 240, 1400, 1500))
+        board.append(Pole(30, "Idz do wiezienia"))
+        board.append(Posiadlosc(31, "Ping-pong", 3000, 260, 1500, 2000))
+        board.append(Posiadlosc(32, "Bilard", 3000, 260, 1500, 2000))
+        board.append(Pole(33, "Szansa"))
+        board.append(Posiadlosc(34, "Piłkarzyki", 3200, 280, 1600, 2000))
+        board.append(PosiadloscKolo(35, "KSI", 2000, 250, 1000))
+        board.append(Pole(36, "Szansa"))
+        board.append(Posiadlosc(37, "sala 0004", 3500, 350, 1750, 2000))
+        board.append(Pole(38, "Podatek dochodowy"))
+        board.append(Posiadlosc(39, "sala 0089", 4000, 500, 2000, 2000))
 
         return board
 
@@ -137,7 +133,7 @@ class Gra:
         self.wykonaj_akcje_na_polu(gracz, pole)
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-        self.messages.append(f"Pole {pole.typ}")
+        self.messages.append(pole.wyswietl_info())
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
@@ -147,6 +143,7 @@ class Gra:
             # gracz.pozycja = 30
             gracz.uwiezienie = True
             #  pole = self.board[30],
+
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
