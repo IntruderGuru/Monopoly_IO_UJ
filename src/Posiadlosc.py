@@ -11,7 +11,7 @@ class Posiadlosc(Pole):
         self.zastaw_kwota = zastaw
         self.cena_domu = cena_domu
         self.IDwlasciciela = None 
-        self.czy_zastawione = False
+        self.czy_zastawiona = False
         self.liczba_domow = 0
 
     def wyswietl_info(self):
@@ -22,33 +22,56 @@ class Posiadlosc(Pole):
     def kup_posiadlosc(self, gra, gracz):
         if(self.cena > gracz.kwota):
             gra.messages.append("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? t/n")
-            #if gra.pobierz_info_tak_nie():
-                #gracz.wyswietl_posiadlosci()
-        else:
-            gracz.kwota -= self.cena
-            self.IDwlasciciela = gracz.id
-            gra.messages.append("Zakup się udał")
+            if gra.pobierz_info_tak_nie():
+                gracz.zastaw_posiadlosci()
+            else: 
+                gra.messages.append("Zakup zakończony niepowodzeniem")
+                return
+            
+        gracz.kwota -= self.cena
+        gracz.lista_posiadlosci.append(self)
+        self.IDwlasciciela = gracz.id
+        gra.messages.append("Zakup się udał")
     
     def kup_dom(self, gra, gracz):
-        if(self.czy_zastawione):
+        if(self.czy_zastawiona):
             gra.messages.append("Nie można kupić domku lub hotelu na zastawionej nieruchomości")
-
-        elif(self.cena_domu > gracz.kwota):
-            gra.messages.append("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? t/n")
-            #if gra.pobierz_info_tak_nie():
-                #gracz.wyswietl_posiadlosci()
-        else:
+            return
+        while True:
+            if(self.cena_domu > gracz.kwota):
+                gra.messages.append("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? t/n")
+                if gra.pobierz_info_tak_nie():
+                    gracz.zastaw_posiadlosci()
+                else: 
+                    gra.messages.append("Zakup zakończony niepowodzeniem")
+                    return
             gracz.kwota -= self.cena_domu
             self.liczba_domow += 1
             gra.messages.append("Zakup domu się udał")
+            gra.messages.append("Czy chcesz zastawić kolejną nieruchomość? t/n")
+            if not gra.pobierz_info_tak_nie():
+                return
         
-    def sprzedaj(self, gra, gracz):
-        if(self.czy_zastawione):
+    def sprzedaj_posiadlosc(self, gra, gracz):
+        if(self.czy_zastawiona):
             gra.messages.append("Nie można sprzedać zastawionej nieruchomości")
         else:
-            gracz.kwota = gracz.kwota + self.cena + (self.liczba_domow * self.cena_domu)
+            #80% wartości posiadłości
+            gracz.kwota = gracz.kwota + (self.cena + (self.liczba_domow * self.cena_domu))*0.8
             self.IDwlasciciela = None
             self.liczba_domow = 0
+            gracz.lista_posiadlosci.remove(self)
+
+    def sprzedaj_dom(self, gra, gracz):
+        if(self.czy_zastawiona):
+            gra.messages.append("Nie można sprzedać zastawionej nieruchomości")
+        else:
+            #80% wartości
+            gra.messages.append("Ile domków chcesz sprzedać?")
+            #wczytanie do x, sprawdzenie czy x <= self.liczba_domow
+            x=2
+            gracz.kwota = gracz.kwota + (x * self.cena_domu * 0.8)
+            self.liczba_domow -= x
 
 
             
