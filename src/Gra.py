@@ -132,6 +132,20 @@ class Gra:
         pole = self.board[nowa_pozycja]
         self.wykonaj_akcje_na_polu(gracz, pole)
 
+    def pobierz_info_tak_nie(self):
+        pygame.display.flip()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_t:
+                        return True
+                    elif event.key == pygame.K_n:
+                        return False
+                    else:
+                        self.messages.append(f"Naciśnięto nieznany klawisz: {pygame.key.name(event.key)}. Wciśnij klawisz t-tak lub n-nie")
+    
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
         if pole.typ == "wiezienie":
@@ -143,6 +157,22 @@ class Gra:
             # gracz.pozycja = 30
             gracz.uwiezienie = True
             #  pole = self.board[30],
+        
+        elif "Posiadlosc" == pole.typ:
+            if isinstance(pole, Posiadlosc):
+               posiadlosc = pole
+            if posiadlosc.IDwlasciciela is None:
+                self.messages.append(f"Czy chcesz kupić miejsce {posiadlosc.nazwa}? t/n")
+                pygame.display.flip()
+                if self.pobierz_info_tak_nie():
+                    posiadlosc.kup_posiadlosc(self, gracz)
+            elif posiadlosc.IDwlasciciela == gracz.id:
+                self.messages.append(f"Czy chcesz kupić dom na {posiadlosc.nazwa}? t/n")
+                if self.pobierz_info_tak_nie():
+                    posiadlosc.kup_dom(self, gracz)
+
+            #czynsz - posiadlosc nalezy do innego gracza
+            #else:
 
 
     def tura(self):
