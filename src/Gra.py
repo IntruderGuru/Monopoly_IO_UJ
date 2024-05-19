@@ -1,5 +1,6 @@
 import random
 import pygame
+import sys
 from src.Gracz import Gracz
 from src.Pole import Pole
 from src.Posiadlosc import *
@@ -132,19 +133,63 @@ class Gra:
         pole = self.board[nowa_pozycja]
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def pobierz_info_tak_nie(self):
-        pygame.display.flip()
-        while True:
+    def stworz_przycisk(self, text, x, y, w, h, color, hover_color, screen, action=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if x + w > mouse[0] > x and y + h > mouse[1] > y:
+            pygame.draw.rect(screen, hover_color, (x, y, w, h))
+            if click[0] == 1 and action is not None:
+                return action
+        else:
+            pygame.draw.rect(screen, color, (x, y, w, h))
+
+        font = pygame.font.Font(None, 36)
+        text_surface = font.render(text, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=((x + (w / 2)), (y + (h / 2))))
+        screen.blit(text_surface, text_rect)
+
+        return None
+
+    def pobierz_info_tak_nie(self, text):
+        clock = pygame.time.Clock()
+        res = (720,720) 
+        screen = pygame.display.set_mode(res) 
+        color_true = (0, 255, 0) #zielony
+        color_false = (255, 0, 0) #czerwony
+        button_color = (170,170,170) #szary
+
+        window_size = (300, 200)
+        pygame.display.set_caption('Wybierz opcję')
+
+        running = True
+        while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    return False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_t:
-                        return True
-                    elif event.key == pygame.K_n:
-                        return False
-                    else:
-                        self.messages.append(f"Naciśnięto nieznany klawisz: {pygame.key.name(event.key)}. Wciśnij klawisz t-tak lub n-nie")
+                    pygame.quit()
+                    sys.exit()
+
+            screen.fill((255, 255, 255))
+
+            font = pygame.font.Font(None, 36)
+            text_surface = font.render(text, True, (0, 0, 0))
+            text_rect = text_surface.get_rect(center=(window_size[0], 30))
+            screen.blit(text_surface, text_rect)
+
+            true_action = self.stworz_przycisk("Tak", 50, 70, 80, 50, button_color, color_true, screen, "True")
+            false_action = self.stworz_przycisk("Nie", 170, 70, 80, 50, button_color, color_false, screen, "False")
+
+            if true_action:
+                return True
+            if false_action:
+                return False
+
+            pygame.display.flip()
+            pygame.display.update()
+            clock.tick(30)
+            pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
+
+
     
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
@@ -162,13 +207,10 @@ class Gra:
             if isinstance(pole, Posiadlosc):
                posiadlosc = pole
             if posiadlosc.IDwlasciciela is None:
-                self.messages.append(f"Czy chcesz kupić miejsce {posiadlosc.nazwa}? t/n")
-                pygame.display.flip()
-                if self.pobierz_info_tak_nie():
+                if self.pobierz_info_tak_nie(f"Czy chcesz kupić miejsce {posiadlosc.nazwa}?"):
                     posiadlosc.kup_posiadlosc(self, gracz)
             elif posiadlosc.IDwlasciciela == gracz.id:
-                self.messages.append(f"Czy chcesz kupić dom na {posiadlosc.nazwa}? t/n")
-                if self.pobierz_info_tak_nie():
+                if self.pobierz_info_tak_nie(f"Czy chcesz kupić dom na {posiadlosc.nazwa}?"):
                     posiadlosc.kup_dom(self, gracz)
 
             #czynsz - posiadlosc nalezy do innego gracza
@@ -196,7 +238,7 @@ class Gra:
                 self.gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self.messages.append(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
+            self.messages.append(f"Gracz {self._aktualny_gracz} jest width więzieniu.")
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
