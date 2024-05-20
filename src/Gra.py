@@ -11,6 +11,9 @@ MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
 
+aktualna_szerokosc_ekranu = 1200
+aktualna_wysokosc_ekranu = 800
+
 # Dodajemy listę kolorów dla pionków jako obiekty pygame.Color
 PIECE_COLORS = [
     pygame.Color("red"),
@@ -154,7 +157,7 @@ class Gra:
 
     def pobierz_info_tak_nie(self, text):
         clock = pygame.time.Clock()
-        res = (720,720) 
+        res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
         screen = pygame.display.set_mode(res) 
         color_true = (0, 255, 0) #zielony
         color_false = (255, 0, 0) #czerwony
@@ -188,7 +191,7 @@ class Gra:
             pygame.display.flip()
             pygame.display.update()
             clock.tick(30)
-            pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
+            pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
 
 
     

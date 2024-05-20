@@ -84,6 +84,8 @@ class Main:
             elif event.type == pygame.VIDEORESIZE:
                 self._screen_width = event.w
                 self._screen_height = event.h
+                self._gra.aktualna_szerokosc_ekranu = self._screen_width
+                self._gra.aktualna_wysokosc_ekranu = self._screen_height
 
                 self._board_png = pygame.image.load("graphics/board.png")
                 self._board_png = pygame.transform.scale(
