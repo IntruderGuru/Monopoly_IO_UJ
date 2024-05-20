@@ -17,7 +17,7 @@ class Przycisk:
 
         if self.text:
             text_surf = self.font.render(self.text, True, self.text_color)
-            text_rect = text_surf.get_rect(center=self.rect.center)
+            text_rect = text_surf.get_rect(center = self.rect.center)
             screen.blit(text_surf, text_rect)
 
     def is_clicked(self, event):

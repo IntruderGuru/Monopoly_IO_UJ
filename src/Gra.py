@@ -194,8 +194,7 @@ class Gra:
             clock.tick(30)
             pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
 
-
-    def akcja_pola(self, gracz, pole, nr_pola = 1):
+    def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
 
         clock = pygame.time.Clock()
         res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
@@ -220,10 +219,8 @@ class Gra:
             kolor_hovera = (150, 150, 150)
             
             zakup = Przycisk(W * 0.6, H * 0.2, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "kupuje", (255,255,255))
-            sprzedaz = Przycisk(W * 0.6, H * 0.4, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "sprzedaje", (255,255,255))
-            licytacja = Przycisk(W * 0.6, H * 0.6, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "licytacja", (255,255,255))
-
-            sprzedaz.draw(screen)
+            licytacja = Przycisk(W * 0.6, H * 0.4, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "licytacja", (255,255,255))
+            
             zakup.draw(screen)
             licytacja.draw(screen)
 
@@ -233,17 +230,67 @@ class Gra:
                     sys.exit()
                 elif zakup.is_clicked(event):
                     return 1
-                elif sprzedaz.is_clicked(event):
-                    return 2
                 elif licytacja.is_clicked(event):
-                    return 3
+                    return 2
 
             pygame.display.flip()
             pygame.display.update()
             clock.tick(30)
             pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
 
-    
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
+
+        clock = pygame.time.Clock()
+        res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
+        screen = pygame.display.set_mode(res) 
+
+        running = True
+        while running:
+                
+            screen.fill((255, 255, 255))
+            font = pygame.font.Font(None, 36)
+
+            H = self.aktualna_wysokosc_ekranu
+            W = self.aktualna_szerokosc_ekranu
+
+            board_png = pygame.image.load("graphics/pole.png")
+            board_png = pygame.transform.scale(
+                board_png, (0.28 * W, 0.64 * H)
+            )
+            screen.blit(board_png, (W * 0.2, H * 0.15))
+
+            kolor_przycisku = (70, 70, 70)
+            kolor_hovera = (150, 150, 150)
+            
+
+            nieruchomosc = "wyjscie"
+            if posiadlosc.liczba_domow  < 4:
+                przycisk = Przycisk(W * 0.6, H * 0.2, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "kup domek", (255,255,255))
+                nieruchomosc = "domek"
+            else:
+                przycisk = Przycisk(W * 0.6, H * 0.2, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "kup hotel", (255,255,255))
+                nieruchomosc = "hotel"
+            
+            wyjscie = Przycisk(W * 0.6, H * 0.4, W * 0.2, H * 0.15, kolor_przycisku, kolor_hovera, "brak ruchu", (255,255,255))
+            wyjscie.draw(screen)
+            przycisk.draw(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif przycisk.is_clicked(event) and nieruchomosc == "domek":
+                    return 1
+                elif przycisk.is_clicked(event) and nieruchomosc == "hotel":
+                    return 2
+                elif wyjscie.is_clicked(event) and nieruchomosc == "wyjscie":
+                    return 3
+
+            pygame.display.flip()
+            pygame.display.update()
+            clock.tick(30)
+            pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
+   
     def wykonaj_akcje_na_polu(self, gracz, pole):
 
         self.messages.append(pole.wyswietl_info())
@@ -253,25 +300,37 @@ class Gra:
 
         elif pole.typ == "idz_do_wiezienia":
             self.messages.append("Gracz musi iść na pole 30 (więzienie)")
-            # gracz.pozycja = 30
             gracz.uwiezienie = True
-            #  pole = self.board[30],
         
-        elif "Posiadlosc" == pole.typ:
-
-            akcja = self.akcja_pola(gracz, pole)
+        elif pole.typ == "Posiadlosc":
 
             if isinstance(pole, Posiadlosc):
                posiadlosc = pole
             if posiadlosc.IDwlasciciela is None:
+                akcja = self.akcja_dostepnego_pola(gracz, posiadlosc)
+
+                #akcja 1 to zakup posiadlosci
                 if akcja == 1:
                     posiadlosc.kup_posiadlosc(self, gracz)
+                #akcja 2 to licytacja
+                if akcja == 2:
+                    pass
+                
             elif posiadlosc.IDwlasciciela == gracz.id:
-                if self.pobierz_info_tak_nie(f"Czy chcesz kupić dom na {posiadlosc.nazwa}?"):
-                    posiadlosc.kup_dom(self, gracz)
 
-            #czynsz - posiadlosc nalezy do innego gracza
-            #else:
+                akcja = self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
+
+                if akcja == 1:
+                    posiadlosc.kup_dom(self, gracz)
+                elif akcja == 2:
+                    #nie jest zaimplementowane kupowanie hotelu
+                    #posiadlosc.kup_hotel(self, gracz)
+                    pass
+
+    
+            else:
+                pass
+
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
