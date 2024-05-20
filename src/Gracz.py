@@ -30,3 +30,11 @@ class Gracz:
 
             if not gra.pobierz_info_tak_nie("Czy chcesz zastawić kolejną nieruchomość?"):
                 return
+
+    def czy_przeszedl_przez_start(self, gra, stara_pozycja):
+        if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
+            self.kwota += 2000
+
+            gra.messages.append(
+                f"Gracz {self.id} przeszedł przez start. Otrzymuje 2000"
+            )

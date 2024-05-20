@@ -125,6 +125,7 @@ class Gra:
         # gracz.pozycja = nowa_pozycja
         gracz.pionek.numer_pola = nowa_pozycja
         gracz.pionek.przesun(ruch)
+        gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         self.messages.append(
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
