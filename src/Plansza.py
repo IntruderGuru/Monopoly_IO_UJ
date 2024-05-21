@@ -3,7 +3,8 @@ from src.Posiadlosc import Posiadlosc, PosiadloscKolo, PosiadloscPozaWmii
 
 
 class Plansza:
-    def inicializacja_planszy(self):
+    @staticmethod
+    def inicializacja_planszy() -> []:
         board = []
         board.append(Pole(0, "Start"))
         board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
@@ -46,14 +47,17 @@ class Plansza:
         board.append(Pole(38, "Podatek dochodowy"))
         board.append(Posiadlosc(39, "sala 0089", 4000, 500, 2000, 2000))
 
+        return board
+
     def __init__(self):
-        self.plansza = []
+        self.plansza = self.inicializacja_planszy()
 
     # def wysrodkuj_pionki(self):
     #
     # def wysrodkuj_plansze(self):
 
-    def update(self):
+    # def update(self):
 
-    def render(self):
-
+    def render(self, screen):
+        for pole in self.plansza:
+            pole.render(screen)
