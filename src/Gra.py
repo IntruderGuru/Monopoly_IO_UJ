@@ -138,56 +138,47 @@ class Gra:
         pole = self.board[nowa_pozycja]
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def stworz_przycisk(self, text, x, y, w, h, color, hover_color, screen, action=None):
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-
-        if x + w > mouse[0] > x and y + h > mouse[1] > y:
-            pygame.draw.rect(screen, hover_color, (x, y, w, h))
-            if click[0] == 1 and action is not None:
-                return action
-        else:
-            pygame.draw.rect(screen, color, (x, y, w, h))
-
-        font = pygame.font.Font(None, 36)
-        text_surface = font.render(text, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=((x + (w / 2)), (y + (h / 2))))
-        screen.blit(text_surface, text_rect)
-
-        return None
-
     def pobierz_info_tak_nie(self, text):
+
         clock = pygame.time.Clock()
         res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
         screen = pygame.display.set_mode(res) 
-        color_true = (0, 255, 0) #zielony
-        color_false = (255, 0, 0) #czerwony
-        button_color = (170,170,170) #szary
+        screen.fill((255,255,255))
 
-        window_size = (300, 200)
-        pygame.display.set_caption('Wybierz opcję')
+        H = self.aktualna_wysokosc_ekranu
+        W = self.aktualna_szerokosc_ekranu
+
+
+        font = pygame.font.Font(None, 38)
+        text = font.render(text, True, (0,0,0))
+        text_rect = text.get_rect(center=(W * 0.5, H * 0.4,))
 
         running = True
         while running:
+                
+            screen.fill((255, 255, 255))
+            screen.blit(text, text_rect)
+            font = pygame.font.Font(None, 36)
+
+            kolor_tak = (51, 204, 51)
+            kolor_nie = (255, 77, 77)
+            kolor_hovera_nie = (255, 102, 102)
+            kolor_hovera_tak = (71, 209, 71)
+            
+            tak = Przycisk(W * 0.3, H * 0.45, W * 0.15, H * 0.11, kolor_tak, kolor_hovera_tak, "tak", (255,255,255))
+            nie = Przycisk(W * 0.5, H * 0.45, W * 0.15, H * 0.11, kolor_nie, kolor_hovera_nie, "nie", (255,255,255))
+            
+            tak.draw(screen)
+            nie.draw(screen)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-
-            screen.fill((255, 255, 255))
-
-            font = pygame.font.Font(None, 36)
-            text_surface = font.render(text, True, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(window_size[0], 30))
-            screen.blit(text_surface, text_rect)
-
-            true_action = self.stworz_przycisk("Tak", 50, 70, 80, 50, button_color, color_true, screen, "True")
-            false_action = self.stworz_przycisk("Nie", 170, 70, 80, 50, button_color, color_false, screen, "False")
-
-            if true_action:
-                return True
-            if false_action:
-                return False
+                elif tak.is_clicked(event):
+                    return True
+                elif nie.is_clicked(event):
+                    return False
 
             pygame.display.flip()
             pygame.display.update()
@@ -199,6 +190,9 @@ class Gra:
         clock = pygame.time.Clock()
         res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
         screen = pygame.display.set_mode(res) 
+        screen.fill((255,255,255))
+
+
 
         running = True
         while running:
@@ -243,6 +237,7 @@ class Gra:
         clock = pygame.time.Clock()
         res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
         screen = pygame.display.set_mode(res) 
+        screen.fill((255,255,255))
 
         running = True
         while running:
@@ -327,12 +322,12 @@ class Gra:
                     #posiadlosc.kup_hotel(self, gracz)
                     pass
 
-    
             else:
                 pass
 
 
     def tura(self):
+
         if not self._kolejny_rzut_kostka:
             self.wybierzKolejnegoGracza()
 
