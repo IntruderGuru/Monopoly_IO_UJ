@@ -16,7 +16,7 @@ aktualna_szerokosc_ekranu = 1200
 aktualna_wysokosc_ekranu = 800
 
 # Dodajemy listę kolorów dla pionków jako obiekty pygame.Color
-PIECE_COLORS = [
+PIECE_COLORS: [pygame.Color] = [
     pygame.Color("red"),
     pygame.Color("green"),
     pygame.Color("blue"),
@@ -183,12 +183,12 @@ class Gra:
             pygame.display.flip()
             pygame.display.update()
             clock.tick(30)
-            pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
+            pygame.display.set_mode((aktualna_szerokosc_ekranu, aktualna_wysokosc_ekranu), pygame.RESIZABLE)
 
     def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
 
         clock = pygame.time.Clock()
-        res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
+        res = (aktualna_szerokosc_ekranu, aktualna_wysokosc_ekranu)
         screen = pygame.display.set_mode(res) 
         screen.fill((255,255,255))
 
@@ -200,8 +200,8 @@ class Gra:
             screen.fill((255, 255, 255))
             font = pygame.font.Font(None, 36)
 
-            H = self.aktualna_wysokosc_ekranu
-            W = self.aktualna_szerokosc_ekranu
+            H = aktualna_wysokosc_ekranu
+            W = aktualna_szerokosc_ekranu
 
             board_png = pygame.image.load("graphics/pole.png")
             board_png = pygame.transform.scale(
@@ -230,12 +230,12 @@ class Gra:
             pygame.display.flip()
             pygame.display.update()
             clock.tick(30)
-            pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
+            pygame.display.set_mode((aktualna_szerokosc_ekranu, aktualna_wysokosc_ekranu), pygame.RESIZABLE)
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
 
         clock = pygame.time.Clock()
-        res = (self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu) 
+        res = (aktualna_szerokosc_ekranu, aktualna_wysokosc_ekranu)
         screen = pygame.display.set_mode(res) 
         screen.fill((255,255,255))
 
@@ -245,8 +245,8 @@ class Gra:
             screen.fill((255, 255, 255))
             font = pygame.font.Font(None, 36)
 
-            H = self.aktualna_wysokosc_ekranu
-            W = self.aktualna_szerokosc_ekranu
+            H = aktualna_wysokosc_ekranu
+            W = aktualna_szerokosc_ekranu
 
             board_png = pygame.image.load("graphics/pole.png")
             board_png = pygame.transform.scale(
@@ -284,7 +284,7 @@ class Gra:
             pygame.display.flip()
             pygame.display.update()
             clock.tick(30)
-            pygame.display.set_mode((self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu), pygame.RESIZABLE)
+            pygame.display.set_mode((aktualna_szerokosc_ekranu, aktualna_wysokosc_ekranu), pygame.RESIZABLE)
    
     def wykonaj_akcje_na_polu(self, gracz, pole):
 
