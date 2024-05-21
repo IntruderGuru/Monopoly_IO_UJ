@@ -92,6 +92,7 @@ class PosiadloscKolo(Pole):
     def wyswietl_info(self):
         return (f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
 
+
 class PosiadloscPozaWmii(Pole):
     def __init__(self, numer: int, nazwa: str, cena: int, czynsz: int, zastaw: int):
         super().__init__(numer, "Posiadlosc-pozaWmii")
