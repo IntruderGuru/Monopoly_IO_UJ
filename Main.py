@@ -1,6 +1,6 @@
 import os
 import pygame
-from src.Gra import Gra
+from src.Gra import Gra, Plansza
 
 
 class Main:
@@ -29,6 +29,7 @@ class Main:
         self._boardOffset = (self._screen_height - self._board_rect.height) / 2
 
         self._gra = Gra(self._screen)
+        self.plansza = Plansza()
         self._clock = pygame.time.Clock()
         self._running = True
         self._delta_time = 0
@@ -50,21 +51,23 @@ class Main:
         if self._gra.czy_kupno or self._gra.czy_info or self._gra.czy_dostep:
             self._gra.wyswietlaj()
         else:
-            self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
+            # self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
+            #
+            # for gracz in self._gra.gracze:
+            #     gracz.pionek.wyswietlaj(self._screen)
+            #
+            # # Wyświetlanie komunikatów z prawej strony
+            # y_offset = 10
+            # for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
+            #     self.render_text(message, (self._screen_width - 400, y_offset))
+            #     y_offset += 40
+            #
+            # # Wyświetlanie pola tekstowego
+            # self.render_text(
+            #     self.input_text, (self._screen_width - 400, self._screen_height - 50)
+            # )
 
-            for gracz in self._gra.gracze:
-                gracz.pionek.wyswietlaj(self._screen)
-
-            # Wyświetlanie komunikatów z prawej strony
-            y_offset = 10
-            for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
-                self.render_text(message, (self._screen_width - 400, y_offset))
-                y_offset += 40
-
-            # Wyświetlanie pola tekstowego
-            self.render_text(
-                self.input_text, (self._screen_width - 400, self._screen_height - 50)
-            )
+            self.plansza.render(self._screen)
 
         pygame.display.update()
 

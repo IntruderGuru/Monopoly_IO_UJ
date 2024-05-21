@@ -3,6 +3,7 @@ import pygame
 import sys
 from src.Gracz import Gracz
 from src.Pole import Pole
+from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 from src.Przycisk import Przycisk
