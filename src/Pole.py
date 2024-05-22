@@ -4,6 +4,8 @@ from enum import Enum
 from src.Pionek import Kierunek
 
 
+# TODO: Do usuniecia, korzystanie z jednego enuma z Pionka, problem z kolejnoscia wystepowania
+# TODO: atrybutow w enumie w Pionku, zla kolejnosc, poprawna ponizej
 class KierunekPol(Enum):
     Gora = 0
     Prawo = 1
@@ -18,6 +20,7 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
+    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
     MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
     DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
     KOLOR_TLA = pygame.color.THECOLORS["red"]
@@ -51,6 +54,7 @@ class Pole:
     def wyswietl_info(self) :
         return (f"Nazwa: {self.typ}")
 
+    # TODO: inicjalizacja tych wartosci w konstruktorze, aby za kazdym razem ich nie liczyc w metodzie render
     def render(self, screen):
         kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, 10, 40)
         wymiary_pola = self.oblicz_rozmiar_pola(self.numer, 10, 40)
@@ -70,7 +74,7 @@ class Pole:
             case KierunekPol.Prawo:
                 lewo += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
                 gora += 0 if (self.numer % 10 == 0) else (((self.numer % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
-                gora += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if self.numer % 10 != 0 else 0)
+                gora += ((Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING) if self.numer % 10 != 0 else 0)
 
             case KierunekPol.Dol:
                 lewo += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
@@ -78,7 +82,7 @@ class Pole:
                 gora += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
+                gora += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
         my_font = pygame.font.SysFont('Arial', 30)
         text_surface = my_font.render(str(self.numer), False, pygame.color.THECOLORS["black"])
