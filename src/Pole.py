@@ -1,6 +1,14 @@
 import pygame
 from typing import NamedTuple
+from enum import Enum
 from src.Pionek import Kierunek
+
+
+class KierunekPol(Enum):
+    Gora = 0
+    Prawo = 1
+    Dol = 2
+    Lewo = 3
 
 
 class Vector2(NamedTuple):
@@ -22,11 +30,11 @@ class Pole:
     maksymalna_liczba_pol - ilosc pol na planszy
     """
     @staticmethod
-    def oblicz_zwrot_naglowka_pola(numer_pola, dlugosc_sciany_w_polach, maksymalna_liczba_pol) -> Kierunek:
-        if abs(maksymalna_liczba_pol / dlugosc_sciany_w_polach) != len(Kierunek):
+    def oblicz_zwrot_naglowka_pola(numer_pola, dlugosc_sciany_w_polach, maksymalna_liczba_pol) -> KierunekPol:
+        if abs(maksymalna_liczba_pol / dlugosc_sciany_w_polach) != len(KierunekPol):
             raise "Podano niepoprawne wymiary planszy!"
 
-        return Kierunek((numer_pola % maksymalna_liczba_pol) // dlugosc_sciany_w_polach)
+        return KierunekPol((numer_pola % maksymalna_liczba_pol) // dlugosc_sciany_w_polach)
 
     @staticmethod
     def oblicz_rozmiar_pola(numer_pola, dlugosc_sciany_w_polach, maksymalna_liczba_pol) -> Vector2:
@@ -50,27 +58,29 @@ class Pole:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
 
-        szerokosc_aktualny_kierunek = wymiary_pola.x if kierunek_sciany in (Kierunek.Gora, Kierunek.Dol) else wymiary_pola.y
-        wysokosc_aktualny_kierunek = wymiary_pola.y if kierunek_sciany in (Kierunek.Gora, Kierunek.Dol) else wymiary_pola.x
-
-        # szerokosc_przeciwny_kierunek = wymiary_pola.y if kierunek_sciany in (Kierunek.Gora, Kierunek.Dol) else wymiary_pola.x
-        # wysokosc_przeciwny_kierunek = wymiary_pola.x if kierunek_sciany in (Kierunek.Gora, Kierunek.Dol) else wymiary_pola.y
+        szerokosc_aktualny_kierunek = wymiary_pola.x if kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else wymiary_pola.y
+        wysokosc_aktualny_kierunek = wymiary_pola.y if kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else wymiary_pola.x
 
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
-            case Kierunek.Gora:
-                lewo += ((self.numer % 10) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
-                         + (Pole.DUZE_POLE_WYMIARY.x if self.numer % 10 != 0 else 0))
+            case KierunekPol.Gora:
+                lewo += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if self.numer % 10 != 0 else 0)
+                lewo += 0 if (self.numer % 10 == 0) else (((self.numer % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
 
-            case Kierunek.Prawo:
-                lewo += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x
-                gora += (self.numer % 10) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
+            case KierunekPol.Prawo:
+                lewo += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
+                gora += 0 if (self.numer % 10 == 0) else (((self.numer % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
+                gora += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if self.numer % 10 != 0 else 0)
 
-            case Kierunek.Dol:
-                lewo += (10 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + (Pole.DUZE_POLE_WYMIARY.x if self.numer % 10 == 0 else 0)
-                gora += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y
+            case KierunekPol.Dol:
+                lewo += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
+                lewo += (Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
+                gora += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
-            case Kierunek.Lewo:
-                gora += (10 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
+            case KierunekPol.Lewo:
+                gora += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
 
+        my_font = pygame.font.SysFont('Arial', 30)
+        text_surface = my_font.render(str(self.numer), False, pygame.color.THECOLORS["black"])
+        screen.blit(text_surface, (lewo, gora))
         pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(lewo, gora, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
