@@ -20,12 +20,15 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
     MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
+    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
     DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
     KOLOR_TLA = pygame.color.THECOLORS["red"]
     OFF_SET: Vector2 = Vector2(100, 100)
     SPACING: int = 10
+    MAKSYMALNA_LICZBA_POL: int = 40
+    # dla sciany = ilosc malych pol + jedno duze pole
+    DLUGOSC_SCIANY_W_POLACH = 10
 
     """
     numer_pola - nr. id pola [0, maksymalna_liczba_pol)
@@ -46,45 +49,49 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    def __init__(self, numer: int, typ: str):
-        self.numer = numer
-        self.typ = typ
-        self.kolor_naglowka = pygame.color.THECOLORS["violet"]
-
-    def wyswietl_info(self) :
-        return (f"Nazwa: {self.typ}")
-
-    # TODO: inicjalizacja tych wartosci w konstruktorze, aby za kazdym razem ich nie liczyc w metodzie render
-    def render(self, screen):
-        kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, 10, 40)
-        wymiary_pola = self.oblicz_rozmiar_pola(self.numer, 10, 40)
-
+    @staticmethod
+    def inicjalizacja_pozycji(numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
-
-        szerokosc_aktualny_kierunek = wymiary_pola.x if kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else wymiary_pola.y
-        wysokosc_aktualny_kierunek = wymiary_pola.y if kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else wymiary_pola.x
 
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
             case KierunekPol.Gora:
-                lewo += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if self.numer % 10 != 0 else 0)
-                lewo += 0 if (self.numer % 10 == 0) else (((self.numer % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
+                lewo += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
 
             case KierunekPol.Prawo:
                 lewo += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
-                gora += 0 if (self.numer % 10 == 0) else (((self.numer % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
-                gora += ((Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING) if self.numer % 10 != 0 else 0)
+                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
+                gora += ((Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING) if numer_pola % 10 != 0 else 0)
 
             case KierunekPol.Dol:
-                lewo += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
+                lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
                 lewo += (Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
                 gora += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (self.numer % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
+                gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
-        my_font = pygame.font.SysFont('Arial', 30)
+        return Vector2(lewo, gora)
+
+    def __init__(self, numer: int, typ: str):
+        self.numer = numer
+        self.typ = typ
+        self.kolor_naglowka = pygame.color.THECOLORS["violet"]
+        self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
+        self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
+        self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
+
+    def wyswietl_info(self) :
+        return (f"Nazwa: {self.typ}")
+
+    def render(self, screen):
+        szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
+        wysokosc_aktualny_kierunek = self.wymiary.y if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.x
+
+        my_font = pygame.font.SysFont('Arial', 15)
         text_surface = my_font.render(str(self.numer), False, pygame.color.THECOLORS["black"])
-        screen.blit(text_surface, (lewo, gora))
-        pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(lewo, gora, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
+        screen.blit(text_surface, (self.pozycja.x, self.pozycja.y))
+        
+        pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(self.pozycja.x, self.pozycja.y, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
