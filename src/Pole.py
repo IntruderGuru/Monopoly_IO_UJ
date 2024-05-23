@@ -1,7 +1,6 @@
 import pygame
 from typing import NamedTuple
 from enum import Enum
-from src.Pionek import Kierunek
 
 
 # TODO: Do usuniecia, korzystanie z jednego enuma z Pionka, problem z kolejnoscia wystepowania
@@ -44,7 +43,7 @@ class Pole:
 
     @staticmethod
     def oblicz_rozmiar_pola(numer_pola, dlugosc_sciany_w_polach, maksymalna_liczba_pol) -> Vector2:
-        if abs(maksymalna_liczba_pol / dlugosc_sciany_w_polach) != len(Kierunek):
+        if abs(maksymalna_liczba_pol / dlugosc_sciany_w_polach) != len(KierunekPol):
             raise "Podano niepoprawne wymiary planszy!"
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY

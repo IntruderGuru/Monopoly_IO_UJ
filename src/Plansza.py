@@ -1,4 +1,7 @@
+import pygame.color
+
 from src.Pole import Pole
+from src.Pionek import Pionek
 from src.Posiadlosc import Posiadlosc, PosiadloscKolo, PosiadloscPozaWmii
 
 
