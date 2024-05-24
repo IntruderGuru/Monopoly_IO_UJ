@@ -12,8 +12,6 @@ MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
 
-aktualna_szerokosc_ekranu = 1200
-aktualna_wysokosc_ekranu = 800
 
 # Dodajemy listę kolorów dla pionków jako obiekty pygame.Color
 PIECE_COLORS: [pygame.Color] = [
@@ -36,19 +34,21 @@ class Gra:
         self._aktualny_gracz = 0
         self.board = self.stworz_plansze()
         self.messages = []
+        self.aktualna_szerokosc_ekranu = 1200
+        self.aktualna_wysokosc_ekranu = 800
 
         # Refactor def akcja_dostepnego_pola() - Piter
         self.board_png = pygame.transform.scale(
-            pygame.image.load("graphics/pole.png"), (0.28 * aktualna_szerokosc_ekranu, 0.64 * aktualna_wysokosc_ekranu)
+            pygame.image.load("graphics/pole.png"), (0.28 * self.aktualna_szerokosc_ekranu, 0.64 * self.aktualna_wysokosc_ekranu)
         )
 
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
 
-        self.zakup = Przycisk(aktualna_szerokosc_ekranu * 0.6, aktualna_wysokosc_ekranu * 0.2, aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kupuje", (255,255,255))
-        self.licytacja = Przycisk(aktualna_szerokosc_ekranu * 0.6, aktualna_wysokosc_ekranu * 0.4, aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "licytacja", (255,255,255))
+        self.zakup = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kupuje", (255,255,255))
+        self.licytacja = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.4, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "licytacja", (255,255,255))
         self.ktora_akcja = 0
-        self.czy_dostep = False
+        self.czy_akcja_pola = False
 
         # Refactor def pobierz_info_tak_nie() - Piter
         self.kolor_tak = (51, 204, 51)
@@ -58,10 +58,10 @@ class Gra:
 
         self.font = pygame.font.Font(None, 36)
         self.text = self.font.render("test", True, (0,0,0))
-        self.text_rect = self.text.get_rect(center=(aktualna_szerokosc_ekranu * 0.5, aktualna_wysokosc_ekranu * 0.4,))
+        self.text_rect = self.text.get_rect(center=(self.aktualna_szerokosc_ekranu * 0.5, self.aktualna_wysokosc_ekranu * 0.4,))
 
-        self.tak = Przycisk(aktualna_wysokosc_ekranu * 0.3, aktualna_wysokosc_ekranu * 0.45, aktualna_wysokosc_ekranu * 0.15, aktualna_wysokosc_ekranu * 0.11, self.kolor_tak, self.kolor_hovera_tak, "tak", (255,255,255))
-        self.nie = Przycisk(aktualna_wysokosc_ekranu * 0.5, aktualna_wysokosc_ekranu * 0.45, aktualna_wysokosc_ekranu * 0.15, aktualna_wysokosc_ekranu * 0.11, self.kolor_nie, self.kolor_hovera_nie, "nie", (255,255,255))
+        self.tak = Przycisk(self.aktualna_wysokosc_ekranu * 0.3, self.aktualna_wysokosc_ekranu * 0.45, self.aktualna_wysokosc_ekranu * 0.15, self.aktualna_wysokosc_ekranu * 0.11, self.kolor_tak, self.kolor_hovera_tak, "tak", (255,255,255))
+        self.nie = Przycisk(self.aktualna_wysokosc_ekranu * 0.5, self.aktualna_wysokosc_ekranu * 0.45, self.aktualna_wysokosc_ekranu * 0.15, self.aktualna_wysokosc_ekranu * 0.11, self.kolor_nie, self.kolor_hovera_nie, "nie", (255,255,255))
 
         self.tak_klik = False
         self.nie_klik = True
@@ -69,9 +69,9 @@ class Gra:
 
         # Refactor def akcja_kupienia_nieruchomosci() - Piter
         self.nieruchomosc = "wyjscie"
-        self.wyjscie = Przycisk(aktualna_szerokosc_ekranu * 0.6, aktualna_wysokosc_ekranu * 0.4, aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "brak ruchu", (255,255,255))
-        self.przycisk_kup_hotel = Przycisk(aktualna_szerokosc_ekranu * 0.6, aktualna_wysokosc_ekranu * 0.2, aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup hotel", (255,255,255))
-        self.przycisk_kup_domek = Przycisk(aktualna_szerokosc_ekranu * 0.6, aktualna_wysokosc_ekranu * 0.2, aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup domek", (255,255,255))
+        self.wyjscie = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.4, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "brak ruchu", (255,255,255))
+        self.przycisk_kup_hotel = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup hotel", (255,255,255))
+        self.przycisk_kup_domek = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup domek", (255,255,255))
         self.ktore_kupno = 0
         self.czy_kupno = False
 
@@ -180,26 +180,9 @@ class Gra:
     def pobierz_info_tak_nie(self, text):
         self.czy_info = True
 
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         pygame.quit()
-            #         sys.exit()
-            #     elif tak.is_clicked(event):
-            #         return True
-            #     elif nie.is_clicked(event):
-            #         return False
-
     def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
-        self.czy_dostep = True
+        self.czy_akcja_pola = True
 
-            # for event in pygame.event.get():
-            #     if event.type == pygame.QUIT:
-            #         pygame.quit()
-            #         sys.exit()
-            #     elif self.zakup.is_clicked(event):
-            #         return 1
-            #     elif self.licytacja.is_clicked(event):
-            #         return 2
 
     def aktualizuj_zdarzenia(self, event: pygame.event.Event):
         self.tak_klik = False
@@ -207,11 +190,11 @@ class Gra:
 
         if self.zakup.is_clicked(event):
             self.ktore_kupno = 1
-            self.czy_dostep = False
+            self.czy_akcja_pola = False
             # return 1
         elif self.licytacja.is_clicked(event):
             self.ktore_kupno = 2
-            self.czy_dostep = False
+            self.czy_akcja_pola = False
             # return 2
 
         elif self.tak.is_clicked(event):
@@ -231,8 +214,15 @@ class Gra:
             self.czy_kupno = False
 
     def wyswietlaj(self):
-        if self.czy_dostep:
-            self.glowne_okno.blit(self.board_png, (aktualna_szerokosc_ekranu * 0.2, aktualna_wysokosc_ekranu * 0.15))
+
+        H = self.aktualna_wysokosc_ekranu
+        W = self.aktualna_szerokosc_ekranu
+
+        if self.czy_akcja_pola:
+            self.board_png = pygame.transform.scale(self.board_png, (0.28 * W, 0.64 * H))
+            self.glowne_okno.blit(self.board_png, (W * 0.2, H * 0.15))
+            self.zakup.updateSize(W * 0.6, H * 0.2, W * 0.2, H * 0.15)
+            self.licytacja.updateSize(W * 0.6, H * 0.4, W * 0.2, H * 0.15)
             self.zakup.draw(self.glowne_okno)
             self.licytacja.draw(self.glowne_okno)
 

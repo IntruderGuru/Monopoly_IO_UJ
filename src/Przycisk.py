@@ -25,3 +25,6 @@ class Przycisk:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 return True
         return False
+
+    def updateSize(self, x, y, width, height):
+        self.rect = pygame.Rect(x, y, width, height)

@@ -47,7 +47,7 @@ class Main:
     def _wyswietlaj(self):
         self._screen.fill(Main._background_color)
 
-        if self._gra.czy_kupno or self._gra.czy_info or self._gra.czy_dostep:
+        if self._gra.czy_kupno or self._gra.czy_info or self._gra.czy_akcja_pola:
             self._gra.wyswietlaj()
         else:
             self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
