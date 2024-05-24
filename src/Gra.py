@@ -1,14 +1,10 @@
 import random
 import pygame
-import sys
 
-from src.AkcjaPolaOkno import AkcjaPolaOkno
-from src.Gracz import Gracz
-from src.Pole import Pole
+from Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
-from src.Przycisk import Przycisk
 
 KWOTA_POCZATKOWA = 10000
 MIN_LICZBA_GRACZY = 2

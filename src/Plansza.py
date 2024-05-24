@@ -8,7 +8,7 @@ from src.Posiadlosc import Posiadlosc, PosiadloscKolo, PosiadloscPozaWmii
 class Plansza:
     @staticmethod
     def inicializacja_planszy() -> list[Pole]:
-        board: list[Pole] = []
+        board: list[Pole] = list()
         board.append(Pole(0, "Start"))
         board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
         board.append(Pole(2, "Szansa"))
