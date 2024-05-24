@@ -1,4 +1,4 @@
-from Okno.Okno import Okno
+from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 

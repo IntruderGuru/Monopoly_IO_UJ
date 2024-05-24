@@ -1,7 +1,7 @@
 import random
 import pygame
 
-from Okno.AkcjaPolaOkno import AkcjaPolaOkno
+from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
