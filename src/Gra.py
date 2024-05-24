@@ -3,6 +3,7 @@ import pygame
 import sys
 from src.Gracz import Gracz
 from src.Pole import Pole
+from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 from src.Przycisk import Przycisk
@@ -26,7 +27,7 @@ PIECE_COLORS: [pygame.Color] = [
 class Gra:
     def __init__(self, glowne_okno: pygame.Surface):
         self.glowne_okno = glowne_okno
-        self.gracze = []
+        self.gracze: list[Gracz] = []
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = 0
         self._suma_oczek = 0
@@ -166,7 +167,7 @@ class Gra:
         stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
         # gracz.pozycja = nowa_pozycja
-        gracz.pionek.numer_pola = nowa_pozycja
+        # gracz.pionek.numer_pola = nowa_pozycja
         gracz.pionek.przesun(ruch)
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
