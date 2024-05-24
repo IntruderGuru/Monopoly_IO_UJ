@@ -1,9 +1,6 @@
 import os
 import pygame
-
-from PIL import Image
-from src.Gra import Gra
-from src.Pionek import Pionek
+from src.Gra import Gra, Plansza
 
 
 class Main:
@@ -11,60 +8,54 @@ class Main:
     _background_color = pygame.color.THECOLORS["white"]
 
     def __init__(self):
-        pygame.init()  # Inicjalizacja pygame
+        pygame.init()       # Inicjalizacja pygame
         pygame.font.init()  # Inicjalizacja modułu fontów
 
-        self._gra = Gra()
-        self._running = True
-        self._delta_time = 0
-        self._clock = pygame.time.Clock()
-        self.input_text = ""
-        self.messages = []
-        self.font = pygame.font.Font(None, 20)
-
         os.environ["SDL_VIDEO_CENTERED"] = "1"
+
+        pygame.display.set_caption("Monopoly")
+        self._screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
 
         self._screen_info = pygame.display.Info()
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._board_png = pygame.image.load("graphics/board.png")
-        self._board_png = pygame.transform.scale(
-            self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
-        )
+        # self._board_png = pygame.image.load("graphics/board.png")
+        # self._board_png = pygame.transform.scale(
+        #     self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
+        # )
 
-        self._board_rect = self._board_png.get_rect()
-        self._boardOffset = (self._screen_height - self._board_rect.height) / 2
+        # self._board_rect = self._board_png.get_rect()
+        # self._boardOffset = (self._screen_height - self._board_rect.height) / 2
 
-        self._screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
-
-        pygame.display.set_caption("Monopoly")
+        self._gra = Gra(self._screen)
+        self._clock = pygame.time.Clock()
+        self._running = True
+        self._delta_time = 0
+        self.input_text = ""
+        self.messages = []
+        self.font = pygame.font.Font(None, 20)
 
     def __del__(self):
         pygame.quit()
         del self._gra
 
-    def render_text(self, text, pos):
-        text_surface = self.font.render(text, True, (0, 0, 0))
-        self._screen.blit(text_surface, pos)
+    def start(self):
+        self.messages.append("Witaj w UJpoly!")
+        self.messages.append("Wprowadź liczbę graczy między (2-5) :")
+        self._petla_gry()
 
-    def _wyswietlaj(self):
-        self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
-        for gracz in self._gra.gracze:
-            gracz.pionek.wyswietlaj(self._screen)
+    def _petla_gry(self):
+        while self._running:
+            self._aktualizuj_delta_time()
+            self._petla_zdarzen(pygame.event.get())
+            self._aktualizuj(delta_time=self._delta_time)
+            self.messages.extend(self._gra.get_messages())
+            self._wyswietlaj()
 
-        # Wyświetlanie komunikatów z prawej strony
-        y_offset = 10
-        for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
-            self.render_text(message, (self._screen_width - 400, y_offset))
-            y_offset += 40
-
-        # Wyświetlanie pola tekstowego
-        self.render_text(
-            self.input_text, (self._screen_width - 400, self._screen_height - 50)
-        )
-
-        pygame.display.update()
+    def _aktualizuj_delta_time(self):
+        self._clock.tick(60)
+        self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
 
     def _petla_zdarzen(self, events_list):
         for event in events_list:
@@ -87,33 +78,32 @@ class Main:
                 self._gra.aktualna_szerokosc_ekranu = self._screen_width
                 self._gra.aktualna_wysokosc_ekranu = self._screen_height
 
-                self._board_png = pygame.image.load("graphics/board.png")
-                self._board_png = pygame.transform.scale(
-                    self._board_png,
-                    (7 / 8 * self._screen_height, 7 / 8 * self._screen_height),
-                )
-                self._board_rect = self._board_png.get_rect()
-                self._boardOffset = (self._screen_height - self._board_rect.height) / 2
-
-                self._screen = pygame.display.set_mode(
-                    (self._screen_width, self._screen_height), pygame.RESIZABLE
-                )
+            self._gra.aktualizuj_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
         _delta_time = delta_time
+
+    def render_text(self, text, pos):
+        text_surface = self.font.render(text, True, (0, 0, 0))
+        self._screen.blit(text_surface, pos)
+
+    def _wyswietlaj(self):
         self._screen.fill(Main._background_color)
 
-    def _aktualizuj_delta_time(self):
-        self._clock.tick(60)
-        self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
+        # Wyświetlanie komunikatów z prawej strony
+        y_offset = 10
+        for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
+            self.render_text(message, (self._screen_width - 400, y_offset))
+            y_offset += 40
 
-    def _petla_gry(self):
-        while self._running:
-            self._aktualizuj_delta_time()
-            self._petla_zdarzen(pygame.event.get())
-            self._aktualizuj(delta_time=self._delta_time)
-            self.messages.extend(self._gra.get_messages())
-            self._wyswietlaj()
+        # Wyświetlanie pola tekstowego
+        self.render_text(
+            self.input_text, (self._screen_width - 400, self._screen_height - 50)
+        )
+
+        self._gra.wyswietl()
+
+        pygame.display.update()
 
     def process_input(self, input_text):
         self.messages.append(f"Wprowadzono: {input_text}")
@@ -128,11 +118,6 @@ class Main:
                 self.messages.append("Nieprawidłowa liczba graczy.")
         else:
             self.messages.append(f"Nieznana komenda: {input_text}")
-
-    def start(self):
-        self.messages.append("Witaj w UJpoly!")
-        self.messages.append("Wprowadź liczbę graczy między (2-5) :")
-        self._petla_gry()
 
 
 if __name__ == "__main__":
