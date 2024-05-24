@@ -29,7 +29,6 @@ class Main:
         # self._boardOffset = (self._screen_height - self._board_rect.height) / 2
 
         self._gra = Gra(self._screen)
-        self.plansza = Plansza()
         self._clock = pygame.time.Clock()
         self._running = True
         self._delta_time = 0
@@ -103,11 +102,6 @@ class Main:
     def _wyswietlaj(self):
         self._screen.fill(Main._background_color)
 
-        # self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
-        #
-        # for gracz in self._gra.gracze:
-        #     gracz.pionek.wyswietlaj(self._screen)
-
         # Wyświetlanie komunikatów z prawej strony
         y_offset = 10
         for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
@@ -119,12 +113,7 @@ class Main:
             self.input_text, (self._screen_width - 400, self._screen_height - 50)
         )
 
-        self.plansza.render(self._screen)
-
-        for gracz in self._gra.gracze:
-            gracz.pionek.wyswietlaj(self._screen)
-
-        self._gra.wyswietlaj()
+        self._gra.wyswietl()
 
         pygame.display.update()
 

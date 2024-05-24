@@ -74,6 +74,6 @@ class Pionek:
 
         return False
 
-    def wyswietlaj(self, window: pygame.Surface):
-        pygame.draw.rect(window, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
+    def wyswietl(self, okno: pygame.Surface):
+        pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
 

@@ -28,9 +28,9 @@ PIECE_COLORS: [pygame.Color] = [
 
 class Gra:
     def __init__(self, glowne_okno: pygame.Surface):
-        self.glowne_okno: pygame.Surface = glowne_okno
-        self.gracze: list[Gracz] = []
-        self.plansza: Plansza = Plansza()
+        self._glowne_okno: pygame.Surface = glowne_okno
+        self._gracze: list[Gracz] = []
+        self._plansza: Plansza = Plansza()
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = 0
         self._suma_oczek = 0
@@ -40,6 +40,7 @@ class Gra:
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
 
+        self._plansza = Plansza()
         self.akcjaPolaOkno = AkcjaPolaOkno()
 
     def przygotuj_graczy(self):
@@ -48,7 +49,7 @@ class Gra:
             pionek = Pionek(0, PIECE_COLORS[i - 1], "path")
             gracz = Gracz(i, self._kwota_poczatkowa, pionek)
             gracz.pozycja = 0
-            self.gracze.append(gracz)
+            self._gracze.append(gracz)
             color = PIECE_COLORS[i - 1]
             self.messages.append(
                 f"Gracz {i} gotowy z pionkiem w kolorze {color.r}, {color.g}, {color.b}"
@@ -59,10 +60,10 @@ class Gra:
         poczatkowy_gracz = self._aktualny_gracz
 
         while True:
-            if not self.gracze[self._aktualny_gracz - 1].uwiezienie:
+            if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
                 break
             else:
-                self.gracze[self._aktualny_gracz - 1].odczekajJednaTure()
+                self._gracze[self._aktualny_gracz - 1].odczekajJednaTure()
                 self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
                 self._suma_oczek = 0
                 if self._aktualny_gracz == poczatkowy_gracz:
@@ -80,8 +81,8 @@ class Gra:
 
         if self._suma_oczek == 21:
             self.messages.append("Idziesz do więzienia")
-            self.gracze[self._aktualny_gracz - 1].pozycja = 10
-            self.gracze[self._aktualny_gracz - 1].uwiezienie = True
+            self._gracze[self._aktualny_gracz - 1].pozycja = 10
+            self._gracze[self._aktualny_gracz - 1].uwiezienie = True
             self._kolejny_rzut_kostka = False
 
     def przesun_gracza(self, gracz, ruch):
@@ -94,7 +95,7 @@ class Gra:
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
         )
 
-        pole = self.plansza.pobierz_pole(nowa_pozycja)
+        pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
     def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
@@ -152,7 +153,7 @@ class Gra:
         if not self._kolejny_rzut_kostka:
             self.wybierz_kolejnego_gracza()
 
-        if not self.gracze[self._aktualny_gracz - 1].uwiezienie:
+        if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
             self.messages.append(f"Ruch gracza: {self._aktualny_gracz}")
 
             kostka_pierwsza = random.randint(1, 6)
@@ -166,7 +167,7 @@ class Gra:
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
             self.przesun_gracza(
-                self.gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
+                self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
             self.messages.append(f"Gracz {self._aktualny_gracz} jest width więzieniu.")
@@ -182,5 +183,10 @@ class Gra:
     def aktualizuj_zdarzenia(self, event: pygame.event.Event):
         self.akcjaPolaOkno.aktulizacja_zdarzen(event)
 
-    def wyswietlaj(self):
-        self.akcjaPolaOkno.wyswietl(self.glowne_okno)
+    def wyswietl(self):
+        self._plansza.render(self._glowne_okno)
+
+        for gracz in self._gracze:
+            gracz.pionek.wyswietl(self._glowne_okno)
+
+        self.akcjaPolaOkno.wyswietl(self._glowne_okno)
