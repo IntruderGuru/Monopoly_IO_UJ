@@ -20,13 +20,13 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._board_png = pygame.image.load("graphics/board.png")
-        self._board_png = pygame.transform.scale(
-            self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
-        )
+        # self._board_png = pygame.image.load("graphics/board.png")
+        # self._board_png = pygame.transform.scale(
+        #     self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
+        # )
 
-        self._board_rect = self._board_png.get_rect()
-        self._boardOffset = (self._screen_height - self._board_rect.height) / 2
+        # self._board_rect = self._board_png.get_rect()
+        # self._boardOffset = (self._screen_height - self._board_rect.height) / 2
 
         self._gra = Gra(self._screen)
         self.plansza = Plansza()
@@ -40,6 +40,61 @@ class Main:
     def __del__(self):
         pygame.quit()
         del self._gra
+
+    def start(self):
+        self.messages.append("Witaj w UJpoly!")
+        self.messages.append("Wprowadź liczbę graczy między (2-5) :")
+        self._petla_gry()
+
+    def _petla_gry(self):
+        while self._running:
+            self._aktualizuj_delta_time()
+            self._petla_zdarzen(pygame.event.get())
+            self._aktualizuj(delta_time=self._delta_time)
+            self.messages.extend(self._gra.get_messages())
+            self._wyswietlaj()
+
+    def _aktualizuj_delta_time(self):
+        self._clock.tick(60)
+        self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
+
+    def _petla_zdarzen(self, events_list):
+        for event in events_list:
+            if event.type == pygame.QUIT:
+                self._running = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.process_input(self.input_text)
+                    self.input_text = ""
+                elif event.key == pygame.K_BACKSPACE:
+                    self.input_text = self.input_text[:-1]
+                elif event.key == pygame.K_SPACE:
+                    self._gra.tura()
+                else:
+                    self.input_text += event.unicode
+            elif event.type == pygame.VIDEORESIZE:
+                self._screen_width = event.w
+                self._screen_height = event.h
+                self._gra.aktualna_szerokosc_ekranu = self._screen_width
+                self._gra.aktualna_wysokosc_ekranu = self._screen_height
+
+                # self._board_png = pygame.image.load("graphics/board.png")
+                # self._board_png = pygame.transform.scale(
+                #     self._board_png,
+                #     (7 / 8 * self._screen_height, 7 / 8 * self._screen_height),
+                # )
+                # self._board_rect = self._board_png.get_rect()
+                # self._boardOffset = (self._screen_height - self._board_rect.height) / 2
+
+                # self._screen = pygame.display.set_mode(
+                #     (self._screen_width, self._screen_height), pygame.RESIZABLE
+                # )
+
+            self._gra.aktualizuj_zdarzenia(event)
+
+    def _aktualizuj(self, delta_time):
+        _delta_time = delta_time
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, (0, 0, 0))
@@ -73,56 +128,6 @@ class Main:
 
         pygame.display.update()
 
-    def _petla_zdarzen(self, events_list):
-        for event in events_list:
-            if event.type == pygame.QUIT:
-                self._running = False
-                break
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    self.process_input(self.input_text)
-                    self.input_text = ""
-                elif event.key == pygame.K_BACKSPACE:
-                    self.input_text = self.input_text[:-1]
-                elif event.key == pygame.K_SPACE:
-                    self._gra.tura()
-                else:
-                    self.input_text += event.unicode
-            elif event.type == pygame.VIDEORESIZE:
-                self._screen_width = event.w
-                self._screen_height = event.h
-                self._gra.aktualna_szerokosc_ekranu = self._screen_width
-                self._gra.aktualna_wysokosc_ekranu = self._screen_height
-
-                self._board_png = pygame.image.load("graphics/board.png")
-                self._board_png = pygame.transform.scale(
-                    self._board_png,
-                    (7 / 8 * self._screen_height, 7 / 8 * self._screen_height),
-                )
-                self._board_rect = self._board_png.get_rect()
-                self._boardOffset = (self._screen_height - self._board_rect.height) / 2
-
-                # self._screen = pygame.display.set_mode(
-                #     (self._screen_width, self._screen_height), pygame.RESIZABLE
-                # )
-
-            self._gra.aktualizuj_zdarzenia(event)
-
-    def _aktualizuj(self, delta_time):
-        _delta_time = delta_time
-
-    def _aktualizuj_delta_time(self):
-        self._clock.tick(60)
-        self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
-
-    def _petla_gry(self):
-        while self._running:
-            self._aktualizuj_delta_time()
-            self._petla_zdarzen(pygame.event.get())
-            self._aktualizuj(delta_time=self._delta_time)
-            self.messages.extend(self._gra.get_messages())
-            self._wyswietlaj()
-
     def process_input(self, input_text):
         self.messages.append(f"Wprowadzono: {input_text}")
         if input_text.isdigit():
@@ -136,11 +141,6 @@ class Main:
                 self.messages.append("Nieprawidłowa liczba graczy.")
         else:
             self.messages.append(f"Nieznana komenda: {input_text}")
-
-    def start(self):
-        self.messages.append("Witaj w UJpoly!")
-        self.messages.append("Wprowadź liczbę graczy między (2-5) :")
-        self._petla_gry()
 
 
 if __name__ == "__main__":
