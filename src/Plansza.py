@@ -7,8 +7,8 @@ from src.Posiadlosc import Posiadlosc, PosiadloscKolo, PosiadloscPozaWmii
 
 class Plansza:
     @staticmethod
-    def inicializacja_planszy() -> []:
-        board = []
+    def inicializacja_planszy() -> list[Pole]:
+        board: list[Pole] = []
         board.append(Pole(0, "Start"))
         board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
         board.append(Pole(2, "Szansa"))
@@ -53,7 +53,13 @@ class Plansza:
         return board
 
     def __init__(self):
-        self.plansza = self.inicializacja_planszy()
+        self.plansza: [Pole] = self.inicializacja_planszy()
+
+    def pobierz_pole(self, numer_pola):
+        if 0 <= numer_pola <= len(self.plansza):
+            return self.plansza[numer_pola]
+        else:
+            raise Exception("Bledny numer pola")
 
     # def wysrodkuj_pionki(self):
     #

@@ -48,29 +48,28 @@ class Main:
     def _wyswietlaj(self):
         self._screen.fill(Main._background_color)
 
-        if self._gra.czy_kupno or self._gra.czy_info or self._gra.czy_akcja_pola:
-            self._gra.wyswietlaj()
-        else:
-            # self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
-            #
-            # for gracz in self._gra.gracze:
-            #     gracz.pionek.wyswietlaj(self._screen)
+        # self._screen.blit(self._board_png, (self._boardOffset, self._boardOffset))
+        #
+        # for gracz in self._gra.gracze:
+        #     gracz.pionek.wyswietlaj(self._screen)
 
-            # Wyświetlanie komunikatów z prawej strony
-            y_offset = 10
-            for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
-                self.render_text(message, (self._screen_width - 400, y_offset))
-                y_offset += 40
+        # Wyświetlanie komunikatów z prawej strony
+        y_offset = 10
+        for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
+            self.render_text(message, (self._screen_width - 400, y_offset))
+            y_offset += 40
 
-            # Wyświetlanie pola tekstowego
-            self.render_text(
-                self.input_text, (self._screen_width - 400, self._screen_height - 50)
-            )
+        # Wyświetlanie pola tekstowego
+        self.render_text(
+            self.input_text, (self._screen_width - 400, self._screen_height - 50)
+        )
 
-            self.plansza.render(self._screen)
+        self.plansza.render(self._screen)
 
-            for gracz in self._gra.gracze:
-                gracz.pionek.wyswietlaj(self._screen)
+        for gracz in self._gra.gracze:
+            gracz.pionek.wyswietlaj(self._screen)
+
+        self._gra.wyswietlaj()
 
         pygame.display.update()
 

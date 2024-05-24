@@ -28,8 +28,8 @@ class Gracz:
             self.lista_posiadlosci[x].czy_zastawiona = True
             self.kwota += self.lista_posiadlosci[x].zastaw_kwota
 
-            if not gra.pobierz_info_tak_nie("Czy chcesz zastawić kolejną nieruchomość?"):
-                return
+            # if not gra.pobierz_info_tak_nie("Czy chcesz zastawić kolejną nieruchomość?"):
+            #     return
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:

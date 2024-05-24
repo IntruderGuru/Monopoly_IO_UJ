@@ -1,6 +1,8 @@
 import random
 import pygame
 import sys
+
+from src.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Gracz import Gracz
 from src.Pole import Pole
 from src.Plansza import Plansza
@@ -26,100 +28,19 @@ PIECE_COLORS: [pygame.Color] = [
 
 class Gra:
     def __init__(self, glowne_okno: pygame.Surface):
-        self.glowne_okno = glowne_okno
+        self.glowne_okno: pygame.Surface = glowne_okno
         self.gracze: list[Gracz] = []
+        self.plansza: Plansza = Plansza()
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = 0
         self._suma_oczek = 0
         self._kolejny_rzut_kostka = False
         self._aktualny_gracz = 0
-        self.board = self.stworz_plansze()
         self.messages = []
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
 
-        # Refactor def akcja_dostepnego_pola() - Piter
-        self.board_png = pygame.transform.scale(
-            pygame.image.load("graphics/pole.png"), (0.28 * self.aktualna_szerokosc_ekranu, 0.64 * self.aktualna_wysokosc_ekranu)
-        )
-
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
-
-        self.zakup = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kupuje", (255,255,255))
-        self.licytacja = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.4, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "licytacja", (255,255,255))
-        self.ktora_akcja = 0
-        self.czy_akcja_pola = False
-
-        # Refactor def pobierz_info_tak_nie() - Piter
-        self.kolor_tak = (51, 204, 51)
-        self.kolor_nie = (255, 77, 77)
-        self.kolor_hovera_nie = (255, 102, 102)
-        self.kolor_hovera_tak = (71, 209, 71)
-
-        self.font = pygame.font.Font(None, 36)
-        self.text = self.font.render("test", True, (0,0,0))
-        self.text_rect = self.text.get_rect(center=(self.aktualna_szerokosc_ekranu * 0.5, self.aktualna_wysokosc_ekranu * 0.4,))
-
-        self.tak = Przycisk(self.aktualna_wysokosc_ekranu * 0.3, self.aktualna_wysokosc_ekranu * 0.45, self.aktualna_wysokosc_ekranu * 0.15, self.aktualna_wysokosc_ekranu * 0.11, self.kolor_tak, self.kolor_hovera_tak, "tak", (255,255,255))
-        self.nie = Przycisk(self.aktualna_wysokosc_ekranu * 0.5, self.aktualna_wysokosc_ekranu * 0.45, self.aktualna_wysokosc_ekranu * 0.15, self.aktualna_wysokosc_ekranu * 0.11, self.kolor_nie, self.kolor_hovera_nie, "nie", (255,255,255))
-
-        self.tak_klik = False
-        self.nie_klik = True
-        self.czy_info = False
-
-        # Refactor def akcja_kupienia_nieruchomosci() - Piter
-        self.nieruchomosc = "wyjscie"
-        self.wyjscie = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.4, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "brak ruchu", (255,255,255))
-        self.przycisk_kup_hotel = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup hotel", (255,255,255))
-        self.przycisk_kup_domek = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup domek", (255,255,255))
-        self.ktore_kupno = 0
-        self.czy_kupno = False
-
-    def stworz_plansze(self):
-        board = []
-        board.append(Pole(0, "Start"))
-        board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
-        board.append(Pole(2, "Szansa"))
-        board.append(Posiadlosc(3, "Bistro \"Świetlica\"", 600, 40, 300, 500))
-        board.append(Pole(4, "Podatek dochodowy"))
-        board.append(PosiadloscKolo(5, "KNRSI", 2000, 250, 1000))
-        board.append(Posiadlosc(6, "Parking", 1000, 60, 500, 500))
-        board.append(Pole(7, "Szansa"))
-        board.append(Posiadlosc(8, "Winda", 1000, 60, 500, 500))
-        board.append(Posiadlosc(9, "Szatnia", 1200, 80, 500, 500))
-        board.append(Pole(10, "Wiezienie"))
-        board.append(Posiadlosc(11,"Sala 1073 (sieci)", 1400, 100, 700, 1000))
-        board.append(PosiadloscPozaWmii(12,"Drążki za wydziałem", 1500, 0, 750))
-        board.append(Posiadlosc(13, "Sala 0056 (laby)", 1400, 100, 700, 1000))
-        board.append(Posiadlosc(14, "Sala 1072 (macbooki)", 1600, 120, 800, 1000))
-        board.append(PosiadloscKolo(15, "KNMF", 2000, 250, 1000))
-        board.append(Posiadlosc(16, "Ślimak", 1800, 140, 900, 1000))
-        board.append(Pole(17, "Szansa"))
-        board.append(Posiadlosc(18, "Serwerownia", 1800, 140, 900, 1000))
-        board.append(Posiadlosc(19, "Pokój samorządu", 2000, 160, 1000, 1000))
-        board.append(Pole(20, "Parking"))
-        board.append(Posiadlosc(21, "Recepcja", 2200, 180, 1100, 1500))
-        board.append(Pole(22, "Szansa"))
-        board.append(Posiadlosc(23, "Dziekanat", 2200, 180, 1100, 1500))
-        board.append(Posiadlosc(24, "Muzeum komputerów", 2400, 200, 1200, 1500))
-        board.append(PosiadloscKolo(25, "KMS", 2000, 250, 1000))
-        board.append(Posiadlosc(26, "Mural", 2600, 220, 1300, 1500))
-        board.append(Posiadlosc(27, "Pomnik Kopernika", 2600, 220, 1300, 1500))
-        board.append(PosiadloscPozaWmii(28,"Przejście przez WZIKS", 1500, 0, 750))
-        board.append(Posiadlosc(29, "Fontanna", 2800, 240, 1400, 1500))
-        board.append(Pole(30, "Idz do wiezienia"))
-        board.append(Posiadlosc(31, "Ping-pong", 3000, 260, 1500, 2000))
-        board.append(Posiadlosc(32, "Bilard", 3000, 260, 1500, 2000))
-        board.append(Pole(33, "Szansa"))
-        board.append(Posiadlosc(34, "Piłkarzyki", 3200, 280, 1600, 2000))
-        board.append(PosiadloscKolo(35, "KSI", 2000, 250, 1000))
-        board.append(Pole(36, "Szansa"))
-        board.append(Posiadlosc(37, "sala 0004", 3500, 350, 1750, 2000))
-        board.append(Pole(38, "Podatek dochodowy"))
-        board.append(Posiadlosc(39, "sala 0089", 4000, 500, 2000, 2000))
-
-        return board
+        self.akcjaPolaOkno = AkcjaPolaOkno()
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -166,8 +87,6 @@ class Gra:
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
-        # gracz.pozycja = nowa_pozycja
-        # gracz.pionek.numer_pola = nowa_pozycja
         gracz.pionek.przesun(ruch)
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
@@ -175,75 +94,19 @@ class Gra:
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
         )
 
-        pole = self.board[nowa_pozycja]
+        pole = self.plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def pobierz_info_tak_nie(self, text):
-        self.czy_info = True
-
     def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
-        self.czy_akcja_pola = True
-
-
-    def aktualizuj_zdarzenia(self, event: pygame.event.Event):
-        self.tak_klik = False
-        self.nie_klik = True
-
-        if self.zakup.is_clicked(event):
-            self.ktore_kupno = 1
-            self.czy_akcja_pola = False
-            # return 1
-        elif self.licytacja.is_clicked(event):
-            self.ktore_kupno = 2
-            self.czy_akcja_pola = False
-            # return 2
-
-        elif self.tak.is_clicked(event):
-            self.tak_klik = True
-            self.czy_info = False
-            # return True
-        elif self.nie.is_clicked(event):
-            self.nie_klik = False
-            self.czy_info = False
-            # return False
-
-        elif self.przycisk_kup_domek.is_clicked(event) and self.nieruchomosc == "domek":
-            self.czy_kupno = False
-        elif self.przycisk_kup_hotel.is_clicked(event) and self.nieruchomosc == "hotel":
-            self.czy_kupno = False
-        elif self.wyjscie.is_clicked(event) and self.nieruchomosc == "wyjscie":
-            self.czy_kupno = False
-
-    def wyswietlaj(self):
-
-        H = self.aktualna_wysokosc_ekranu
-        W = self.aktualna_szerokosc_ekranu
-
-        if self.czy_akcja_pola:
-            self.board_png = pygame.transform.scale(self.board_png, (0.28 * W, 0.64 * H))
-            self.glowne_okno.blit(self.board_png, (W * 0.2, H * 0.15))
-            self.zakup.updateSize(W * 0.6, H * 0.2, W * 0.2, H * 0.15)
-            self.licytacja.updateSize(W * 0.6, H * 0.4, W * 0.2, H * 0.15)
-            self.zakup.draw(self.glowne_okno)
-            self.licytacja.draw(self.glowne_okno)
-
-        if self.czy_info:
-            self.glowne_okno.blit(self.text, self.text_rect)
-            self.tak.draw(self.glowne_okno)
-            self.nie.draw(self.glowne_okno)
-
-        if self.czy_kupno:
-            self.przycisk_kup_domek.draw(self.glowne_okno)
-            self.przycisk_kup_hotel.draw(self.glowne_okno)
-            self.wyjscie.draw(self.glowne_okno)
+        self.akcjaPolaOkno.czy_akcja_pola = True
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
-        self.czy_kupno = True
+        self.akcjaPolaOkno.czy_kupno = True
 
         if posiadlosc.liczba_domow < 4:
-            self.nieruchomosc = "domek"
+            self.akcjaPolaOkno.nieruchomosc = "domek"
         else:
-            self.nieruchomosc = "hotel"
+            self.akcjaPolaOkno.nieruchomosc = "hotel"
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
@@ -259,10 +122,10 @@ class Gra:
         elif pole.typ == "Posiadlosc":
 
             if isinstance(pole, Posiadlosc):
-               posiadlosc = pole
+                posiadlosc = pole
             if posiadlosc.IDwlasciciela is None:
                 self.akcja_dostepnego_pola(gracz, posiadlosc)
-                akcja = self.ktora_akcja
+                akcja = self.akcjaPolaOkno.ktora_akcja
                 #akcja 1 to zakup posiadlosci
                 if akcja == 1:
                     posiadlosc.kup_posiadlosc(self, gracz)
@@ -272,7 +135,7 @@ class Gra:
 
             elif posiadlosc.IDwlasciciela == gracz.id:
                 self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                akcja = self.ktora_akcja
+                akcja = self.akcjaPolaOkno.ktora_akcja
 
                 if akcja == 1:
                     posiadlosc.kup_dom(self, gracz)
@@ -283,7 +146,6 @@ class Gra:
 
             else:
                 pass
-
 
     def tura(self):
 
@@ -312,8 +174,13 @@ class Gra:
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
 
-
     def get_messages(self):
         messages = self.messages.copy()
         self.messages.clear()
         return messages
+
+    def aktualizuj_zdarzenia(self, event: pygame.event.Event):
+        self.akcjaPolaOkno.aktulizacja_zdarzen(event)
+
+    def wyswietlaj(self):
+        self.akcjaPolaOkno.wyswietl(self.glowne_okno)
