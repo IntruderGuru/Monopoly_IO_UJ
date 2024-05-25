@@ -69,6 +69,10 @@ class Gra:
                 break
             else:
                 self._gracze[self._aktualny_gracz - 1].odczekajJednaTure()
+                if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
+                    self.messages.append(
+                        f"Gracz {self._aktualny_gracz} opuszcza więzienie po dwóch turach"
+                    )
                 self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
                 self._suma_oczek = 0
                 if self._aktualny_gracz == poczatkowy_gracz:
@@ -158,7 +162,6 @@ class Gra:
                 pass
 
     def tura(self):
-
         if not self._kolejny_rzut_kostka:
             self.wybierz_kolejnego_gracza()
 
@@ -179,10 +182,12 @@ class Gra:
                 self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self.messages.append(f"Gracz {self._aktualny_gracz} jest width więzieniu.")
+            self.messages.append(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
+            self.wybierz_kolejnego_gracza()
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
+            self.messages.append(f"Teraz tura gracza: {self._aktualny_gracz}")
 
     def get_messages(self):
         messages = self.messages.copy()
