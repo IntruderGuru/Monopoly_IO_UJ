@@ -2,9 +2,13 @@ from src.Pole import Pole
 from src.Gracz import Gracz
 from src.Gra import Gra
 
+class Odpowiedz(Enum):
+    Odpowiedz_A = 0
+    Odpowiedz_B = 1
+    Odpowiedz_C = 2
 
 class Zagadka():
-    def __init__(self, tresc_zagadki: str, odpowiedz_a: str, odpowiedz_b: str, odpowiedz_c: str, poprawna: int):
+    def __init__(self, tresc_zagadki: str, odpowiedz_a: str, odpowiedz_b: str, odpowiedz_c: str, poprawna: Odpowiedz):
         self.tresc_zagadki = tresc_zagadki
         self.odpowiedz_a = odpowiedz_a
         self.odpowiedz_b = odpowiedz_b
