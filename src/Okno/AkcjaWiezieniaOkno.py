@@ -11,14 +11,17 @@ class AkcjaWiezieniaOkno(Okno):
         self.gra = gra
 
         self.zdjecie = pygame.transform.scale(
-            pygame.image.load("graphics/wiezienie.png"), (0.5 * self.W, 0.5 * self.W)
+            pygame.image.load("graphics/wiezienie.png"), (0.45 * self.H, 0.45 * self.H)
         )
 
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
-
-        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "wyjście", (255,255,255))
+        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.3, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "wyjście", (255,255,255))
         self.czy_wiezienie = False
+
+        self.skalar_czcionki = 24 #im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.informacja_o_wiezeniu = "idziesz do więzienia, stoisz 2 tury"
     
     def aktualizacja(self):
         pass
@@ -33,11 +36,25 @@ class AkcjaWiezieniaOkno(Okno):
         W = self.W
 
         if self.czy_wiezienie:
-            self.zdjecie = pygame.transform.scale(self.zdjecie, (0.28 * W, 0.64 * H))
+            screen.fill((255,255,255))
+
+            self.zaktualizuj_rozmiar_czcionki()
+            self.wyswietl_teksty(screen)
+
+            self.zdjecie = pygame.transform.scale(self.zdjecie, (0.45 * self.H, 0.45 * self.H))
             screen.blit(self.zdjecie, (W * 0.2, H * 0.15))
-            self.wyjscie.updateSize(W * 0.6, H * 0.2, W * 0.2, H * 0.15)
+            self.wyjscie.updateSize(W * 0.6, H * 0.3, W * 0.2, H * 0.15)
             self.wyjscie.draw(screen)
 
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
+
+    
+    def zaktualizuj_rozmiar_czcionki(self):
+        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.tekst = self.font.render(self.informacja_o_wiezeniu, True, (0,0,0))
+
+
+    def wyswietl_teksty(self, screen):
+        screen.blit(self.tekst, (self.W * 0.18, self.H * 0.7))

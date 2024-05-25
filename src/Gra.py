@@ -135,7 +135,8 @@ class Gra:
             self.messages.append(f"Szansa: {karta}")
             self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
-        if pole.typ == "wiezienie":
+        if pole.typ == "Wiezienie":
+            self.akcja_wiezienie_okno.czy_wiezienie = True
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
