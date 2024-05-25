@@ -38,8 +38,8 @@ class Gra:
         self.aktualna_wysokosc_ekranu = 800
 
         self._plansza = Plansza()
-        self.akcja_pola_okno = AkcjaPolaOkno()
-        self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno()
+        self.akcja_pola_okno = AkcjaPolaOkno(self)
+        self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -107,6 +107,7 @@ class Gra:
         else:
             self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
 
+
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
 
@@ -122,27 +123,13 @@ class Gra:
 
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
+
             if posiadlosc.IDwlasciciela is None:
                 self.akcja_dostepnego_pola(gracz, posiadlosc)
-                akcja = self.akcja_pola_okno.ktora_akcja
-                #akcja 1 to zakup posiadlosci
-                if akcja == 1:
-                    posiadlosc.kup_posiadlosc(self, gracz)
-                #akcja 2 to licytacja
-                if akcja == 2:
-                    pass
-
+                self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
             elif posiadlosc.IDwlasciciela == gracz.id:
                 self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                akcja = self.akcja_pola_okno.ktora_akcja
-
-                if akcja == 1:
-                    posiadlosc.kup_dom(self, gracz)
-                elif akcja == 2:
-                    #nie jest zaimplementowane kupowanie hotelu
-                    #posiadlosc.kup_hotel(self, gracz)
-                    pass
-
+                self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
             else:
                 pass
 
