@@ -22,6 +22,39 @@ PIECE_COLORS: [pygame.Color] = [
 ]
 
 
+class StosOtwartychOkien:
+    def __init__(self):
+        self.stos: list[Okno] = list()
+        self.rozmiar_stosu = 0
+
+    def dodaj(self, okno: Okno):
+        self.stos.append(okno)
+        self.rozmiar_stosu += 1
+
+    def usun(self):
+        if self.rozmiar_stosu > 0:
+            self.stos.pop()
+            self.rozmiar_stosu -= 1
+
+    def gora(self):
+        return self.stos[self.rozmiar_stosu - 1]
+
+    def czy_pusty(self):
+        return self.rozmiar_stosu == 0
+
+    def aktualizacja(self):
+        if not self.czy_pusty():
+            self.gora().aktualizacja()
+
+    def aktualizacja_zdarzen(self, event: pygame.event.Event):
+        if not self.czy_pusty():
+            self.gora().aktulizacja_zdarzen(event)
+
+    def wyswietl(self, okno: pygame.Surface):
+        if not self.czy_pusty():
+            self.gora().wyswietl(okno)
+
+
 class Gra:
     def __init__(self, glowne_okno: pygame.Surface):
         self._glowne_okno: pygame.Surface = glowne_okno
@@ -41,6 +74,7 @@ class Gra:
 
         #
         self._czy_gracz_ma_ture = False
+        self._stos_otwartych_okien = StosOtwartychOkien()
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -112,6 +146,7 @@ class Gra:
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 self._akcja_pola_okno.okno_kup_nieruchomosc(gracz, pole)
+                self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
@@ -145,17 +180,21 @@ class Gra:
         return messages
 
     def aktualizacja(self):
-        self._akcja_pola_okno.aktualizacja()
+        if not self._stos_otwartych_okien.czy_pusty():
+            self._stos_otwartych_okien.gora().aktualizacja()
 
         if not self._akcja_pola_okno.czy_koniec_zakupu():
             self._czy_gracz_ma_ture = False
+            self._stos_otwartych_okien.usun()
 
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not self._czy_gracz_ma_ture:
             self._czy_gracz_ma_ture = True
             self.tura()
 
-        self._akcja_pola_okno.aktulizacja_zdarzen(event)
+        # self._akcja_pola_okno.aktulizacja_zdarzen(event)
+        if not self._stos_otwartych_okien.czy_pusty():
+            self._stos_otwartych_okien.gora().aktulizacja_zdarzen(event)
 
     def wyswietl(self):
         self._plansza.render(self._glowne_okno)
@@ -163,4 +202,6 @@ class Gra:
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
 
-        self._akcja_pola_okno.wyswietl(self._glowne_okno)
+        # self._akcja_pola_okno.wyswietl(self._glowne_okno)
+        if not self._stos_otwartych_okien.czy_pusty():
+            self._stos_otwartych_okien.gora().wyswietl(self._glowne_okno)
