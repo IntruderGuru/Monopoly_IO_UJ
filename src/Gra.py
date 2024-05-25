@@ -9,6 +9,7 @@ from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 
+
 KWOTA_POCZATKOWA = 10000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
@@ -34,7 +35,7 @@ class Gra:
         self._liczba_graczy = 0
         self._suma_oczek = 0
         self._kolejny_rzut_kostka = False
-        self._aktualny_gracz = 0
+        self._aktualny_gracz = 1
         self.messages = []
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
@@ -44,7 +45,6 @@ class Gra:
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
         self.akcja_kart_okno = AkcjaKartOkno(self)
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
-
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -85,8 +85,11 @@ class Gra:
         if self._suma_oczek == 21:
             self.messages.append("Idziesz do więzienia")
             self._gracze[self._aktualny_gracz - 1].pozycja = 10
+            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             self._gracze[self._aktualny_gracz - 1].uwiezienie = True
+            self._gracze[self._aktualny_gracz - 1].tury_w_wiezieniu = 0
             self._kolejny_rzut_kostka = False
+            self._suma_oczek = 0
 
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
@@ -101,17 +104,20 @@ class Gra:
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
+    def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
+        stara_pozycja = gracz.pionek.numer_pola
+        gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
+
+    def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
         self.akcja_pola_okno.czy_akcja_pola = True
 
-    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         self.akcja_nieruchomosci_okno.czy_kupno = True
 
         if posiadlosc.liczba_domow < 4:
             self.akcja_nieruchomosci_okno.nieruchomosc = "domek"
         else:
             self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
-
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
@@ -123,20 +129,22 @@ class Gra:
 
         if pole.typ == "Szansa":
             self.akcja_kart_okno.czy_szansa = True
+            karta = self._plansza.karta_szansy.nastepna_karta()
+            self.messages.append(f"Szansa: {karta}")
+            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
         elif pole.typ == "idz_do_wiezienia":
-            self.messages.append("Gracz musi iść na pole 30 (więzienie)")
+            self.messages.append("Gracz musi iść na pole 10 (więzienie)")
+            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             gracz.uwiezienie = True
 
         elif pole.typ == "Posiadlosc":
-
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-
             if posiadlosc.IDwlasciciela is None:
                 self.akcja_dostepnego_pola(gracz, posiadlosc)
                 self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
@@ -197,9 +205,16 @@ class Gra:
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
 
-
     def aktualizuj_rozmiar_okien(self):
-        self.akcja_pola_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
-        self.akcja_nieruchomosci_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
-        self.akcja_kart_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
-        self.akcja_zagadek_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self.akcja_pola_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_nieruchomosci_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_kart_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_zagadek_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
