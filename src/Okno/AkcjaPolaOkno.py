@@ -21,17 +21,11 @@ class AkcjaPolaOkno(Okno):
         self.ktora_akcja = 0
         self.czy_akcja_pola = False
 
-        self.nieruchomosc = "wyjscie"
-        self.wyjscie = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.4, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "brak ruchu", (255,255,255))
-        self.przycisk_kup_hotel = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup hotel", (255,255,255))
-        self.przycisk_kup_domek = Przycisk(self.aktualna_szerokosc_ekranu * 0.6, self.aktualna_wysokosc_ekranu * 0.2, self.aktualna_szerokosc_ekranu * 0.2, self.aktualna_wysokosc_ekranu * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup domek", (255,255,255))
-        self.ktore_kupno = 0
-        self.czy_kupno = False
 
     def aktualizacja(self):
         pass
 
-    def aktulizacja_zdarzen(self, event: pygame.event.Event):
+    def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.zakup.is_clicked(event):
             self.ktore_kupno = 1
             self.czy_akcja_pola = False
@@ -40,12 +34,6 @@ class AkcjaPolaOkno(Okno):
             self.ktore_kupno = 2
             self.czy_akcja_pola = False
             # return 2
-        elif self.przycisk_kup_domek.is_clicked(event) and self.nieruchomosc == "domek":
-            self.czy_kupno = False
-        elif self.przycisk_kup_hotel.is_clicked(event) and self.nieruchomosc == "hotel":
-            self.czy_kupno = False
-        elif self.wyjscie.is_clicked(event) and self.nieruchomosc == "wyjscie":
-            self.czy_kupno = False
 
     def wyswietl(self, screen: pygame.Surface):
         H = self.aktualna_wysokosc_ekranu
@@ -58,8 +46,3 @@ class AkcjaPolaOkno(Okno):
             self.licytacja.updateSize(W * 0.6, H * 0.4, W * 0.2, H * 0.15)
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
-
-        if self.czy_kupno:
-            self.przycisk_kup_domek.draw(screen)
-            self.przycisk_kup_hotel.draw(screen)
-            self.wyjscie.draw(screen)

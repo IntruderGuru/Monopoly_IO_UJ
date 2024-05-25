@@ -38,7 +38,7 @@ class Main:
 
     def __del__(self):
         pygame.quit()
-        del self._gra
+        #del self._gra
 
     def start(self):
         self.messages.append("Witaj w UJpoly!")
