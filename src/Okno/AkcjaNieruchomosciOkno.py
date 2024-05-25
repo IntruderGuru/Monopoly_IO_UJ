@@ -71,3 +71,7 @@ class AkcjaNieruchomosciOkno(Okno):
         #self.posiadlosc_gracza.kup_hotel(self.gra, self.gracz)
         #metoda kup hotel nie jest zaimplementowana
         pass
+
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height

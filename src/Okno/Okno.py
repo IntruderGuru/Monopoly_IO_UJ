@@ -14,3 +14,7 @@ class Okno:
     @abstractmethod
     def wyswietl(self, screen: pygame.Surface):
         pass
+
+    @abstractmethod
+    def aktualizuj_rozmiar_okna(self, width, height):
+        pass

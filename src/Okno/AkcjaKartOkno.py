@@ -31,3 +31,6 @@ class AkcjaKartOkno(Okno):
             self.wyjscie.updateSize(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1)
             self.wyjscie.draw(screen)
 
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height

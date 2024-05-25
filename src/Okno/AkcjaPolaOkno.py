@@ -51,3 +51,6 @@ class AkcjaPolaOkno(Okno):
     def kup_pole(self):
         self.posiadlosc_do_zakupu.kup_posiadlosc(self.gra, self.gracz_majacy_mozliwosc_zakupu)
         
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height

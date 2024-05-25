@@ -185,6 +185,8 @@ class Gra:
         self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
+
+        self.aktualizuj_rozmiar_okien()
         self._plansza.render(self._glowne_okno)
 
         for gracz in self._gracze:
@@ -194,3 +196,10 @@ class Gra:
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+
+
+    def aktualizuj_rozmiar_okien(self):
+        self.akcja_pola_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self.akcja_nieruchomosci_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self.akcja_kart_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self.akcja_zagadek_okno.aktualizuj_rozmiar_okna(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)

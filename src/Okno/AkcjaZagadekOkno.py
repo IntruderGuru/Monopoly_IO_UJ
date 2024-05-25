@@ -34,9 +34,14 @@ class AkcjaZagadekOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        pass
-        # if self.wyjscie.is_clicked(event):
-        #     self.czy_zagadka = False
+
+        if self.A.is_clicked(event):
+            self.czy_zagadka = False
+        elif self.B.is_clicked(event):
+            self.czy_zagadka = False
+        elif self.B.is_clicked(event):
+            self.czy_zagadka = False
+
 
     def wyswietl(self, screen: pygame.Surface):
         self.zaktualizuj_rozmiar_czcionki()
@@ -68,8 +73,8 @@ class AkcjaZagadekOkno(Okno):
 
     def wyswietl_teksty(self, screen):
         screen.fill((255,255,255))
-        screen.blit(self.podatek, (self.W * 0.2, self.H * 0.2))
-        screen.blit(self.info, (self.W * 0.21, self.H * 0.27))
+        screen.blit(self.podatek, (self.W * 0.18, self.H * 0.2))
+        screen.blit(self.info, (self.W * 0.19, self.H * 0.27))
         screen.blit(self.zagadka, (self.W * 0.3, self.H * 0.4))
 
         #odpowiedzi
@@ -78,8 +83,11 @@ class AkcjaZagadekOkno(Okno):
         screen.blit(self.oC, (self.W * 0.3, self.H * 0.78))
 
         
-
     def pobierz_odpowiedzi(self):
         self.odpowiedz_A = "6"
         self.odpowiedz_B = "7"
         self.odpowiedz_C = "-22"
+
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height
