@@ -2,11 +2,16 @@ import random
 import pygame
 
 from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
+from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
+from src.Okno.AkcjaKartOkno import AkcjaKartOkno
+from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 
-KWOTA_POCZATKOWA = 10000
+
+#KWOTA_POCZATKOWA = 10000
+KWOTA_POCZATKOWA = 1000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -37,7 +42,10 @@ class Gra:
         self.aktualna_wysokosc_ekranu = 800
 
         self._plansza = Plansza()
-        self.akcjaPolaOkno = AkcjaPolaOkno()
+        self.akcja_pola_okno = AkcjaPolaOkno(self)
+        self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
+        self.akcja_kart_okno = AkcjaKartOkno(self)
+        self.akcja_zastaw_okno = AkcjaZastawOkno(self)
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -94,19 +102,27 @@ class Gra:
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
-        self.akcjaPolaOkno.czy_akcja_pola = True
+    def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
+        stara_pozycja = gracz.pionek.numer_pola
+        gracz.pionek.numer_pola = nowa_pozycja
+        gracz.pionek.pozycja = Pionek.oblicz_nowa_pozycje(
+            nowa_pozycja, gracz.pionek.kierunek
+        )
+        gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
-    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
-        self.akcjaPolaOkno.czy_kupno = True
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
+        self.akcja_nieruchomosci_okno.czy_kupno = True
 
         if posiadlosc.liczba_domow < 4:
-            self.akcjaPolaOkno.nieruchomosc = "domek"
+            self.akcja_nieruchomosci_okno.nieruchomosc = "domek"
         else:
-            self.akcjaPolaOkno.nieruchomosc = "hotel"
+            self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-        self.messages.append(pole.wyswietl_info())
+        pole.wyswietl_info(self)
+
+        if pole.typ == "Szansa":
+            self.akcja_kart_okno.czy_szansa = True
 
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
@@ -114,35 +130,28 @@ class Gra:
 
         elif pole.typ == "idz_do_wiezienia":
             self.messages.append("Gracz musi iść na pole 30 (więzienie)")
+            self.przesun_gracza_bez_raportu(gracz, 10)
             gracz.uwiezienie = True
 
-        elif pole.typ == "Posiadlosc":
+        elif pole.typ == "Szansa":
+            karta = self._plansza.karta_szansy.nastepna_karta()
+            self.messages.append(f"Szansa: {karta}")
+            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
+        elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-            if posiadlosc.IDwlasciciela is None:
-                self.akcja_dostepnego_pola(gracz, posiadlosc)
-                akcja = self.akcjaPolaOkno.ktora_akcja
-                #akcja 1 to zakup posiadlosci
-                if akcja == 1:
-                    posiadlosc.kup_posiadlosc(self, gracz)
-                #akcja 2 to licytacja
-                if akcja == 2:
+                if posiadlosc.IDwlasciciela is None:
+                    self.akcja_pola_okno.czy_akcja_pola = True
+                    self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
+                elif posiadlosc.IDwlasciciela == gracz.id:
+                    self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
+                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
+                else:
+                    #pobierz czynsz
                     pass
-
-            elif posiadlosc.IDwlasciciela == gracz.id:
-                self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                akcja = self.akcjaPolaOkno.ktora_akcja
-
-                if akcja == 1:
-                    posiadlosc.kup_dom(self, gracz)
-                elif akcja == 2:
-                    #nie jest zaimplementowane kupowanie hotelu
-                    #posiadlosc.kup_hotel(self, gracz)
-                    pass
-
             else:
-                pass
+                raise Exception("Błąd. Posiadłość jest innym polem") 
 
     def tura(self):
 
@@ -166,7 +175,7 @@ class Gra:
                 self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self.messages.append(f"Gracz {self._aktualny_gracz} jest width więzieniu.")
+            self.messages.append(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
@@ -177,7 +186,10 @@ class Gra:
         return messages
 
     def aktualizuj_zdarzenia(self, event: pygame.event.Event):
-        self.akcjaPolaOkno.aktulizacja_zdarzen(event)
+        self.akcja_pola_okno.aktualizacja_zdarzen(event)
+        self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
+        self.akcja_kart_okno.aktualizacja_zdarzen(event)
+        self.akcja_zastaw_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
         self._plansza.render(self._glowne_okno)
@@ -185,4 +197,7 @@ class Gra:
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
 
-        self.akcjaPolaOkno.wyswietl(self._glowne_okno)
+        self.akcja_pola_okno.wyswietl(self._glowne_okno)
+        self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
+        self.akcja_kart_okno.wyswietl(self._glowne_okno)
+        self.akcja_zastaw_okno.wyswietl(self._glowne_okno)

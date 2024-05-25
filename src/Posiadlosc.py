@@ -14,49 +14,45 @@ class Posiadlosc(Pole):
         self.czy_zastawiona = False
         self.liczba_domow = 0
 
-    def wyswietl_info(self):
+    def wyswietl_info(self, gra):
         if self.liczba_domow:
-            return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
-        return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
+            gra.messages.append(f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
+        else:
+            gra.messages.append(f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
+    
+    def oblicz_czynsz(self):
+        if(self.kolor == 'brazowy'):
+            pass
     
     def kup_posiadlosc(self, gra, gracz):
-        if(self.cena > gracz.kwota):
-            if gra.tak_kilk == True:
-                print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? ")
-                #gracz.zastaw_posiadlosci()
-                pass
-            elif gra.nie_klik == False:
-                gra.messages.append("Zakup zakończony niepowodzeniem")
-                return
-            
-        gracz.kwota -= self.cena
-        gracz.lista_posiadlosci.append(self)
-        self.IDwlasciciela = gracz.id
-        gra.messages.append("Zakup się udał")
+        x = gracz.wykonaj_oplate(gra, self.cena)
+        if x == 1:
+            gracz.lista_posiadlosci.append(self)
+            self.IDwlasciciela = gracz.id
+            gra.messages.append(f"Gratulacje, dokonałeś zakupu {self.nazwa}!")
+            gra.akcja_pola_okno.czy_akcja_pola = False
+        elif not gra.akcja_zastaw_okno.czy_zastaw:
+            gra.messages.append("Wycofałeś się z zakupu")  
+            gra.akcja_pola_okno.czy_akcja_pola = False  
+        return
+
     
     def kup_dom(self, gra, gracz):
         if(self.czy_zastawiona):
-            gra.messages.append("Nie można kupić domku lub hotelu na zastawionej nieruchomości")
+            gra.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
             return
-        while True:
-            if(self.cena_domu > gracz.kwota):
-                if gra.tak_klik == True:
-                    print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości?")
-                    #gracz.zastaw_posiadlosci()
-                    pass
-                elif gra.nie_klik == False:
-                    gra.messages.append("Zakup zakończony niepowodzeniem")
-                    return
-            gracz.kwota -= self.cena_domu
+        
+        if(gracz.wykonaj_oplate(gra, self.cena_domu)):
             self.liczba_domow += 1
             gra.messages.append("Zakup domu się udał")
-            if gra.nie_klik == False:
-                print("Czy chcesz zastawić kolejną nieruchomość?")
-                return
+        else:
+            gra.messages.append("Wycofałeś się z zakupu")    
+        
+
         
     def sprzedaj_posiadlosc(self, gra, gracz):
         if(self.czy_zastawiona):
-            gra.messages.append("Nie można sprzedać zastawionej nieruchomości")
+            gra.messages.append("Nie można sprzedać zastawionej posiadłości")
         else:
             #80% wartości posiadłości
             gracz.kwota = gracz.kwota + (self.cena + (self.liczba_domow * self.cena_domu))*0.8
@@ -66,7 +62,7 @@ class Posiadlosc(Pole):
 
     def sprzedaj_dom(self, gra, gracz):
         if(self.czy_zastawiona):
-            gra.messages.append("Nie można sprzedać zastawionej nieruchomości")
+            gra.messages.append("Nie można sprzedać zastawionej posiadłości")
         else:
             #80% wartości
             gra.messages.append("Ile domków chcesz sprzedać?")
@@ -74,12 +70,9 @@ class Posiadlosc(Pole):
             x=2
             gracz.kwota = gracz.kwota + (x * self.cena_domu * 0.8)
             self.liczba_domow -= x
-
-
             
-
-
-
+            
+            
 class PosiadloscKolo(Pole):
     def __init__(self, numer: int, nazwa: str, cena: int, czynsz: int, zastaw: int):
         super().__init__(numer, "Posiadlosc-kolo")
@@ -89,8 +82,8 @@ class PosiadloscKolo(Pole):
         self.zastaw = zastaw
         self.IDwlasciciela = None 
 
-    def wyswietl_info(self):
-        return (f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
+    def wyswietl_info(self, gra):
+        gra.messages.append(f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
 
 
 class PosiadloscPozaWmii(Pole):
@@ -102,5 +95,5 @@ class PosiadloscPozaWmii(Pole):
         self.zastaw = zastaw
         self.IDwlasciciela = None 
 
-    def wyswietl_info(self) :
-        return (f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
+    def wyswietl_info(self, gra) :
+        gra.messages.append(f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
