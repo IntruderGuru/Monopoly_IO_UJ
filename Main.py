@@ -1,6 +1,6 @@
 import os
 import pygame
-from src.Gra import Gra, Plansza
+from src.Gra import Gra
 
 
 class Main:

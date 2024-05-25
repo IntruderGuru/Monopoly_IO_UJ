@@ -106,7 +106,7 @@ class Gra:
             self.akcjaPolaOkno.nieruchomosc = "hotel"
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-        self.messages.append(pole.wyswietl_info())
+        self.messages.append(pole.zwroc_info())
 
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
@@ -166,7 +166,7 @@ class Gra:
                 self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self.messages.append(f"Gracz {self._aktualny_gracz} jest width więzieniu.")
+            self.messages.append(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1

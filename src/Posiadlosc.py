@@ -14,7 +14,7 @@ class Posiadlosc(Pole):
         self.czy_zastawiona = False
         self.liczba_domow = 0
 
-    def wyswietl_info(self):
+    def zwroc_info(self):
         if self.liczba_domow:
             return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
         return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
@@ -89,7 +89,7 @@ class PosiadloscKolo(Pole):
         self.zastaw = zastaw
         self.IDwlasciciela = None 
 
-    def wyswietl_info(self):
+    def zwroc_info(self):
         return (f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
 
 
@@ -102,5 +102,5 @@ class PosiadloscPozaWmii(Pole):
         self.zastaw = zastaw
         self.IDwlasciciela = None 
 
-    def wyswietl_info(self) :
+    def zwroc_info(self):
         return (f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")

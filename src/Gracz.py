@@ -21,7 +21,7 @@ class Gracz:
         while True:
             for posiadlosc in self.lista_posiadlosci:
                 if not posiadlosc.czy_zastawiona:
-                    posiadlosc.wyswietl_info
+                    posiadlosc.zwroc_info
             gra.messages.append("Wpisz numer posiadłości którą chcesz zastawić")
             #wczytanie numeru, sprawdzenie czy numer jest dobry
             x = 2
