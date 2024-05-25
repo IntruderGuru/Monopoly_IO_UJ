@@ -3,7 +3,17 @@ from src.Gracz import Gracz
 from src.Gra import Gra
 
 
-
+class Zagadka():
+    def __init__(self, tresc_zagadki: str, odpowiedz_a: str, odpowiedz_b: str, odpowiedz_c: str, poprawna: int):
+        self.tresc_zagadki = tresc_zagadki
+        self.odpowiedz_a = odpowiedz_a
+        self.odpowiedz_b = odpowiedz_b
+        self.odpowiedz_c = odpowiedz_c
+        self.poprawna = poprawna
+    
+    def zadaj_zagadke(self, gra: Gra) -> bool:
+        gra.messages.append(f"{self.tresc_zagadki} \na. {self.odpowiedz_a} \nb. {self.odpowiedz_b} \nc. {self.odpowiedz_c}")
+        #dodac przyciski na wybieranie odpowiedzi
 
 class PodatekDochodowy(Pole):
 
