@@ -49,8 +49,7 @@ class PodatekDochodowy(Pole):
         if(do_zaplaty > gracz.kwota):
             if gra.pobierz_info_tak_nie("Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."):
                 gracz.zastaw_nieruchomosci()
-            else: 
-                gra.messages.append("Bankrutujesz")
-                return
+        if(do_zaplaty > gracz.kwota):
+            gra.messages.append("Bankrutujesz")
         gracz.kwota -= do_zaplaty
         gra.messages.append("Podatek został zapłacony")
