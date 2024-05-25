@@ -7,6 +7,7 @@ from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 
+
 KWOTA_POCZATKOWA = 10000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
@@ -96,17 +97,24 @@ class Gra:
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
-    def akcja_dostepnego_pola(self, gracz, pole, nr_pola = 1):
+    def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
+        stara_pozycja = gracz.pionek.numer_pola
+        gracz.pionek.numer_pola = nowa_pozycja
+        gracz.pionek.pozycja = Pionek.oblicz_nowa_pozycje(
+            nowa_pozycja, gracz.pionek.kierunek
+        )
+        gracz.czy_przeszedl_przez_start(self, stara_pozycja)
+
+    def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
         self.akcja_pola_okno.czy_akcja_pola = True
 
-    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola = 1):
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         self.akcja_nieruchomosci_okno.czy_kupno = True
 
         if posiadlosc.liczba_domow < 4:
             self.akcja_nieruchomosci_okno.nieruchomosc = "domek"
         else:
             self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
-
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
@@ -117,13 +125,17 @@ class Gra:
 
         elif pole.typ == "idz_do_wiezienia":
             self.messages.append("Gracz musi iść na pole 30 (więzienie)")
+            self.przesun_gracza_bez_raportu(gracz, 10)
             gracz.uwiezienie = True
 
-        elif pole.typ == "Posiadlosc":
+        elif pole.typ == "Szansa":
+            karta = self._plansza.karta_szansy.nastepna_karta()
+            self.messages.append(f"Szansa: {karta}")
+            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
+        elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-
             if posiadlosc.IDwlasciciela is None:
                 self.akcja_dostepnego_pola(gracz, posiadlosc)
                 self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)

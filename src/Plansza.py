@@ -3,6 +3,7 @@ import pygame.color
 from src.Pole import Pole
 from src.Pionek import Pionek
 from src.Posiadlosc import Posiadlosc, PosiadloscKolo, PosiadloscPozaWmii
+from src.KartaSzansy import KartaSzansy
 
 
 class Plansza:
@@ -12,7 +13,7 @@ class Plansza:
         board.append(Pole(0, "Start"))
         board.append(Posiadlosc(1, "Automat z kawą", 600, 20, 300, 500))
         board.append(Pole(2, "Szansa"))
-        board.append(Posiadlosc(3, "Bistro \"Świetlica\"", 600, 40, 300, 500))
+        board.append(Posiadlosc(3, 'Bistro "Świetlica"', 600, 40, 300, 500))
         board.append(Pole(4, "Podatek dochodowy"))
         board.append(PosiadloscKolo(5, "KNRSI", 2000, 250, 1000))
         board.append(Posiadlosc(6, "Parking", 1000, 60, 500, 500))
@@ -20,8 +21,8 @@ class Plansza:
         board.append(Posiadlosc(8, "Winda", 1000, 60, 500, 500))
         board.append(Posiadlosc(9, "Szatnia", 1200, 80, 500, 500))
         board.append(Pole(10, "Wiezienie"))
-        board.append(Posiadlosc(11,"Sala 1073 (sieci)", 1400, 100, 700, 1000))
-        board.append(PosiadloscPozaWmii(12,"Drążki za wydziałem", 1500, 0, 750))
+        board.append(Posiadlosc(11, "Sala 1073 (sieci)", 1400, 100, 700, 1000))
+        board.append(PosiadloscPozaWmii(12, "Drążki za wydziałem", 1500, 0, 750))
         board.append(Posiadlosc(13, "Sala 0056 (laby)", 1400, 100, 700, 1000))
         board.append(Posiadlosc(14, "Sala 1072 (macbooki)", 1600, 120, 800, 1000))
         board.append(PosiadloscKolo(15, "KNMF", 2000, 250, 1000))
@@ -37,7 +38,7 @@ class Plansza:
         board.append(PosiadloscKolo(25, "KMS", 2000, 250, 1000))
         board.append(Posiadlosc(26, "Mural", 2600, 220, 1300, 1500))
         board.append(Posiadlosc(27, "Pomnik Kopernika", 2600, 220, 1300, 1500))
-        board.append(PosiadloscPozaWmii(28,"Przejście przez WZIKS", 1500, 0, 750))
+        board.append(PosiadloscPozaWmii(28, "Przejście przez WZIKS", 1500, 0, 750))
         board.append(Posiadlosc(29, "Fontanna", 2800, 240, 1400, 1500))
         board.append(Pole(30, "Idz do wiezienia"))
         board.append(Posiadlosc(31, "Ping-pong", 3000, 260, 1500, 2000))
@@ -54,6 +55,7 @@ class Plansza:
 
     def __init__(self):
         self.plansza: [Pole] = self.inicializacja_planszy()
+        self.karta_szansy = KartaSzansy()
 
     def pobierz_pole(self, numer_pola):
         if 0 <= numer_pola <= len(self.plansza):
