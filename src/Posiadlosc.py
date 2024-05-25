@@ -18,9 +18,12 @@ class Posiadlosc(Pole):
         if self.liczba_domow:
             return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
         return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
-    
+
+    def pobierz_id_wlasciciela(self):
+        return self.IDwlasciciela
+
     def kup_posiadlosc(self, gra, gracz):
-        if(self.cena > gracz.kwota):
+        if self.cena > gracz.kwota:
             if gra.tak_kilk == True:
                 print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? ")
                 #gracz.zastaw_posiadlosci()
