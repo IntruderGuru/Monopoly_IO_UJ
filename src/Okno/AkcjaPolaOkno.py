@@ -1,10 +1,16 @@
 from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
+from enum import Enum
+
+
+class AkcjaZakupu(Enum):
+    Nic = 0
+    Posiadlosc = 1
+    Hotel = 2
 
 
 class AkcjaPolaOkno(Okno):
-
     def __init__(self):
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
