@@ -4,6 +4,7 @@ import pygame
 from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
 from src.Okno.AkcjaKartOkno import AkcjaKartOkno
+from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -42,6 +43,7 @@ class Gra:
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
         self.akcja_kart_okno = AkcjaKartOkno(self)
+        self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
 
 
     def przygotuj_graczy(self):
@@ -114,6 +116,10 @@ class Gra:
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
 
+        if pole.typ == "Podatek dochodowy":
+            self.akcja_zagadek_okno.przygotuj_tekst_zagadki()
+            self.akcja_zagadek_okno.czy_zagadka = True
+
         if pole.typ == "Szansa":
             self.akcja_kart_okno.czy_szansa = True
 
@@ -175,6 +181,7 @@ class Gra:
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
         self.akcja_kart_okno.aktualizacja_zdarzen(event)
+        self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
         self._plansza.render(self._glowne_okno)
@@ -185,3 +192,4 @@ class Gra:
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
+        self.akcja_zagadek_okno.wyswietl(self._glowne_okno)

@@ -30,3 +30,5 @@ class AkcjaKartOkno(Okno):
             screen.blit(self.szansa_png, (self.W * 0.2, self.H * 0.15))
             self.wyjscie.updateSize(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1)
             self.wyjscie.draw(screen)
+
+    
