@@ -16,7 +16,7 @@ class AkcjaNieruchomosciOkno(Okno):
         self.kolor_hovera = (150, 150, 150)
         self.nieruchomosc = "brak"
 
-        self.wyjscie            = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "wyjscie", (255,255,255))
+        self.wyjscie            = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "wyjście", (255,255,255))
         self.przycisk_kup_hotel = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup hotel", (255,255,255))
         self.przycisk_kup_domek = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "kup domek", (255,255,255))
 

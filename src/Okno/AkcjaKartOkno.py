@@ -14,7 +14,7 @@ class AkcjaKartOkno(Okno):
 
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
-        self.wyjscie = Przycisk(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "wyjscie", (255,255,255))
+        self.wyjscie = Przycisk(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "wyjście", (255,255,255))
         self.czy_szansa = False
 
     def aktualizacja(self):
@@ -31,4 +31,3 @@ class AkcjaKartOkno(Okno):
             self.wyjscie.updateSize(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1)
             self.wyjscie.draw(screen)
 
-    
