@@ -1,14 +1,8 @@
 from src.Pole import Pole
 from src.Gracz import Gracz
-from src.Gra import Gra
 from numpy import random
-from enum import Enum
+from src.Odpowiedz import Odpowiedz
 
-
-class Odpowiedz(Enum):
-    Odpowiedz_A = 0
-    Odpowiedz_B = 1
-    Odpowiedz_C = 2
 
 class Zagadka():
     def __init__(self, tresc_zagadki: str, odpowiedz_a: str, odpowiedz_b: str, odpowiedz_c: str, poprawna: Odpowiedz) -> None:
@@ -20,7 +14,7 @@ class Zagadka():
     
 class Zagadki:
     lista_zagadek = [
-        Zagadka()
+        Zagadka("Co lubi jeść Nemo?", "glony", "ryby", "plankton", Odpowiedz.Odpowiedz_C)
     ]
 
     def __init__(self) -> None:
@@ -35,13 +29,13 @@ class Zagadki:
 class PodatekDochodowy(Pole):
 
     def __init__(self, numer: int, podatek: int) -> None:
-        super().__init__(numer, "Podatek Dochodowy")
+        super().__init__(numer, "Podatek dochodowy")
         self.podatek = podatek
 
     def wyswietl_info(self) -> str:
         return (f"Stanąłeś na polu podatek dochodowy. Musisz zapłacić podatek w wysokości {self.podatek}")
 
-    def zaplac_podatek(self, gra: Gra, gracz: Gracz, czy_dobra: bool) -> None:
+    def zaplac_podatek(self, gra, gracz: Gracz, czy_dobra: bool) -> None:
         do_zaplaty = self.podatek
         if(czy_dobra):
             do_zaplaty /= 2
@@ -52,4 +46,4 @@ class PodatekDochodowy(Pole):
         if(do_zaplaty > gracz.kwota):
             gra.messages.append("Bankrutujesz")
         gracz.kwota -= do_zaplaty
-        gra.messages.append("Podatek został zapłacony")
+        gra.messages.append("Podatek został zapłacony, zapłacono: " + str(do_zaplaty))

@@ -123,8 +123,9 @@ class Gra:
         self.messages.append(pole.wyswietl_info())
 
         if pole.typ == "Podatek dochodowy":
-            self.akcja_zagadek_okno.przygotuj_tekst_zagadki()
-            self.akcja_zagadek_okno.pobierz_odpowiedzi()
+            
+            self.akcja_zagadek_okno.akcja_podatkowa(gracz, pole)
+            self.akcja_zagadek_okno.przygotuj_zagadke()
             self.akcja_zagadek_okno.czy_zagadka = True
 
         if pole.typ == "Szansa":

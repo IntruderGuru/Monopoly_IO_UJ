@@ -1,5 +1,6 @@
 from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
+from src.Odpowiedz import Odpowiedz
 import pygame
 
 
@@ -25,7 +26,7 @@ class AkcjaZagadekOkno(Okno):
 
         self.skalar_czcionki = 22 #im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
-        self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości x"
+        self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_zagadce = "odpowiedz poprawnie na pytanie aby zmniejszyć opłatę"
         self.tekst_zagadki = "empty"
 
@@ -35,11 +36,14 @@ class AkcjaZagadekOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.A.is_clicked(event):
+        if self.A.is_clicked(event) :
+            self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_A))
             self.czy_zagadka = False
         elif self.B.is_clicked(event):
+            self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_B))
             self.czy_zagadka = False
-        elif self.B.is_clicked(event):
+        elif self.C.is_clicked(event):
+            self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C))
             self.czy_zagadka = False
 
 
@@ -56,8 +60,23 @@ class AkcjaZagadekOkno(Okno):
             self.C.updateSize(self.W * 0.2, self.H * 0.74, self.H * 0.1, self.H * 0.1)
             self.C.draw(screen)
 
-    def przygotuj_tekst_zagadki(self):
-        self.tekst_zagadki = "Ile to: (5 + 6) * 4 / 5"
+    def przygotuj_zagadke(self):
+
+        zagadka = self.gra._plansza.zagadki.nastepna_zagadka()
+        self.tekst_zagadki = zagadka.tresc_zagadki
+
+        self.odpowiedz_A = zagadka.odpowiedz_a
+        self.odpowiedz_B = zagadka.odpowiedz_b
+        self.odpowiedz_C = zagadka.odpowiedz_c
+        self.poprawna_odpowiedz = zagadka.poprawna
+
+        self.informacja_o_podatku += str(self.pole.podatek)
+
+    def akcja_podatkowa(self, gracz, pole):
+        self.gracz = gracz
+        self.pole = pole
+
+
 
     def zaktualizuj_rozmiar_czcionki(self):
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
@@ -75,18 +94,12 @@ class AkcjaZagadekOkno(Okno):
         screen.fill((255,255,255))
         screen.blit(self.podatek, (self.W * 0.18, self.H * 0.2))
         screen.blit(self.info, (self.W * 0.19, self.H * 0.27))
-        screen.blit(self.zagadka, (self.W * 0.3, self.H * 0.4))
+        screen.blit(self.zagadka, (self.W * 0.2, self.H * 0.4))
 
         #odpowiedzi
         screen.blit(self.oA, (self.W * 0.3, self.H * 0.54))
         screen.blit(self.oB, (self.W * 0.3, self.H * 0.66))
         screen.blit(self.oC, (self.W * 0.3, self.H * 0.78))
-
-        
-    def pobierz_odpowiedzi(self):
-        self.odpowiedz_A = "6"
-        self.odpowiedz_B = "7"
-        self.odpowiedz_C = "-22"
 
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
