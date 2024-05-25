@@ -8,7 +8,7 @@ class Main:
     _background_color = pygame.color.THECOLORS["white"]
 
     def __init__(self):
-        pygame.init()       # Inicjalizacja pygame
+        pygame.init()  # Inicjalizacja pygame
         pygame.font.init()  # Inicjalizacja modułu fontów
 
         os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -38,7 +38,7 @@ class Main:
 
     def __del__(self):
         pygame.quit()
-        del self._gra
+        # del self._gra
 
     def start(self):
         self.messages.append("Witaj w UJpoly!")

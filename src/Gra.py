@@ -10,8 +10,7 @@ from src.Posiadlosc import *
 from src.Pionek import Pionek
 
 
-#KWOTA_POCZATKOWA = 10000
-KWOTA_POCZATKOWA = 1000
+KWOTA_POCZATKOWA = 10000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -36,7 +35,7 @@ class Gra:
         self._liczba_graczy = 0
         self._suma_oczek = 0
         self._kolejny_rzut_kostka = False
-        self._aktualny_gracz = 0
+        self._aktualny_gracz = 1
         self.messages = []
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
@@ -86,8 +85,11 @@ class Gra:
         if self._suma_oczek == 21:
             self.messages.append("Idziesz do więzienia")
             self._gracze[self._aktualny_gracz - 1].pozycja = 10
+            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             self._gracze[self._aktualny_gracz - 1].uwiezienie = True
+            self._gracze[self._aktualny_gracz - 1].tury_w_wiezieniu = 0
             self._kolejny_rzut_kostka = False
+            self._suma_oczek = 0
 
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
@@ -104,11 +106,10 @@ class Gra:
 
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
-        gracz.pionek.numer_pola = nowa_pozycja
-        gracz.pionek.pozycja = Pionek.oblicz_nowa_pozycje(
-            nowa_pozycja, gracz.pionek.kierunek
-        )
-        gracz.czy_przeszedl_przez_start(self, stara_pozycja)
+        gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
+
+    def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
+        self.akcja_pola_okno.czy_akcja_pola = True
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         self.akcja_nieruchomosci_okno.czy_kupno = True
@@ -119,18 +120,26 @@ class Gra:
             self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-        pole.wyswietl_info(self)
 
         if pole.typ == "Szansa":
             self.akcja_kart_okno.czy_szansa = True
+            karta = self._plansza.karta_szansy.nastepna_karta()
+            self.messages.append(f"Szansa: {karta}")
+            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
+
+        if pole.typ == "Szansa":
+            self.akcja_kart_okno.czy_szansa = True
+            karta = self._plansza.karta_szansy.nastepna_karta()
+            self.messages.append(f"Szansa: {karta}")
+            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
         elif pole.typ == "idz_do_wiezienia":
-            self.messages.append("Gracz musi iść na pole 30 (więzienie)")
-            self.przesun_gracza_bez_raportu(gracz, 10)
+            self.messages.append("Gracz musi iść na pole 10 (więzienie)")
+            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             gracz.uwiezienie = True
 
         elif pole.typ == "Szansa":
