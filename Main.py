@@ -60,8 +60,6 @@ class Main:
                     self.input_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     self.input_text = self.input_text[:-1]
-                elif event.key == pygame.K_SPACE:
-                    self._gra.tura()
                 else:
                     self.input_text += event.unicode
             elif event.type == pygame.VIDEORESIZE:
@@ -70,10 +68,11 @@ class Main:
                 self._gra.aktualna_szerokosc_ekranu = self._screen_width
                 self._gra.aktualna_wysokosc_ekranu = self._screen_height
 
-            self._gra.aktualizuj_zdarzenia(event)
+            self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
         _delta_time = delta_time
+        self._gra.aktualizacja()
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, (0, 0, 0))
