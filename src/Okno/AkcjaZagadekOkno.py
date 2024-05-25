@@ -13,11 +13,15 @@ class AkcjaZagadekOkno(Okno):
 
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
+        self.czy_zagadka = False
 
         self.A = Przycisk(self.W * 0.2, self.H * 0.5, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "A", (255,255,255))
         self.B = Przycisk(self.W * 0.2, self.H * 0.6, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "B", (255,255,255))
         self.C = Przycisk(self.W * 0.2, self.H * 0.7, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "C", (255,255,255))
-        self.czy_zagadka = False
+
+        self.odpowiedz_A = "empty"
+        self.odpowiedz_B = "empty"
+        self.odpowiedz_C = "empty"
 
         self.skalar_czcionki = 22 #im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
@@ -57,8 +61,25 @@ class AkcjaZagadekOkno(Okno):
         self.info = self.font.render(self.informacja_o_zagadce, True, (0,0,0))
         self.zagadka = self.font.render(self.tekst_zagadki, True, (0,0,0))
 
+        #odpowiedzi
+        self.oA = self.font.render(self.odpowiedz_A, True, (0,0,0))
+        self.oB = self.font.render(self.odpowiedz_B, True, (0,0,0))
+        self.oC = self.font.render(self.odpowiedz_C, True, (0,0,0))
+
     def wyswietl_teksty(self, screen):
         screen.fill((255,255,255))
         screen.blit(self.podatek, (self.W * 0.2, self.H * 0.2))
         screen.blit(self.info, (self.W * 0.21, self.H * 0.27))
         screen.blit(self.zagadka, (self.W * 0.3, self.H * 0.4))
+
+        #odpowiedzi
+        screen.blit(self.oA, (self.W * 0.3, self.H * 0.54))
+        screen.blit(self.oB, (self.W * 0.3, self.H * 0.66))
+        screen.blit(self.oC, (self.W * 0.3, self.H * 0.78))
+
+        
+
+    def pobierz_odpowiedzi(self):
+        self.odpowiedz_A = "6"
+        self.odpowiedz_B = "7"
+        self.odpowiedz_C = "-22"

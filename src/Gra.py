@@ -118,6 +118,7 @@ class Gra:
 
         if pole.typ == "Podatek dochodowy":
             self.akcja_zagadek_okno.przygotuj_tekst_zagadki()
+            self.akcja_zagadek_okno.pobierz_odpowiedzi()
             self.akcja_zagadek_okno.czy_zagadka = True
 
         if pole.typ == "Szansa":
