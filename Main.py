@@ -20,14 +20,6 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        # self._board_png = pygame.image.load("graphics/board.png")
-        # self._board_png = pygame.transform.scale(
-        #     self._board_png, (7 / 8 * self._screen_height, 7 / 8 * self._screen_height)
-        # )
-
-        # self._board_rect = self._board_png.get_rect()
-        # self._boardOffset = (self._screen_height - self._board_rect.height) / 2
-
         self._gra = Gra(self._screen)
         self._clock = pygame.time.Clock()
         self._running = True
