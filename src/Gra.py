@@ -5,6 +5,7 @@ from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
 from src.Okno.AkcjaKartOkno import AkcjaKartOkno
 from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
+from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -45,6 +46,7 @@ class Gra:
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
         self.akcja_kart_okno = AkcjaKartOkno(self)
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
+        self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -123,7 +125,6 @@ class Gra:
         self.messages.append(pole.wyswietl_info())
 
         if pole.typ == "Podatek dochodowy":
-            
             self.akcja_zagadek_okno.akcja_podatkowa(gracz, pole)
             self.akcja_zagadek_okno.przygotuj_zagadke()
             self.akcja_zagadek_okno.czy_zagadka = True
@@ -192,6 +193,7 @@ class Gra:
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
         self.akcja_kart_okno.aktualizacja_zdarzen(event)
         self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
+        self.akcja_wiezienie_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
 
@@ -205,6 +207,7 @@ class Gra:
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+        self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -217,5 +220,8 @@ class Gra:
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
         self.akcja_zagadek_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_wiezienie_okno.aktualizuj_rozmiar_okna(
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
