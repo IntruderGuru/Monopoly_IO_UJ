@@ -3,6 +3,7 @@ import pygame
 
 from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
+from src.Okno.AkcjaKartOkno import AkcjaKartOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -41,6 +42,7 @@ class Gra:
         self._plansza = Plansza()
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
+        self.akcja_kart_okno = AkcjaKartOkno(self)
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -119,6 +121,9 @@ class Gra:
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.messages.append(pole.wyswietl_info())
 
+        if pole.typ == "Szansa":
+            self.akcja_kart_okno.czy_szansa = True
+
         if pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
@@ -180,6 +185,7 @@ class Gra:
     def aktualizuj_zdarzenia(self, event: pygame.event.Event):
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
+        self.akcja_kart_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
         self._plansza.render(self._glowne_okno)
@@ -189,3 +195,4 @@ class Gra:
 
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
+        self.akcja_kart_okno.wyswietl(self._glowne_okno)
