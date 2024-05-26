@@ -33,8 +33,7 @@ class Gracz:
         self.lista_posiadlosci[x].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[x].zastaw_kwota  
-        
-                
+           
 
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz()
@@ -42,10 +41,32 @@ class Gracz:
         posiadlosc.IDwlasciciela.kwota += czynsz
         
     def caly_kolor(self, kolor):
-        pass
+        liczba_w_kolorze = 1
+        for posiadlosc in self.lista_posiadlosci:
+            if not posiadlosc.kolor == kolor:
+                liczba_w_kolorze += 1
+        if((kolor == "brazowy" or kolor == "granatowy")):
+            return liczba_w_kolorze == 2
+        else:
+            return liczba_w_kolorze == 3                 
     
     def cztery_domki(self, posiadlosc):
-        pass
+        if(posiadlosc.liczba_domow < 4):
+            return "domek"
+        
+        liczba_domkow_w_kolorze = 0
+        for pole in self.lista_posiadlosci:
+            if not pole.kolor == pole.kolor:
+                liczba_domkow_w_kolorze += pole.liczba_domow
+                
+        if((posiadlosc.kolor == "brazowy" or posiadlosc.kolor == "granatowy")):
+            if(liczba_domkow_w_kolorze < 8):
+                return "nie"
+            return "hotel"
+        else:
+            if(liczba_domkow_w_kolorze < 12):
+                return "nie"
+            return "hotel"
         
 
     def wykonaj_oplate(self, gra, cena):

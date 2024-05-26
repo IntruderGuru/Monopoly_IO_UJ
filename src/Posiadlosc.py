@@ -38,19 +38,16 @@ class Posiadlosc(Pole):
             gra.akcja_pola_okno.czy_akcja_pola = False  
         return
 
-    
     def kup_dom(self, gra, gracz, ile_domow):
         if(gracz.wykonaj_oplate(gra, self.cena_domu*ile_domow)):
             self.liczba_domow += ile_domow
             while(self.liczba_domow >= 5):
                 self.liczba_domow -= 5
                 self.liczba_hoteli += 1
-            gra.messages.append(f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hotrli")
+            gra.messages.append(f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli")
         else:
             gra.messages.append("Wycofałeś się z zakupu") 
           
-
-        
     def sprzedaj_posiadlosc(self, gra, gracz):
         if(self.czy_zastawiona):
             gra.messages.append("Nie można sprzedać zastawionej posiadłości")
