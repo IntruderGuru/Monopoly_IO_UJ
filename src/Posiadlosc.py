@@ -3,9 +3,10 @@ from src.Gracz import Gracz
 
 class Posiadlosc(Pole):
 
-    def __init__(self, numer: int, nazwa: str, cena: int, czynsz: int, zastaw: int, cena_domu: int):
+    def __init__(self, numer, nazwa, kolor, cena, czynsz, zastaw, cena_domu=0):
         super().__init__(numer, "Posiadlosc")
         self.nazwa = nazwa
+        self.kolor = kolor
         self.cena = cena
         self.czynsz = czynsz
         self.zastaw_kwota = zastaw
@@ -13,6 +14,7 @@ class Posiadlosc(Pole):
         self.IDwlasciciela = None 
         self.czy_zastawiona = False
         self.liczba_domow = 0
+        self.liczba_hoteli = 0
 
     def wyswietl_info(self, gra):
         if self.liczba_domow:
@@ -37,17 +39,16 @@ class Posiadlosc(Pole):
         return
 
     
-    def kup_dom(self, gra, gracz):
-        if(self.czy_zastawiona):
-            gra.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
-            return
-        
-        if(gracz.wykonaj_oplate(gra, self.cena_domu)):
-            self.liczba_domow += 1
-            gra.messages.append("Zakup domu się udał")
+    def kup_dom(self, gra, gracz, ile_domow):
+        if(gracz.wykonaj_oplate(gra, self.cena_domu*ile_domow)):
+            self.liczba_domow += ile_domow
+            while(self.liczba_domow >= 5):
+                self.liczba_domow -= 5
+                self.liczba_hoteli += 1
+            gra.messages.append(f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hotrli")
         else:
-            gra.messages.append("Wycofałeś się z zakupu")    
-        
+            gra.messages.append("Wycofałeś się z zakupu") 
+          
 
         
     def sprzedaj_posiadlosc(self, gra, gracz):
@@ -70,30 +71,3 @@ class Posiadlosc(Pole):
             x=2
             gracz.kwota = gracz.kwota + (x * self.cena_domu * 0.8)
             self.liczba_domow -= x
-            
-            
-            
-class PosiadloscKolo(Pole):
-    def __init__(self, numer: int, nazwa: str, cena: int, czynsz: int, zastaw: int):
-        super().__init__(numer, "Posiadlosc-kolo")
-        self.nazwa = nazwa
-        self.cena = cena
-        self.czynsz = czynsz
-        self.zastaw = zastaw
-        self.IDwlasciciela = None 
-
-    def wyswietl_info(self, gra):
-        gra.messages.append(f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")
-
-
-class PosiadloscPozaWmii(Pole):
-    def __init__(self, numer: int, nazwa: str, cena: int, czynsz: int, zastaw: int):
-        super().__init__(numer, "Posiadlosc-pozaWmii")
-        self.nazwa = nazwa
-        self.cena = cena
-        self.czynsz = czynsz
-        self.zastaw = zastaw
-        self.IDwlasciciela = None 
-
-    def wyswietl_info(self, gra) :
-        gra.messages.append(f"Nazwa: {self.nazwa}\nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw}")

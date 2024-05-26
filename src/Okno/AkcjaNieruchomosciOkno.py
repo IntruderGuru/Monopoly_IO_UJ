@@ -65,9 +65,7 @@ class AkcjaNieruchomosciOkno(Okno):
         
 
     def kup_domek(self):
-        self.posiadlosc_gracza.kup_dom(self.gra, self.gracz)
+        self.posiadlosc_gracza.kup_dom(self.gra, self.gracz, 1)
 
     def kup_hotel(self):
-        #self.posiadlosc_gracza.kup_hotel(self.gra, self.gracz)
-        #metoda kup hotel nie jest zaimplementowana
-        pass
+        self.posiadlosc_gracza.kup_dom(self.gra, self.gracz, 5)

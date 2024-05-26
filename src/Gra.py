@@ -111,29 +111,33 @@ class Gra:
     def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
         self.akcja_pola_okno.czy_akcja_pola = True
 
-    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
-        self.akcja_nieruchomosci_okno.czy_kupno = True
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):  
+        if(posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii"):
+            return
+        if(not gracz.caly_kolor(posiadlosc.kolor)):   
+            self.messages.append("Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku") 
+            return
+        if(posiadlosc.czy_zastawiona):
+            self.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
+            return
 
-        if posiadlosc.liczba_domow < 4:
-            self.akcja_nieruchomosci_okno.nieruchomosc = "domek"
-        else:
-            self.akcja_nieruchomosci_okno.nieruchomosc = "hotel"
+        nieruchomosc = gracz.cztery_domki(posiadlosc)
+        if  nieruchomosc == "nie":
+            self.messages.append(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
+            return
+        
+        self.akcja_nieruchomosci_okno.czy_kupno = True
+        self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
+                
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-
         if pole.typ == "Szansa":
             self.akcja_kart_okno.czy_szansa = True
             karta = self._plansza.karta_szansy.nastepna_karta()
             self.messages.append(f"Szansa: {karta}")
             self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
-        if pole.typ == "Szansa":
-            self.akcja_kart_okno.czy_szansa = True
-            karta = self._plansza.karta_szansy.nastepna_karta()
-            self.messages.append(f"Szansa: {karta}")
-            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
-
-        if pole.typ == "wiezienie":
+        elif pole.typ == "wiezienie":
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
@@ -141,11 +145,6 @@ class Gra:
             self.messages.append("Gracz musi iść na pole 10 (więzienie)")
             self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             gracz.uwiezienie = True
-
-        elif pole.typ == "Szansa":
-            karta = self._plansza.karta_szansy.nastepna_karta()
-            self.messages.append(f"Szansa: {karta}")
-            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):

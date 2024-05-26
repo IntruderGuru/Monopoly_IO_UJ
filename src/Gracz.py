@@ -36,9 +36,17 @@ class Gracz:
         
                 
 
-    def zaplac_czynsz(self, gracz, posiadlosc):
+    def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz()
+        self.wykonaj_oplate(gra, czynsz)
+        posiadlosc.IDwlasciciela.kwota += czynsz
+        
+    def caly_kolor(self, kolor):
         pass
+    
+    def cztery_domki(self, posiadlosc):
+        pass
+        
 
     def wykonaj_oplate(self, gra, cena):
         if (cena > self.kwota):
