@@ -10,10 +10,6 @@ class AkcjaPolaOkno(Okno):
         self.H = 800
         self.gra = gra
 
-        self.board_png = pygame.transform.scale(
-            pygame.image.load("graphics/pole.png"), (0.28 * self.W, 0.64 * self.H)
-        )
-
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
 
@@ -49,6 +45,7 @@ class AkcjaPolaOkno(Okno):
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
         self.gracz_majacy_mozliwosc_zakupu = gracz
+        self.board_png = pygame.transform.scale(pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki), (0.28 * self.W, 0.64 * self.H))
 
     def kup_pole(self):
         self.posiadlosc_do_zakupu.kup_posiadlosc(self.gra, self.gracz_majacy_mozliwosc_zakupu)

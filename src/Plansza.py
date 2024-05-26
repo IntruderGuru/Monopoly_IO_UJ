@@ -59,6 +59,7 @@ class Plansza:
         self.plansza: [Pole] = self.inicializacja_planszy()
         self.karta_szansy = KartaSzansy()
         self.zagadki = Zagadki()
+        self.wczytaj_grafiki()
 
     def pobierz_pole(self, numer_pola):
         if 0 <= numer_pola <= len(self.plansza):
@@ -75,5 +76,16 @@ class Plansza:
     def render(self, screen):
         for pole in self.plansza:
             pole.render(screen)
+
+    def wczytaj_grafiki(self):
+        i = 0
+        path = "graphics/pola/pole_"
+        extension = ".png"
+
+        for pole in self.plansza:
+            pole.sciezka_do_grafiki = (path + str(i) + extension) 
+            i += 1
+
+
 
     

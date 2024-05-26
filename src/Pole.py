@@ -81,6 +81,7 @@ class Pole:
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
+        self.sciezka_do_grafiki = "..."
 
     def wyswietl_info(self) :
         return (f"Nazwa: {self.typ}")
