@@ -10,7 +10,6 @@ class AkcjaNieruchomosciOkno(Okno):
         self.H = 800
         self.W = 1200
         self.gra = gra
-        self.pole_png = pygame.transform.scale(pygame.image.load("graphics/pole.png"), (0.28 * self.W, 0.64 * self.H))
 
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_hovera = (150, 150, 150)
@@ -65,6 +64,7 @@ class AkcjaNieruchomosciOkno(Okno):
         self.posiadlosc_gracza = posiadlosc
         self.gracz = gracz
         self.ustaw_poprawny_przycisk_domek_hotel()
+        self.pole_png = pygame.transform.scale(pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki), (0.28 * self.W, 0.64 * self.H))
         
 
     def kup_domek(self):
