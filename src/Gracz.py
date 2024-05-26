@@ -33,25 +33,50 @@ class Gracz:
         self.lista_posiadlosci[x].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[x].zastaw_kwota  
-           
-
-    def zaplac_czynsz(self, gra, posiadlosc):
-        czynsz = posiadlosc.oblicz_czynsz()
-        self.wykonaj_oplate(gra, czynsz)
-        posiadlosc.IDwlasciciela.kwota += czynsz
         
-    def caly_kolor(self, kolor):
-        liczba_w_kolorze = 1
+    def zdejmij_zastaw_posiadlosci(self, gra):
+        if self.liczba_zastawionych == 0:
+            gra.messages.append("Nie masz zastawionych posiadlosci") 
+            gra.akcja_zastaw_okno.czy_zdejmij_zastaw = False
+            return
+
+        gra.messages.append("To wszystkie Twoje posiadłości, które masz zastawione:")
+        for posiadlosc in self.lista_posiadlosci:
+            if posiadlosc.czy_zastawiona:
+                posiadlosc.wyswietl_info(gra)
+                
+        #wczytanie numeru, sprawdzenie czy numer jest dobry
+        x = 0
+        cena = self.lista_posiadlosci[x].zastaw_kwota * 1.2
+        if(self.kwota >= cena):
+            self.lista_posiadlosci[x].czy_zastawiona = False
+            self.liczba_zastawionych -= 1
+            self.kwota-= cena
+        else:
+              gra.messages.append("Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości")
+           
+    def zaplac_czynsz(self, gra, posiadlosc):
+        czynsz = posiadlosc.oblicz_czynsz(gra)
+        self.wykonaj_oplate(gra, czynsz)
+        posiadlosc.wlasciciel.kwota += czynsz
+    
+    def ile_w_kolorze(self, kolor):
+        liczba_w_kolorze = 0
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.kolor == kolor:
                 liczba_w_kolorze += 1
-        if((kolor == "brazowy" or kolor == "granatowy")):
-            return liczba_w_kolorze == 2
+        return liczba_w_kolorze
+        
+    def caly_kolor(self, kolor):
+        if kolor == "brazowy" or kolor == "granatowy" or kolor == "pozaWmii":
+            return ile_w_kolorze(kolor) == 2
         else:
-            return liczba_w_kolorze == 3                 
+            return ile_w_kolorze(kolor) == 3  
+    
+                 
     
     def cztery_domki(self, posiadlosc):
-        if(posiadlosc.liczba_domow < 4):
+        if posiadlosc.liczba_domow < 4 :
             return "domek"
         
         liczba_domkow_w_kolorze = 0
@@ -68,7 +93,6 @@ class Gracz:
                 return "nie"
             return "hotel"
         
-
     def wykonaj_oplate(self, gra, cena):
         if (cena > self.kwota):
                     gra.messages.append(f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?")

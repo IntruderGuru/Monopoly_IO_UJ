@@ -149,15 +149,15 @@ class Gra:
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-                if posiadlosc.IDwlasciciela is None:
+                if posiadlosc.wlasciciel is None:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
-                elif posiadlosc.IDwlasciciela == gracz.id:
+                elif posiadlosc.wlasciciel == gracz.id:
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
-                    #pobierz czynsz
-                    pass
+                    self.messages.append("Gracz płaci czynsz")
+                    gracz.zaplac_czynsz(self, posiadlosc)
             else:
                 raise Exception("Błąd. Posiadłość jest innym polem") 
 
