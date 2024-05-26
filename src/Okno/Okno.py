@@ -18,3 +18,7 @@ class Okno:
     @abstractmethod
     def aktualizuj_rozmiar_okna(self, width, height):
         pass
+
+    @abstractmethod
+    def zamknij(self):
+        pass

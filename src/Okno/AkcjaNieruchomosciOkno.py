@@ -43,11 +43,14 @@ class AkcjaNieruchomosciOkno(Okno):
         if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
             self.kup_domek()
             self.czy_kupno = False
+            self.zamknij()
         elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
             self.kup_hotel()
             self.czy_kupno = False
+            self.zamknij()
         elif self.wyjscie.is_clicked(event):
             self.czy_kupno = False
+            self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_kupno:
@@ -75,3 +78,6 @@ class AkcjaNieruchomosciOkno(Okno):
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True

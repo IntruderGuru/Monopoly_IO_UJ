@@ -29,6 +29,7 @@ class AkcjaWiezieniaOkno(Okno):
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.wyjscie.is_clicked(event):
             self.czy_wiezienie = False
+            self.zamknij()
 
 
     def wyswietl(self, screen: pygame.Surface):
@@ -58,3 +59,6 @@ class AkcjaWiezieniaOkno(Okno):
 
     def wyswietl_teksty(self, screen):
         screen.blit(self.tekst, (self.W * 0.18, self.H * 0.7))
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True

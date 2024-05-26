@@ -28,8 +28,10 @@ class AkcjaPolaOkno(Okno):
         if self.zakup.is_clicked(event):
             self.kup_pole()
             self.czy_akcja_pola = False
+            self.zamknij()
         elif self.licytacja.is_clicked(event):
             self.czy_akcja_pola = False
+            self.zamknij()
             pass
 
     def wyswietl(self, screen: pygame.Surface):
@@ -54,3 +56,6 @@ class AkcjaPolaOkno(Okno):
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True

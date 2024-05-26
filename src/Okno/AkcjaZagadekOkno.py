@@ -40,12 +40,15 @@ class AkcjaZagadekOkno(Okno):
         if self.A.is_clicked(event) :
             self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_A))
             self.czy_zagadka = False
+            self.zamknij()
         elif self.B.is_clicked(event):
             self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_B))
             self.czy_zagadka = False
+            self.zamknij()
         elif self.C.is_clicked(event):
             self.pole.zaplac_podatek(self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C))
             self.czy_zagadka = False
+            self.zamknij()
 
 
     def wyswietl(self, screen: pygame.Surface):
@@ -105,3 +108,6 @@ class AkcjaZagadekOkno(Okno):
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True

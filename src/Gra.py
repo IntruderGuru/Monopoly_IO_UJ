@@ -47,6 +47,7 @@ class Gra:
         self.akcja_kart_okno = AkcjaKartOkno(self)
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
         self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
+        self.czy_akcja_zakonczona = True
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -129,17 +130,20 @@ class Gra:
         self.messages.append(pole.wyswietl_info())
 
         if pole.typ == "Podatek dochodowy":
+            self.czy_akcja_zakonczona = False
             self.akcja_zagadek_okno.akcja_podatkowa(gracz, pole)
             self.akcja_zagadek_okno.przygotuj_zagadke()
             self.akcja_zagadek_okno.czy_zagadka = True
 
         if pole.typ == "Szansa":
+            self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
             karta = self._plansza.karta_szansy.nastepna_karta()
             self.messages.append(f"Szansa: {karta}")
             self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
         if pole.typ == "Wiezienie":
+            self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
@@ -150,12 +154,15 @@ class Gra:
             gracz.uwiezienie = True
 
         elif pole.typ == "Posiadlosc":
+
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
             if posiadlosc.IDwlasciciela is None:
+                self.czy_akcja_zakonczona = False
                 self.akcja_dostepnego_pola(gracz, posiadlosc)
                 self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
             elif posiadlosc.IDwlasciciela == gracz.id:
+                self.czy_akcja_zakonczona = False
                 self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                 self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
             else:

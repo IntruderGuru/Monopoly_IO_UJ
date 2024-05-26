@@ -23,6 +23,7 @@ class AkcjaKartOkno(Okno):
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.wyjscie.is_clicked(event):
             self.czy_szansa = False
+            self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_szansa:
@@ -34,3 +35,6 @@ class AkcjaKartOkno(Okno):
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True
