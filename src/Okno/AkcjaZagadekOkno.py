@@ -11,14 +11,11 @@ class AkcjaZagadekOkno(Okno):
         self.H = 800
         self.W = 1200
         self.gra = gra
-
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
         self.czy_zagadka = False
 
-        self.A = Przycisk(self.W * 0.2, self.H * 0.5, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "A", (255,255,255))
-        self.B = Przycisk(self.W * 0.2, self.H * 0.6, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "B", (255,255,255))
-        self.C = Przycisk(self.W * 0.2, self.H * 0.7, self.H * 0.1, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "C", (255,255,255))
+        self.A = Przycisk(self.W * 0.2, self.H * 0.5, self.H * 0.1, self.H * 0.1, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "A", self.gra.kolor_tekstu)
+        self.B = Przycisk(self.W * 0.2, self.H * 0.6, self.H * 0.1, self.H * 0.1, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "B", self.gra.kolor_tekstu)
+        self.C = Przycisk(self.W * 0.2, self.H * 0.7, self.H * 0.1, self.H * 0.1, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "C", self.gra.kolor_tekstu)
 
         self.odpowiedz_A = "empty"
         self.odpowiedz_B = "empty"

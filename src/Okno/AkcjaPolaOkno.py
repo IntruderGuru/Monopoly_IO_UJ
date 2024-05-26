@@ -10,11 +10,8 @@ class AkcjaPolaOkno(Okno):
         self.H = 800
         self.gra = gra
 
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
-
-        self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "kupuję", (255,255,255))
-        self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "licytacja", (255,255,255))
+        self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "kupuję", self.gra.kolor_tekstu)
+        self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "licytacja", self.gra.kolor_tekstu)
         self.czy_akcja_pola = False
     
     def aktualizacja(self):

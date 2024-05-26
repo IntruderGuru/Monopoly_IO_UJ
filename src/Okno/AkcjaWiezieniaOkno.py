@@ -14,9 +14,7 @@ class AkcjaWiezieniaOkno(Okno):
             pygame.image.load("graphics/wiezienie.png"), (0.45 * self.H, 0.45 * self.H)
         )
 
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
-        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.3, self.W * 0.2, self.H * 0.15, self.kolor_przycisku, self.kolor_hovera, "wyjście", (255,255,255))
+        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.3, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "wyjście", self.gra.kolor_tekstu)
         self.czy_wiezienie = False
 
         self.skalar_czcionki = 24 #im wiekszy tym mniejsza czcionka

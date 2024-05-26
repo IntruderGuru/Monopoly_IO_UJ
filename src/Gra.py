@@ -41,6 +41,13 @@ class Gra:
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
 
+
+        #sekcja wizualna
+        self.kolor_przycisku = (70, 70, 70)
+        self.kolor_gdy_kursor = (150, 150, 150)
+        self.kolor_tekstu = (200, 200, 200)
+
+        #sekcja okien
         self._plansza = Plansza()
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -48,6 +55,7 @@ class Gra:
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
         self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
         self.czy_akcja_zakonczona = True
+
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
