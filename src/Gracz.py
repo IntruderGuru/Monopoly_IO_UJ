@@ -22,7 +22,7 @@ class Gracz:
             gra.messages.append("Nie masz już posiadłości, które mógłbyś zastawić") 
             gra.akcja_zastaw_okno.czy_zastaw = False
             return
-
+          
         gra.messages.append("To wszystkie Twoje posiadłości, które możesz zastawić:")
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:

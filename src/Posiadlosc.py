@@ -18,6 +18,16 @@ class Posiadlosc(Pole):
         self.liczba_domow = 0
         self.liczba_hoteli = 0
 
+    def zwroc_info(self):
+        if self.liczba_domow:
+            return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
+        return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
+
+    def pobierz_id_wlasciciela(self):
+        return self.IDwlasciciela
+
+      
+    # wyswietl_info
     def wyswietl_info(self, gra):
         czynsz = self.czynsz
         if self.wlasciciel:

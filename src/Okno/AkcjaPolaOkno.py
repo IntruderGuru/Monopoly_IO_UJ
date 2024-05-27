@@ -1,21 +1,55 @@
 from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
+from enum import Enum
+
+
+class AkcjaZakupu(Enum):
+    Nic = 0
+    Posiadlosc = 1
+    Hotel = 2
 
 
 class AkcjaPolaOkno(Okno):
-
     def __init__(self, gra):
         self.W = 1200
         self.H = 800
         self.gra = gra
-
+        
         self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "kupuję", self.gra.kolor_tekstu)
         self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "licytacja", self.gra.kolor_tekstu)
         self.czy_akcja_pola = False
-    
+        
+        self.ktora_akcja_zakupu: AkcjaZakupu = AkcjaZakupu.Nic
+        self.czy_zakup = False
+
+    def okno_kup_nieruchomosc(self, gracz, pole_posiadlosc):
+        self.czy_zakup = True
+
+        id_wlasciciela_posiadlosci = pole_posiadlosc.pobierz_id_wlasciciela()
+        if id_wlasciciela_posiadlosci is None or id_wlasciciela_posiadlosci == gracz.id:
+            match self.ktora_akcja_zakupu:
+                case AkcjaZakupu.Posiadlosc:
+                    pole_posiadlosc.kup_posiadlosc(self, gracz)
+
+                case AkcjaZakupu.Hotel:
+                    pass
+
+    def czy_koniec_zakupu(self) -> bool:
+        return self.czy_zakup
+
     def aktualizacja(self):
         pass
+
+#     def aktulizacja_zdarzen(self, event: pygame.event.Event):
+#         if self.przycisk_kup_domek.is_clicked(event):
+#             self.ktora_akcja_zakupu = AkcjaZakupu.Posiadlosc
+
+#         elif self.przycisk_kup_hotel.is_clicked(event):
+#             self.ktora_akcja_zakupu = AkcjaZakupu.Hotel
+
+#         elif self.wyjscie.is_clicked(event):
+#             self.czy_zakup = False
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.zakup.is_clicked(event):
@@ -28,16 +62,10 @@ class AkcjaPolaOkno(Okno):
             pass
 
     def wyswietl(self, screen: pygame.Surface):
-        H = self.H
-        W = self.W
-
-        if self.czy_akcja_pola:
-            self.board_png = pygame.transform.scale(self.board_png, (0.28 * W, 0.64 * H))
-            screen.blit(self.board_png, (W * 0.2, H * 0.15))
-            self.zakup.updateSize(W * 0.6, H * 0.2, W * 0.2, H * 0.15)
-            self.licytacja.updateSize(W * 0.6, H * 0.4, W * 0.2, H * 0.15)
-            self.zakup.draw(screen)
-            self.licytacja.draw(screen)
+        if self.czy_zakup:
+            self.przycisk_kup_domek.draw(screen)
+            self.przycisk_kup_hotel.draw(screen)
+            self.wyjscie.draw(screen)
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
