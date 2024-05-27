@@ -19,10 +19,17 @@ class Posiadlosc(Pole):
         self.liczba_hoteli = 0
 
     def wyswietl_info(self, gra):
-        if self.liczba_domow:
-            gra.messages.append(f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
+        czynsz = self.czynsz
+        if self.wlasciciel:
+            czynsz = self.oblicz_czynsz(gra)
+        
+        if self.kolor != "pozaWmii" and self.kolor != "kolo":
+            gra.messages.append(f"Nazwa: {self.nazwa}")
+            gra.messages.append(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
+            gra.messages.append(f"Cena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
         else:
-            gra.messages.append(f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
+            gra.messages.append(f"Nazwa: {self.nazwa}")
+            gra.messages.append(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
     
     def oblicz_czynsz(self, gra):
         liczba_w_kolorze = self.wlasciciel.ile_w_kolorze(self.kolor)

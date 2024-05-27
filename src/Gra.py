@@ -121,7 +121,7 @@ class Gra:
             self.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
             return
 
-        nieruchomosc = gracz.cztery_domki(posiadlosc)
+        nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if  nieruchomosc == "nie":
             self.messages.append(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
             return
@@ -149,6 +149,7 @@ class Gra:
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
+                posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)

@@ -72,10 +72,8 @@ class Gracz:
             return ile_w_kolorze(kolor) == 2
         else:
             return ile_w_kolorze(kolor) == 3  
-    
-                 
-    
-    def cztery_domki(self, posiadlosc):
+              
+    def czy_cztery_domki(self, posiadlosc):
         if posiadlosc.liczba_domow < 4 :
             return "domek"
         
