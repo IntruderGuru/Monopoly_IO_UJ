@@ -20,14 +20,14 @@ class Posiadlosc(Pole):
         return (f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}")
     
     def kup_posiadlosc(self, gra, gracz):
-        if(self.cena > gracz.kwota):
-            if gra.tak_kilk == True:
-                print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? ")
-                #gracz.zastaw_posiadlosci()
-                pass
-            elif gra.nie_klik == False:
-                gra.messages.append("Zakup zakończony niepowodzeniem")
-                return
+        # if(self.cena > gracz.kwota):
+        #     if gra.tak_kilk == True:
+        #         print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości? ")
+        #         #gracz.zastaw_posiadlosci()
+        #         pass
+        #     elif gra.nie_klik == False:
+        #         gra.messages.append("Zakup zakończony niepowodzeniem")
+        #         return
             
         gracz.kwota -= self.cena
         gracz.lista_posiadlosci.append(self)
@@ -38,21 +38,21 @@ class Posiadlosc(Pole):
         if(self.czy_zastawiona):
             gra.messages.append("Nie można kupić domku lub hotelu na zastawionej nieruchomości")
             return
-        while True:
-            if(self.cena_domu > gracz.kwota):
-                if gra.tak_klik == True:
-                    print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości?")
-                    #gracz.zastaw_posiadlosci()
-                    pass
-                elif gra.nie_klik == False:
-                    gra.messages.append("Zakup zakończony niepowodzeniem")
-                    return
-            gracz.kwota -= self.cena_domu
-            self.liczba_domow += 1
-            gra.messages.append("Zakup domu się udał")
-            if gra.nie_klik == False:
-                print("Czy chcesz zastawić kolejną nieruchomość?")
-                return
+        # while True:
+        #     if(self.cena_domu > gracz.kwota):
+        #         if gra.tak_klik == True:
+        #             print("Nie masz wystarczająco dużo pieniędzy. Czy chcesz zastawić którąś z nieruchmości?")
+        #             #gracz.zastaw_posiadlosci()
+        #             pass
+        #         elif gra.nie_klik == False:
+        #             gra.messages.append("Zakup zakończony niepowodzeniem")
+        #             return
+        gracz.kwota -= self.cena_domu
+        self.liczba_domow += 1
+        gra.messages.append("Zakup domu się udał")
+            # if gra.nie_klik == False:
+            #     print("Czy chcesz zastawić kolejną nieruchomość?")
+            #     return
         
     def sprzedaj_posiadlosc(self, gra, gracz):
         if(self.czy_zastawiona):
