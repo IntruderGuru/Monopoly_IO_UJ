@@ -34,12 +34,12 @@ class Posiadlosc(Pole):
             czynsz = self.oblicz_czynsz(gra)
         
         if self.kolor != "pozaWmii" and self.kolor != "kolo":
-            gra.messages.append(f"Nazwa: {self.nazwa}")
-            gra.messages.append(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
-            gra.messages.append(f"Cena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Nazwa: {self.nazwa}")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Cena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}")
         else:
-            gra.messages.append(f"Nazwa: {self.nazwa}")
-            gra.messages.append(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Nazwa: {self.nazwa}")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}")
     
     def oblicz_czynsz(self, gra):
         liczba_w_kolorze = self.wlasciciel.ile_w_kolorze(self.kolor)
@@ -82,22 +82,22 @@ class Posiadlosc(Pole):
         if x == 1:
             gracz.lista_posiadlosci.append(self)
             self.wlasciciel = gracz
-            gra.messages.append(f"Gratulacje, dokonałeś zakupu {self.nazwa}!")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gratulacje, dokonałeś zakupu {self.nazwa}!")
             gra.akcja_pola_okno.czy_akcja_pola = False
         elif not gra.akcja_zastaw_okno.czy_zastaw:
-            gra.messages.append("Wycofałeś się z zakupu")  
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")  
             gra.akcja_pola_okno.czy_akcja_pola = False  
         return
 
     def kup_dom(self, gra, gracz, ile_domow):
         if gracz.wykonaj_oplate(gra, self.cena_domu*ile_domow):
             self.liczba_domow += ile_domow
-            while(self.liczba_domow >= 5):
+            while self.liczba_domow >= 5:
                 self.liczba_domow -= 5
                 self.liczba_hoteli += 1
-            gra.messages.append(f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli")
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli")
         else:
-            gra.messages.append("Wycofałeś się z zakupu") 
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu") 
 
     def sprzedaj_dom(self, gra, gracz):
         if self.liczba_domow > 0 :

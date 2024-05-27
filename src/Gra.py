@@ -75,7 +75,7 @@ class Gra:
         self.messages = []
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
-        self._kontroler_wiadomosci = kontroler_wiadomosci
+        self.kontroler_wiadomosci = kontroler_wiadomosci
 
 
         #sekcja wizualna
@@ -96,14 +96,14 @@ class Gra:
         self.czy_akcja_zakonczona = True
 
     def przygotuj_graczy(self):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Liczba graczy: {self._liczba_graczy}")
+        self.kontroler_wiadomosci.dodaj_wiadomosc(f"Liczba graczy: {self._liczba_graczy}")
         for i in range(1, self._liczba_graczy + 1):
             pionek = Pionek(0, PIECE_COLORS[i - 1], "path")
             gracz = Gracz(i, self._kwota_poczatkowa, pionek)
             gracz.pozycja = 0
             self._gracze.append(gracz)
             color = PIECE_COLORS[i - 1]
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
+            self.kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Gracz {i} gotowy z pionkiem w kolorze {color.r}, {color.g}, {color.b}"
             )
 
@@ -124,7 +124,7 @@ class Gra:
                 self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
                 self._suma_oczek = 0
                 if self._aktualny_gracz == poczatkowy_gracz:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    self.kontroler_wiadomosci.dodaj_wiadomosc(
                         "Wszyscy gracze są w więzieniu. Przechodzimy do następnej tury."
                     )
                     break
@@ -132,12 +132,12 @@ class Gra:
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         if kostka_pierwsza + kostka_druga == 7:
             self._kolejny_rzut_kostka = True
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Siódemka, rzuć jeszcze raz")
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Siódemka, rzuć jeszcze raz")
         else:
             self._kolejny_rzut_kostka = False
 
         if self._suma_oczek == 21:
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Idziesz do więzienia")
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Idziesz do więzienia")
             self._gracze[self._aktualny_gracz - 1].pozycja = 10
             self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             self._gracze[self._aktualny_gracz - 1].uwiezienie = True
@@ -151,7 +151,7 @@ class Gra:
         gracz.pionek.przesun(ruch)
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
-        self._kontroler_wiadomosci.dodaj_wiadomosc(
+        self.kontroler_wiadomosci.dodaj_wiadomosc(
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
         )
 
@@ -184,7 +184,7 @@ class Gra:
         self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
                 
     def wykonaj_akcje_na_polu(self, gracz, pole):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(pole.zwroc_info())
+        self.kontroler_wiadomosci.dodaj_wiadomosc(pole.zwroc_info())
 
         if pole.typ == "Podatek dochodowy":
             self.czy_akcja_zakonczona = False
@@ -235,23 +235,23 @@ class Gra:
             self.wybierz_kolejnego_gracza()
 
         if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Ruch gracza: {self._aktualny_gracz}")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Ruch gracza: {self._aktualny_gracz}")
 
             kostka_pierwsza = random.randint(1, 6)
             kostka_druga = random.randint(1, 6)
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
+            self.kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Suma: {self._suma_oczek}")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Suma: {self._suma_oczek}")
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
             self.przesun_gracza(
                 self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
             self.wybierz_kolejnego_gracza()
 
         if not self._kolejny_rzut_kostka:
