@@ -83,8 +83,8 @@ class Pole:
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
 
-    def wyswietl_info(self) :
-        return (f"Nazwa: {self.typ}")
+    def wyswietl_info(self, gra) :
+        gra.messages.append(f"Nazwa: {self.typ}")
 
     def render(self, screen):
         szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
