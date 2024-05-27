@@ -1,4 +1,4 @@
-from src.Okno.Okno import Okno
+from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 
@@ -29,7 +29,6 @@ class AkcjaNieruchomosciOkno(Okno):
             self.przycisk = self.przycisk_kup_hotel
         else:
             self.przycisk = self.wyjscie
-
 
     def aktualizacja(self):
         pass

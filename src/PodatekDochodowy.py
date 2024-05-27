@@ -11,7 +11,8 @@ class Zagadka():
         self.odpowiedz_b = odpowiedz_b
         self.odpowiedz_c = odpowiedz_c
         self.poprawna = poprawna
-    
+
+
 class Zagadki:
     lista_zagadek = [
         Zagadka("Co lubi jeść Nemo?", "glony", "ryby", "plankton", Odpowiedz.Odpowiedz_C)
@@ -25,6 +26,7 @@ class Zagadki:
         curr = self.ind
         self.ind = (self.ind + 1) % len(self.lista_zagadek)
         return self.permutacja[curr]
+
 
 class PodatekDochodowy(Pole):
 

@@ -1,13 +1,7 @@
-from src.Okno.Okno import Okno
+from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 from enum import Enum
-
-
-class AkcjaZakupu(Enum):
-    Nic = 0
-    Posiadlosc = 1
-    Hotel = 2
 
 
 class AkcjaPolaOkno(Okno):
@@ -15,41 +9,18 @@ class AkcjaPolaOkno(Okno):
         self.W = 1200
         self.H = 800
         self.gra = gra
-        
+
         self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "kupuję", self.gra.kolor_tekstu)
         self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "licytacja", self.gra.kolor_tekstu)
+        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.6, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "wyjscie", self.gra.kolor_tekstu)
+        self.board_png = None
+
         self.czy_akcja_pola = False
-        
-        self.ktora_akcja_zakupu: AkcjaZakupu = AkcjaZakupu.Nic
-        self.czy_zakup = False
-
-    def okno_kup_nieruchomosc(self, gracz, pole_posiadlosc):
-        self.czy_zakup = True
-
-        id_wlasciciela_posiadlosci = pole_posiadlosc.pobierz_id_wlasciciela()
-        if id_wlasciciela_posiadlosci is None or id_wlasciciela_posiadlosci == gracz.id:
-            match self.ktora_akcja_zakupu:
-                case AkcjaZakupu.Posiadlosc:
-                    pole_posiadlosc.kup_posiadlosc(self, gracz)
-
-                case AkcjaZakupu.Hotel:
-                    pass
-
-    def czy_koniec_zakupu(self) -> bool:
-        return self.czy_zakup
+        self.gracz_majacy_mozliwosc_zakupu = None
+        self.posiadlosc_do_zakupu = None
 
     def aktualizacja(self):
         pass
-
-#     def aktulizacja_zdarzen(self, event: pygame.event.Event):
-#         if self.przycisk_kup_domek.is_clicked(event):
-#             self.ktora_akcja_zakupu = AkcjaZakupu.Posiadlosc
-
-#         elif self.przycisk_kup_hotel.is_clicked(event):
-#             self.ktora_akcja_zakupu = AkcjaZakupu.Hotel
-
-#         elif self.wyjscie.is_clicked(event):
-#             self.czy_zakup = False
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.zakup.is_clicked(event):
@@ -60,12 +31,18 @@ class AkcjaPolaOkno(Okno):
             self.czy_akcja_pola = False
             self.zamknij()
             pass
+        elif self.wyjscie.is_clicked(event):
+            self.czy_akcja_pola = False
+            self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
-        if self.czy_zakup:
-            self.przycisk_kup_domek.draw(screen)
-            self.przycisk_kup_hotel.draw(screen)
+        if self.czy_akcja_pola:
+            self.zakup.draw(screen)
+            self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
+            if self.board_png:
+                plansza_wymiary_pozycja = self.board_png.get_rect(center=(self.W // 3, self.H // 2))
+                screen.blit(self.board_png, plansza_wymiary_pozycja)
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc

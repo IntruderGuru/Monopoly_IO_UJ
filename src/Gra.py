@@ -1,12 +1,12 @@
 import random
 import pygame
 
-from src.Okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
-from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
-from src.Okno.AkcjaKartOkno import AkcjaKartOkno
-from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
-from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
-from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
+from src.okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
+from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
+from src.okno.AkcjaKartOkno import AkcjaKartOkno
+from src.okno.AkcjaZastawOkno import AkcjaZastawOkno
+from src.okno.AkcjaZagadekOkno import AkcjaZagadekOkno
+from src.okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -55,7 +55,7 @@ class StosOtwartychOkien:
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if not self.czy_pusty():
-            self.gora().aktulizacja_zdarzen(event)
+            self.gora().aktualizacja_zdarzen(event)
 
     def wyswietl(self, okno: pygame.Surface):
         if not self.czy_pusty():
@@ -86,7 +86,6 @@ class Gra:
         #sekcja okien
         self._plansza = Plansza()
 
-        self._czy_gracz_ma_ture = False
         self._stos_otwartych_okien = StosOtwartychOkien()
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -163,8 +162,8 @@ class Gra:
         stara_pozycja = gracz.pionek.numer_pola
         gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
 
-    def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
-        self.akcja_pola_okno.czy_akcja_pola = True
+    # def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
+    #     self.akcja_pola_okno.czy_akcja_pola = True
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):  
         if(posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii"):
@@ -177,7 +176,7 @@ class Gra:
             return
 
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
-        if  nieruchomosc == "nie":
+        if nieruchomosc == "nie":
             self.messages.append(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
             return
         
@@ -218,9 +217,11 @@ class Gra:
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:
+                    self.czy_akcja_zakonczona = False
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
                 elif posiadlosc.wlasciciel == gracz.id:
+                    self.czy_akcja_zakonczona = False
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
@@ -263,23 +264,25 @@ class Gra:
         return messages
 
     def aktualizacja(self):
-        if not self._stos_otwartych_okien.czy_pusty():
-            self._stos_otwartych_okien.gora().aktualizacja()
+        pass
+        # if not self._stos_otwartych_okien.czy_pusty():
+        #     self._stos_otwartych_okien.gora().aktualizacja()
 
-        if not self._akcja_pola_okno.czy_koniec_zakupu():
-            self._czy_gracz_ma_ture = False
-            self._stos_otwartych_okien.usun()
+        # if not self.akcja_pola_okno.czy_koniec_zakupu():
+        #     self._czy_gracz_ma_ture = False
+        #     self._stos_otwartych_okien.usun()
 
 #     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
-#         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and not self._czy_gracz_ma_ture:
-#             self._czy_gracz_ma_ture = True
-#             self.tura()
 
 #         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
-#         if not self._stos_otwartych_okien.czy_pusty():
-#             self._stos_otwartych_okien.gora().aktulizacja_zdarzen(event)
 
-    def aktualizuj_zdarzenia(self, event: pygame.event.Event):
+    def aktualizacja_zdarzenia(self, event: pygame.event.Event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona:
+            self.tura()
+
+        # if not self._stos_otwartych_okien.czy_pusty():
+        #     self._stos_otwartych_okien.gora().aktualizacja_zdarzen(event)
+
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
         self.akcja_kart_okno.aktualizacja_zdarzen(event)
@@ -296,8 +299,8 @@ class Gra:
             gracz.pionek.wyswietl(self._glowne_okno)
 
         # self._akcja_pola_okno.wyswietl(self._glowne_okno)
-#         if not self._stos_otwartych_okien.czy_pusty():
-#             self._stos_otwartych_okien.gora().wyswietl(self._glowne_okno)
+        # if not self._stos_otwartych_okien.czy_pusty():
+        #     self._stos_otwartych_okien.gora().wyswietl(self._glowne_okno)
 
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
