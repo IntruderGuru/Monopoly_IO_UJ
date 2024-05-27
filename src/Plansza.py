@@ -4,6 +4,8 @@ from src.Pole import Pole
 from src.Pionek import Pionek
 from src.Posiadlosc import Posiadlosc
 from src.KartaSzansy import KartaSzansy
+from src.PodatekDochodowy import Zagadki
+from src.PodatekDochodowy import PodatekDochodowy
 
 
 class Plansza:
@@ -14,7 +16,7 @@ class Plansza:
         board.append(Posiadlosc(1, "Automat z kawą", "brazowy", 600, 20, 300, 500))
         board.append(Pole(2, "Szansa"))
         board.append(Posiadlosc(3, 'Bistro "Świetlica"', "brazowy", 600, 40, 300, 500))
-        board.append(Pole(4, "Podatek dochodowy"))
+        board.append(PodatekDochodowy(4, 1000))
         board.append(Posiadlosc(5, "KNRSI", "kolo", 2000, 250, 1000))
         board.append(Posiadlosc(6, "Parking", "niebieski", 1000, 60, 500, 500))
         board.append(Pole(7, "Szansa"))
@@ -48,7 +50,7 @@ class Plansza:
         board.append(Posiadlosc(35, "KSI", "kolo", 2000, 250, 1000))
         board.append(Pole(36, "Szansa"))
         board.append(Posiadlosc(37, "sala 0004", "granatowy", 3500, 350, 1750, 2000))
-        board.append(Pole(38, "Podatek dochodowy"))
+        board.append(PodatekDochodowy(38, 500))
         board.append(Posiadlosc(39, "sala 0089", "granatowy", 4000, 500, 2000, 2000))
 
         return board
@@ -56,6 +58,8 @@ class Plansza:
     def __init__(self):
         self.plansza: [Pole] = self.inicializacja_planszy()
         self.karta_szansy = KartaSzansy()
+        self.zagadki = Zagadki()
+        self.wczytaj_grafiki()
 
     def pobierz_pole(self, numer_pola):
         if 0 <= numer_pola <= len(self.plansza):
@@ -72,3 +76,16 @@ class Plansza:
     def render(self, screen):
         for pole in self.plansza:
             pole.render(screen)
+
+    def wczytaj_grafiki(self):
+        i = 0
+        path = "graphics/pola/pole_"
+        extension = ".png"
+
+        for pole in self.plansza:
+            pole.sciezka_do_grafiki = (path + str(i) + extension) 
+            i += 1
+
+
+
+    

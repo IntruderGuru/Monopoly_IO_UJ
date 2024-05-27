@@ -6,15 +6,12 @@ import pygame
 class AkcjaKartOkno(Okno):
 
     def __init__(self, gra):
-
         self.H = 800
         self.W = 1200
         self.gra = gra
         self.szansa_png = pygame.transform.scale(pygame.image.load("graphics/karta_szansy.png"), (0.6 * self.W, 0.5 * self.H))
 
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
-        self.wyjscie = Przycisk(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1, self.kolor_przycisku, self.kolor_hovera, "wyjscie", (255,255,255))
+        self.wyjscie = Przycisk(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "wyjście", self.gra.kolor_tekstu)
         self.czy_szansa = False
 
     def aktualizacja(self):
@@ -23,6 +20,7 @@ class AkcjaKartOkno(Okno):
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.wyjscie.is_clicked(event):
             self.czy_szansa = False
+            self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_szansa:
@@ -30,3 +28,10 @@ class AkcjaKartOkno(Okno):
             screen.blit(self.szansa_png, (self.W * 0.2, self.H * 0.15))
             self.wyjscie.updateSize(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1)
             self.wyjscie.draw(screen)
+
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height
+
+    def zamknij(self):
+        self.gra.czy_akcja_zakonczona = True

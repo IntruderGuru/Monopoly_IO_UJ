@@ -68,7 +68,7 @@ class Main:
                     self.input_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     self.input_text = self.input_text[:-1]
-                elif event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_SPACE and self._gra.czy_akcja_zakonczona:
                     self._gra.tura()
                 else:
                     self.input_text += event.unicode

@@ -5,6 +5,8 @@ from src.Okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
 from src.Okno.AkcjaKartOkno import AkcjaKartOkno
 from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
+from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
+from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -40,11 +42,21 @@ class Gra:
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
 
+
+        #sekcja wizualna
+        self.kolor_przycisku = (70, 70, 70)
+        self.kolor_gdy_kursor = (150, 150, 150)
+        self.kolor_tekstu = (200, 200, 200)
+
+        #sekcja okien
         self._plansza = Plansza()
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
         self.akcja_kart_okno = AkcjaKartOkno(self)
         self.akcja_zastaw_okno = AkcjaZastawOkno(self)
+        self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
+        self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
+        self.czy_akcja_zakonczona = True
 
     def przygotuj_graczy(self):
         self.messages.append(f"Liczba graczy: {self._liczba_graczy}")
@@ -67,6 +79,10 @@ class Gra:
                 break
             else:
                 self._gracze[self._aktualny_gracz - 1].odczekajJednaTure()
+                if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
+                    self.messages.append(
+                        f"Gracz {self._aktualny_gracz} opuszcza więzienie po dwóch turach"
+                    )
                 self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
                 self._suma_oczek = 0
                 if self._aktualny_gracz == poczatkowy_gracz:
@@ -131,13 +147,25 @@ class Gra:
                 
 
     def wykonaj_akcje_na_polu(self, gracz, pole):
+        self.messages.append(pole.wyswietl_info())
+
+        if pole.typ == "Podatek dochodowy":
+            self.czy_akcja_zakonczona = False
+            self.akcja_zagadek_okno.akcja_podatkowa(gracz, pole)
+            self.akcja_zagadek_okno.przygotuj_zagadke()
+            self.akcja_zagadek_okno.czy_zagadka = True
+
+
         if pole.typ == "Szansa":
+            self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
             karta = self._plansza.karta_szansy.nastepna_karta()
             self.messages.append(f"Szansa: {karta}")
             self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
-        elif pole.typ == "wiezienie":
+        elif pole.typ == "Wiezienie":
+            self.czy_akcja_zakonczona = False
+            self.akcja_wiezienie_okno.czy_wiezienie = True
             self.messages.append("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
@@ -147,6 +175,7 @@ class Gra:
             gracz.uwiezienie = True
 
         elif pole.typ == "Posiadlosc":
+
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
@@ -163,7 +192,6 @@ class Gra:
                 raise Exception("Błąd. Posiadłość jest innym polem") 
 
     def tura(self):
-
         if not self._kolejny_rzut_kostka:
             self.wybierz_kolejnego_gracza()
 
@@ -185,9 +213,12 @@ class Gra:
             )
         else:
             self.messages.append(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
+            self.wybierz_kolejnego_gracza()
+
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
+            self.messages.append(f"Teraz tura gracza: {self._aktualny_gracz}")
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -199,8 +230,12 @@ class Gra:
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
         self.akcja_kart_okno.aktualizacja_zdarzen(event)
         self.akcja_zastaw_okno.aktualizacja_zdarzen(event)
+        self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
+        self.akcja_wiezienie_okno.aktualizacja_zdarzen(event)
 
     def wyswietl(self):
+
+        self.aktualizuj_rozmiar_okien()
         self._plansza.render(self._glowne_okno)
 
         for gracz in self._gracze:
@@ -210,3 +245,22 @@ class Gra:
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
+        self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+        self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
+
+    def aktualizuj_rozmiar_okien(self):
+        self.akcja_pola_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_nieruchomosci_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_kart_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_zagadek_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_wiezienie_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
