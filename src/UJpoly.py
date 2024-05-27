@@ -15,12 +15,12 @@ class Gracz:
         self.uwiezienie = uwiezienie
         
 class Posiadlosc(Pole):
-    def __init__(self, cena: int, czynsz: int, cenaDomu: int, cenaHotelu: int, IDwlasciciela: int):
+    def __init__(self, cena: int, czynsz: int, cenaDomu: int, cenaHotelu: int, wlasciciel: Gracz):
         self.cena = cena
         self.czynsz = czynsz
         self.cenaDomu = cenaDomu
         self.cenaHotelu = cenaHotelu
-        self.IDwlasciciela = IDwlasciciela        
+        self.wlasciciel = wlasciciel        
 
 class Pole:
     def __init__(self, numer: int, grafika: Graphic):
