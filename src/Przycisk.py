@@ -1,5 +1,6 @@
 import pygame
 
+
 class Przycisk:
     def __init__(self, x, y, width, height, color, hover_color, text, text_color):
         self.rect = pygame.Rect(x, y, width, height)
@@ -8,6 +9,9 @@ class Przycisk:
         self.text = text
         self.text_color = text_color
         self.font = pygame.font.Font(None, 36)
+
+    def pobierz_wymiary(self) -> pygame.Rect:
+        return self.rect
 
     def draw(self, screen):
         mouse_pos = pygame.mouse.get_pos()

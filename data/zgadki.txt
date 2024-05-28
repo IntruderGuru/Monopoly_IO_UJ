@@ -1,0 +1,113 @@
+Rozważmy następujące dwa zapytania w SQL: SELECT Kod_dzialu, AVG(Stawka) FROM Pracownicy GROUP BY Kod_dzialu HAVING AVG(Stawka) > 1000;     Oraz:   SELECT Kod_dzialu, AVG(Stawka) FROM Pracownicy WHERE AVG(Stawka) > 1000 GROUP BY Kod_dzialu;   
+Obydwa zapytania są poprawne
+Pierwsze jest poprawne, a drugie niepoprawne
+Pierwsze jest niepoprawne, a drugie poprawne
+B
+
+Indeksy w bazach danych:
+Przyśpieszają wyszukiwanie danych
+Zajmują dodatkowe miejsce w pamięci
+Mogą być założone tylko na pojedynczej kolumnie
+A
+
+Aby zdanie logiczne:    (AB + ~A) + (~AB + A)   było prawdziwe, zmienna A musi mieć wartość:
+Prawda
+Fałsz
+Nie ma to znaczenia
+C
+
+Które z poniższych wyrażeń ma wartość prawda, jeśli A = prawda i B = fałsz?
+~(B + ~B)
+A(B + A)
+~A + B
+B
+
+Aby wstawić komentarz w JavaScripcie, można użyć:
+#
+/
+//
+C
+
+Rozwiń skrót HTTP:
+Hypertext Transfer Protocol
+Hypertext Transactions Transfer Protocol
+Huge Transactions Transfer Protocol
+A
+
+Która linijka przedstawia prawidłowe wyświetlanie tekstu na ekran w Pythonie?
+cout<<"Hello World";
+print("Hello World")
+echo Hello World
+B
+
+Jaki jest ulubiony język programowania Kuby?
+JavaScript
+Python
+C++
+A
+
+Które z poniższych sortowań jest stabilne?
+selection sort
+quicksort
+bubblesort
+C
+
+Ile jest liczb czterocyfrowych takich, aby na 2 miejscu była cyfra nieparzysta?
+2*9*10*10
+2*5*10*10
+5*9*10*10
+C
+
+Która własność wyznacznika macierzy jest nieprawdziwa?\
+det(A^-1) = det(A)
+det(A^T) = det(A)
+dla macierzy tego samego stopnia: det(A*B) = det(A)*det(B)
+A
+
+Które wyrażenie jest fałszywe dla f(x) = x^3 + 4x^2 - 6x + 1
+f(1) = 0
+f(3) = 0
+f'(x) = 3x^2 + 8x - 6
+B
+
+Jakie kryterium zbieżności szeregów nie istnieje?
+kryterium porównawcze
+kryterium Leibniza
+kryterium Banacha
+C
+
+Jakie połączenie kolorystyczne polepsza czytelność tekstu?
+biały i czarny
+ecru i czarny
+ecru i biały
+B
+
+Kto jest twórcą algorytmu wyznaczajęco minimalne drzewo rozpinające dla spójnego grafu nieskierowanego ważonego?
+Borůvka
+Borówka
+Bobruwka
+A
+
+Jaką metodą obliczono dokładną złożoność sortowania przez kopcowanie?
+Metodą kompresji
+Metodą potencjału
+Metodą kosztu sumarycznego
+A
+
+Jakiego języka już się nie naucza w USA?
+Pythona
+Javy
+C++
+C
+
+Informacja to:
+zjawisko osiągnięcia przez źródło informacji dowolnego stanu spośród wszystkich jego możliwych stanów
+najogólniej – właściwość pewnych obiektów, relacja między elementami zbiorów pewnych obiektów, której istotą jest zmniejszanie niepewności (nieokreśloności)
+dziedzina zajmująca się przetwarzaniem wiadomości
+B
+
+Kto może zapytać się studenta czym jest Informatyka?
+Wujek
+Pracodawca
+Siostrzeniec
+C
