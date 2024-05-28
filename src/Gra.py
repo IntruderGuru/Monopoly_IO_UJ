@@ -1,12 +1,12 @@
 import random
 import pygame
 
-from src.okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
-from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
-from src.okno.AkcjaKartOkno import AkcjaKartOkno
-from src.okno.AkcjaZastawOkno import AkcjaZastawOkno
-from src.okno.AkcjaZagadekOkno import AkcjaZagadekOkno
-from src.okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
+from src.Okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
+from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
+from src.Okno.AkcjaKartOkno import AkcjaKartOkno
+from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
+from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
+from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -63,12 +63,21 @@ class StosOtwartychOkien:
 
 
 class Gra:
-    def __init__(self, glowne_okno: pygame.Surface, kontroler_wiadomosci: KontrolerWiadomosci):
+    def __init__(
+        self,
+        glowne_okno: pygame.Surface,
+        kontroler_wiadomosci: KontrolerWiadomosci,
+        liczba_graczy: int,
+        gracze: list[str],
+    ):
         self._glowne_okno: pygame.Surface = glowne_okno
-        self._gracze: list[Gracz] = []
+        self._gracze = [
+            Gracz(name, KWOTA_POCZATKOWA, Pionek(0, PIECE_COLORS[i], "path"))
+            for i, name in enumerate(gracze)
+        ]
         self._plansza: Plansza = Plansza()
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
-        self._liczba_graczy = 0
+        self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
         self._kolejny_rzut_kostka = False
         self._aktualny_gracz = 1
@@ -77,13 +86,12 @@ class Gra:
         self.aktualna_wysokosc_ekranu = 800
         self._kontroler_wiadomosci = kontroler_wiadomosci
 
-
-        #sekcja wizualna
+        # sekcja wizualna
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_gdy_kursor = (150, 150, 150)
         self.kolor_tekstu = (200, 200, 200)
 
-        #sekcja okien
+        # sekcja okien
         self._plansza = Plansza()
 
         self._stos_otwartych_okien = StosOtwartychOkien()
@@ -96,7 +104,9 @@ class Gra:
         self.czy_akcja_zakonczona = True
 
     def przygotuj_graczy(self):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Liczba graczy: {self._liczba_graczy}")
+        self._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Liczba graczy: {self._liczba_graczy}"
+        )
         for i in range(1, self._liczba_graczy + 1):
             pionek = Pionek(0, PIECE_COLORS[i - 1], "path")
             gracz = Gracz(i, self._kwota_poczatkowa, pionek)
@@ -165,24 +175,30 @@ class Gra:
     # def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
     #     self.akcja_pola_okno.czy_akcja_pola = True
 
-    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):  
-        if(posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii"):
+    def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
+        if posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii":
             return
-        if(not gracz.caly_kolor(posiadlosc.kolor)):   
-            self.messages.append("Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku") 
+        if not gracz.caly_kolor(posiadlosc.kolor):
+            self.messages.append(
+                "Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku"
+            )
             return
-        if(posiadlosc.czy_zastawiona):
-            self.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
+        if posiadlosc.czy_zastawiona:
+            self.messages.append(
+                "Nie można kupić domku lub hotelu na zastawionej posiadłości"
+            )
             return
 
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
-            self.messages.append(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
+            self.messages.append(
+                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}"
+            )
             return
-        
+
         self.akcja_nieruchomosci_okno.czy_kupno = True
         self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
-                
+
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self._kontroler_wiadomosci.dodaj_wiadomosc(pole.zwroc_info())
 
@@ -212,7 +228,7 @@ class Gra:
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
-#                 self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
+                #                 self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
 
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
@@ -228,14 +244,16 @@ class Gra:
                     self.messages.append("Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
-                raise Exception("Błąd. Posiadłość jest innym polem") 
+                raise Exception("Błąd. Posiadłość jest innym polem")
 
     def tura(self):
         if not self._kolejny_rzut_kostka:
             self.wybierz_kolejnego_gracza()
 
         if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Ruch gracza: {self._aktualny_gracz}")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Ruch gracza: {self._aktualny_gracz}"
+            )
 
             kostka_pierwsza = random.randint(1, 6)
             kostka_druga = random.randint(1, 6)
@@ -251,7 +269,9 @@ class Gra:
                 self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
             )
         else:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self._aktualny_gracz} jest w więzieniu.")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {self._aktualny_gracz} jest w więzieniu."
+            )
             self.wybierz_kolejnego_gracza()
 
         if not self._kolejny_rzut_kostka:
@@ -272,12 +292,16 @@ class Gra:
         #     self._czy_gracz_ma_ture = False
         #     self._stos_otwartych_okien.usun()
 
-#     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
+    #     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
 
-#         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
+    #         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
 
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona:
+        if (
+            event.type == pygame.KEYDOWN
+            and event.key == pygame.K_SPACE
+            and self.czy_akcja_zakonczona
+        ):
             self.tura()
 
         # if not self._stos_otwartych_okien.czy_pusty():

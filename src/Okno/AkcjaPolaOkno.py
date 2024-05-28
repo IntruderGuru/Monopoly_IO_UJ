@@ -1,4 +1,4 @@
-from src.okno.Okno import Okno
+from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 from enum import Enum
@@ -10,9 +10,36 @@ class AkcjaPolaOkno(Okno):
         self.H = 800
         self.gra = gra
 
-        self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "kupuję", self.gra.kolor_tekstu)
-        self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "licytacja", self.gra.kolor_tekstu)
-        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.6, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "wyjscie", self.gra.kolor_tekstu)
+        self.zakup = Przycisk(
+            self.W * 0.6,
+            self.H * 0.2,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "kupuję",
+            self.gra.kolor_tekstu,
+        )
+        self.licytacja = Przycisk(
+            self.W * 0.6,
+            self.H * 0.4,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "licytacja",
+            self.gra.kolor_tekstu,
+        )
+        self.wyjscie = Przycisk(
+            self.W * 0.6,
+            self.H * 0.6,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "wyjscie",
+            self.gra.kolor_tekstu,
+        )
         self.board_png = None
 
         self.czy_akcja_pola = False
@@ -41,17 +68,24 @@ class AkcjaPolaOkno(Okno):
             self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
             if self.board_png:
-                plansza_wymiary_pozycja = self.board_png.get_rect(center=(self.W // 3, self.H // 2))
+                plansza_wymiary_pozycja = self.board_png.get_rect(
+                    center=(self.W // 3, self.H // 2)
+                )
                 screen.blit(self.board_png, plansza_wymiary_pozycja)
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
         self.gracz_majacy_mozliwosc_zakupu = gracz
-        self.board_png = pygame.transform.scale(pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki), (0.28 * self.W, 0.64 * self.H))
+        self.board_png = pygame.transform.scale(
+            pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
+            (0.28 * self.W, 0.64 * self.H),
+        )
 
     def kup_pole(self):
-        self.posiadlosc_do_zakupu.kup_posiadlosc(self.gra, self.gracz_majacy_mozliwosc_zakupu)
-        
+        self.posiadlosc_do_zakupu.kup_posiadlosc(
+            self.gra, self.gracz_majacy_mozliwosc_zakupu
+        )
+
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
