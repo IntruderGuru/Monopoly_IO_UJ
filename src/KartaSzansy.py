@@ -24,7 +24,14 @@ class KartaSzansy:
             gracz.wykonaj_oplate(gra, self.wartosc)
             
         elif self.typ == "oplata_za_domki":
-            pass
+            liczba_domkow = 0
+            liczba_hoteli = 0
+            for pole in gracz.lista_posiadlosci:
+                    liczba_domkow += pole.liczba_domow
+                    liczba_hoteli += pole.liczba_hoteli
+            cena = liczba_domkow * self.wartosc
+            cena += liczba_hoteli * self.wartosc * 3
+            gracz.wykonaj_oplate(gra, cena)
             
         elif self.typ == "przejdz_na_pole":
             gra.przesun_gracza(self, gracz, self.wartosc)
@@ -35,10 +42,13 @@ class KartaSzansy:
             
         elif self.typ == "cofnij_do_wiezienia":
             gracz.uwiezienie = True
-            gra.przesun_gracza_bez_raportu(gra._gracze[gra._aktualny_gracz - 1], 10)
+            gra.przesun_gracza_bez_raportu(gracz, 10)
+            
+        elif self.typ == "cofnij_na_start":
+            gra.przesun_gracza_bez_raportu(gracz, 0)
         
         elif self.typ == "karta_wyjscie_z_wiezienia":
-            pass
+            gracz.liczba_kart_wyjdz_z_wiezienia += 1
             
 
 class Karty:
@@ -67,20 +77,3 @@ class Karty:
         karta = self.karty[self.current_index]
         self.current_index = (self.current_index + 1) % len(self.karty)
         return karta
-
-
-    def idz_na_start(self, gra, gracz):
-        gra.przesun_gracza_bez_raportu(gracz, 0)
-        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} idzie na Start")
-
-
-    def otrzymujesz_50_od_kazdego(self, gra, gracz):
-        for g in gra._gracze:
-            if g.id != gracz.id:
-                g.kwota -= 50
-                gracz.kwota += 50
-        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} otrzymuje 50 zł od każdego gracza")
-
-    def strata_50_na_naprawy(self, gra, gracz):
-        gracz.kwota -= 50
-        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} traci 50 zł na naprawy")

@@ -200,20 +200,22 @@ class Gra:
             karta.wykonaj_akcje(self, gracz)
 
         elif pole.typ == "Wiezienie":
-            self.czy_akcja_zakonczona = False
-            self.akcja_wiezienie_okno.czy_wiezienie = True
-            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
-            gracz.uwiezienie = True
-
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
+                
+        #TODO: mozliwosc wykupienia sie z wiezienia za pomoca wyrzucenia 2 siodemek na 3 rzuty kostka
         elif pole.typ == "idz_do_wiezienia":
-            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz musi iść na pole 10 (więzienie)")
-            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
-            gracz.uwiezienie = True
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
+            if not gracz.liczba_kart_wyjdz_z_wiezienia:
+                self.czy_akcja_zakonczona = False
+                self.akcja_wiezienie_okno.czy_wiezienie = True
+                gracz.uwiezienie = True
+                self.przesun_gracza_bez_raportu(gracz, 10)
+            else:
+                gracz.liczba_kart_wyjdz_z_wiezienia -= 1
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'")
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
-#                 self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
-
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:

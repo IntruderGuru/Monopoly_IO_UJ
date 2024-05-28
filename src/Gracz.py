@@ -6,6 +6,7 @@ class Gracz:
         self.pozycja = 0
         self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
+        self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
 
@@ -17,6 +18,7 @@ class Gracz:
                 self.tury_w_wiezieniu = 0
                 print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
 
+    #TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych >= len(self.lista_posiadlosci):
             gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz już posiadłości, które mógłbyś zastawić") 

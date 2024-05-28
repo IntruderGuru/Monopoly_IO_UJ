@@ -26,8 +26,6 @@ class Posiadlosc(Pole):
     def pobierz_id_wlasciciela(self):
         return self.IDwlasciciela
 
-      
-    # wyswietl_info
     def wyswietl_info(self, gra):
         czynsz = self.czynsz
         if self.wlasciciel:
