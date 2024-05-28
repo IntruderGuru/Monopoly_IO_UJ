@@ -34,7 +34,9 @@ class KontrolerWiadomosci:
         wiadomosc_index = self.ostatnia_pozycyjnie_wiadomosc_index
         wiadomosc_index_end = (self.ostatnia_pozycyjnie_wiadomosc_index - 1) % KontrolerWiadomosci.MAKSYMALNA_ILOSC_WIADOMOSCI if self.ilosc_wiadomosci == KontrolerWiadomosci.MAKSYMALNA_ILOSC_WIADOMOSCI else self.ilosc_wiadomosci - 1
 
-        while wiadomosc_index != wiadomosc_index_end:
+        wiadomosc_number = 0;
+        while wiadomosc_number < self.ilosc_wiadomosci:
+        # while wiadomosc_index != wiadomosc_index_end:
             wiadomosc = self.wiadomosci[wiadomosc_index]
 
             if isinstance(wiadomosc, str | bytes):
@@ -42,6 +44,7 @@ class KontrolerWiadomosci:
                 y_offset += 40
 
             wiadomosc_index = (wiadomosc_index + 1) % KontrolerWiadomosci.MAKSYMALNA_ILOSC_WIADOMOSCI
+            wiadomosc_number += 1
 
         # for message in self.wiadomosci[-15:]:  # Wyświetla ostatnie 15 komunikatów
         #     if isinstance(message, str | bytes):

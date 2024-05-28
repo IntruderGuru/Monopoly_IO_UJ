@@ -118,7 +118,7 @@ class Gra:
             else:
                 self._gracze[self._aktualny_gracz - 1].odczekajJednaTure()
                 if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
-                    self.messages.append(
+                    self.kontroler_wiadomosci.dodaj_wiadomosc(
                         f"Gracz {self._aktualny_gracz} opuszcza więzienie po dwóch turach"
                     )
                 self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
@@ -169,15 +169,15 @@ class Gra:
         if(posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii"):
             return
         if(not gracz.caly_kolor(posiadlosc.kolor)):   
-            self.messages.append("Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku") 
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku") 
             return
         if(posiadlosc.czy_zastawiona):
-            self.messages.append("Nie można kupić domku lub hotelu na zastawionej posiadłości")
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Nie można kupić domku lub hotelu na zastawionej posiadłości")
             return
 
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
-            self.messages.append(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}")
             return
         
         self.akcja_nieruchomosci_okno.czy_kupno = True
@@ -196,17 +196,17 @@ class Gra:
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
             karta = self._plansza.karta_szansy.nastepna_karta()
-            self.messages.append(f"Szansa: {karta}")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Szansa: {karta}")
             self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
 
         elif pole.typ == "Wiezienie":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
-            self.messages.append("Gracz idzie do więzienia")
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             gracz.uwiezienie = True
 
         elif pole.typ == "idz_do_wiezienia":
-            self.messages.append("Gracz musi iść na pole 10 (więzienie)")
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz musi iść na pole 10 (więzienie)")
             self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             gracz.uwiezienie = True
 
@@ -225,7 +225,7 @@ class Gra:
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
-                    self.messages.append("Gracz płaci czynsz")
+                    self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
                 raise Exception("Błąd. Posiadłość jest innym polem") 
@@ -256,7 +256,7 @@ class Gra:
 
         if not self._kolejny_rzut_kostka:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
-            self.messages.append(f"Teraz tura gracza: {self._aktualny_gracz}")
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Teraz tura gracza: {self._aktualny_gracz}")
 
     def get_messages(self):
         messages = self.messages.copy()

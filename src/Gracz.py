@@ -19,11 +19,11 @@ class Gracz:
 
     def zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych >= len(self.lista_posiadlosci):
-            gra.messages.append("Nie masz już posiadłości, które mógłbyś zastawić") 
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz już posiadłości, które mógłbyś zastawić") 
             gra.akcja_zastaw_okno.czy_zastaw = False
             return
           
-        gra.messages.append("To wszystkie Twoje posiadłości, które możesz zastawić:")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc("To wszystkie Twoje posiadłości, które możesz zastawić:")
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
                 posiadlosc.wyswietl_info(gra)
@@ -36,11 +36,11 @@ class Gracz:
         
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
-            gra.messages.append("Nie masz zastawionych posiadlosci") 
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz zastawionych posiadlosci") 
             gra.akcja_zastaw_okno.czy_zdejmij_zastaw = False
             return
 
-        gra.messages.append("To wszystkie Twoje posiadłości, które masz zastawione:")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc("To wszystkie Twoje posiadłości, które masz zastawione:")
         for posiadlosc in self.lista_posiadlosci:
             if posiadlosc.czy_zastawiona:
                 posiadlosc.wyswietl_info(gra)
@@ -53,7 +53,7 @@ class Gracz:
             self.liczba_zastawionych -= 1
             self.kwota-= cena
         else:
-              gra.messages.append("Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości")
+              gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości")
            
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz(gra)
@@ -69,9 +69,9 @@ class Gracz:
         
     def caly_kolor(self, kolor):
         if kolor == "brazowy" or kolor == "granatowy" or kolor == "pozaWmii":
-            return ile_w_kolorze(kolor) == 2
+            return self.ile_w_kolorze(kolor) == 2
         else:
-            return ile_w_kolorze(kolor) == 3  
+            return self.ile_w_kolorze(kolor) == 3  
               
     def czy_cztery_domki(self, posiadlosc):
         if posiadlosc.liczba_domow < 4 :
@@ -93,7 +93,7 @@ class Gracz:
         
     def wykonaj_oplate(self, gra, cena):
         if (cena > self.kwota):
-                    gra.messages.append(f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?")
+                    gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?")
                     gra.akcja_zastaw_okno.czy_zastaw = True
                     gra.akcja_zastaw_okno.akcja_zastawiania(self)    
         else:
@@ -104,6 +104,6 @@ class Gracz:
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
             self.kwota += 2000
-            gra.messages.append(
+            gra.kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Gracz {self.id} przeszedł przez start. Otrzymuje 2000"
             )

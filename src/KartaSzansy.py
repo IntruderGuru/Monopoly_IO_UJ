@@ -32,28 +32,28 @@ class KartaSzansy:
 
     def otrzymujesz_200(self, gra, gracz):
         gracz.kwota += 200
-        gra.messages.append(f"Gracz {gracz.id} otrzymuje 200 zł")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} otrzymuje 200 zł")
 
     def placisz_100(self, gra, gracz):
         gracz.kwota -= 100
-        gra.messages.append(f"Gracz {gracz.id} płaci 100 zł")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} płaci 100 zł")
 
     def idz_na_start(self, gra, gracz):
         gra.przesun_gracza_bez_raportu(gracz, 0)
-        gra.messages.append(f"Gracz {gracz.id} idzie na Start")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} idzie na Start")
 
     def idz_do_wiezienia(self, gra, gracz):
         gra.przesun_gracza_bez_raportu(gracz, 10)
         gracz.uwiezienie = True
-        gra.messages.append(f"Gracz {gracz.id} idzie do więzienia")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} idzie do więzienia")
 
     def otrzymujesz_50_od_kazdego(self, gra, gracz):
         for g in gra._gracze:
             if g.id != gracz.id:
                 g.kwota -= 50
                 gracz.kwota += 50
-        gra.messages.append(f"Gracz {gracz.id} otrzymuje 50 zł od każdego gracza")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} otrzymuje 50 zł od każdego gracza")
 
     def strata_50_na_naprawy(self, gra, gracz):
         gracz.kwota -= 50
-        gra.messages.append(f"Gracz {gracz.id} traci 50 zł na naprawy")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} traci 50 zł na naprawy")

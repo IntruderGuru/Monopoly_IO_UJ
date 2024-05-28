@@ -48,4 +48,4 @@ class PodatekDochodowy(Pole):
         if(do_zaplaty > gracz.kwota):
             gra.messages.append("Bankrutujesz")
         gracz.kwota -= do_zaplaty
-        gra.messages.append("Podatek został zapłacony, zapłacono: " + str(do_zaplaty))
+        gra.kontroler_wiadomosci.dodaj_wiadomosc("Podatek został zapłacony, zapłacono: " + str(do_zaplaty))
