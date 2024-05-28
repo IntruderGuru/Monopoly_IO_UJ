@@ -39,7 +39,7 @@ class Main:
 
     def start(self):
         self._kontroler_wiadomosci.dodaj_wiadomosc("Witaj w UJpoly!")
-        while self.menu.state != "done":
+        while self.menu.stan != "stop":
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
