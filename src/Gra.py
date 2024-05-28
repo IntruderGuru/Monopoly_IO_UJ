@@ -195,9 +195,9 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            karta = self._plansza.karta_szansy.nastepna_karta()
-            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Szansa: {karta}")
-            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
+            karta = self._plansza.karty.nastepna_karta()
+            karta.wyswietl_tresc(self)
+            karta.wykonaj_akcje(self, gracz)
 
         elif pole.typ == "Wiezienie":
             self.czy_akcja_zakonczona = False
