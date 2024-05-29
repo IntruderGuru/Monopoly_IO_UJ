@@ -8,7 +8,6 @@ class Menu:
         self.liczba_graczy = 0
         self.gracze = []
         self.font = pygame.font.Font(None, 32)
-
         self.H = 800
         self.W = 1200
 
@@ -57,10 +56,10 @@ class Menu:
                 else:
                     self.gracze[-1] += event.unicode
 
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
-
             
     def draw(self, screen):
 
@@ -97,4 +96,5 @@ class Menu:
                 True,
                 (0, 0, 0),
             )
+            screen.blit(text, (self.W * 0.32, self.H * 0.35))
 
