@@ -36,11 +36,11 @@ class KartaSzansy:
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
             ruch = (stara_pozycja - self.wartosc) % 40
-            gra.przesun_gracza(self, gracz, ruch)
+            gra.przesun_gracza(gracz, ruch)
             
         #brak poboru oplaty za przejscie przez start 
         elif self.typ == "cofnij_na_pole":
-            gra.przesun_gracza_bez_raportu(self, gracz, self.wartosc)
+            gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
             
         elif self.typ == "cofnij_do_wiezienia":
             gracz.uwiezienie = True
