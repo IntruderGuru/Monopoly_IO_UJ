@@ -1,6 +1,127 @@
 pobierz
-Tresc szansy
-2000
+Gratulacje! Otrzymałeś/otrzymałaś stypendium rektora. Pobierz 1000
+1000
+
 pobierz
-Tresc szansy
+Twój projekt został doceniony przez zewnętrznego inwestora. Pobierz 1000
+1000
+
+pobierz
+Dostałeś/dostałaś się na staż wakacyjny! Pobierz 2000
+2000
+
+pobierz
+Otrzymałeś/otrzymałaś stypendium naukowe za swoje osiągnięcia! Pobierz 1500
+1500
+
+pobierz
+Odebrałeś/odebrałaś studencką zniżkę na konferencję naukową. Pobierz 100
+100
+
+pobierz
+Postanowiłeś/postanowiłaś wstać o 6.30, aby kupić masło na promocji w Biedronce. Misja zakończyła się sukcesem Pobierz 1000
+1000
+
+pobierz
+KMS zorganizował weekendowy wyjazd. Dzięki temu wydajesz mniej pięniędzy na jedzenie. Zaoszczędziłeś 500
+500
+
+pobierz
+Na wydziałowych targach kariery dostałeś/dostałaś wiele gadżetów. Pobierz 250
 250
+
+pobierz
+W KSI odbywa się wykład z firmą, po którym będzie pizza. Nie robisz obiadu, więc zaoszczędzasz 200
+200
+
+pobierz
+Cały miesiąc piłeś kawę w kołach naukowych. Zaoszczędziłeś 500
+500
+
+pobierz_od_graczy
+Zrobiłeś/zrobiłaś coś niemożliwego! Dzięki Twoim staraniom studenci dostają na uczelnianą pocztę tylko maile, które ich dotyczą. W podzięce każdy student daje Ci 50
+50
+
+pobierz_od_graczy
+Kupiłeś nowe zapasy kawy i 'Puchatka'. To przekonało nowych studentów do dołączenia do koła. Dostajesz od każdego z graczy 100
+100
+
+oplata
+Rozpoczął się nowy semestr. Zapłać 200 składki do KSI
+200
+
+oplata
+Zapomniałeś/zapomniałaś legitymacji studenckiej i nie możesz dostać się do siedziby koła. Kupujesz kawę w automacie za 100
+100
+
+oplata
+Nowy semestr trwa już miesiąc, a Ty dalej nie poszedłeś/nie poszłaś do sekretariatu. W tramwaju kontroler biletów uświadomił Cię, że legitymacja jest już nieważna. Zapłać mandat 1000
+1000
+
+oplata
+Kupiłeś/kupiłaś bilet na koncert na Juwenaliach. Zapłać 500
+500
+
+oplata
+W tym roku podwinęła Ci się noga i musisz wziąć dwa warunki. Musisz wykonać opłatę za powtarzanie przedmiotów w wysokości 1500
+1500
+
+oplata
+Kończysz dzisiaj zajęcia o 19.30 i zapomniałeś/zapomniałaś wziąć ze sobą czegoś do jedzenia. Decydujesz się na obiad na wydziałowej stołówce. Zapłać 150
+150
+
+oplata
+Zgubiłeś/zgubiłaś portfel na spacerze przy Wiśle. Wymiana wszystkich dokumnetów kosztuje Cię 500
+500
+
+przejdz_na_pole
+Podczas przerwy między zajęciami odpoczywasz przy Fontannie. Przejdź na to pole
+29
+
+przejdz_na_pole
+Postanawiasz trochę poćwiczyć. Przejdź na pole 'Drążki za wydziałem'
+12
+
+przejdz_na_pole
+Idziesz ustalać szczegóły projektu ze swoją grupą. Pójdź do 'Ślimaka'
+16
+
+cofnij_na_pole
+Poprawka kolokwium. Cofnij się do sali 0004
+37
+
+cofnij_na_pole
+Zapomniałeś/zapomniałaś kurtki z szatni. Musisz się po nią wrócić
+9
+
+cofnij_na_pole
+Powtarzasz rok. Przejdź na pole 'start'
+0
+
+cofnij_na_pole
+Awaria autobusu, spóźniasz się na zajęcia. Przejdź na pole 'start'
+0
+
+cofnij_do_wiezienia
+Ajajaj, masz kłopoty! Antyplagiatorka wykryła nieprawidłowości w Twoim kodzie na BaCy. Trafiasz od więzienia na 2 tury. Nie masz możliwości wykupienia się kartą 'wyjście z więzienia' ani rzutami kostką
+0 
+
+cofnij_do_wiezienia
+Ajajaj, masz kłopoty! Wykładowca przyłapał Cię na ściąganiu na kolokwium. Trafiasz od więzienia na 2 tury. Nie masz możliwości wykupienia się kartą 'wyjście z więzienia' ani rzutami kostką
+0 
+
+karta_wyjscie_z_wiezienia
+Samorząd Studentów WMiI wstawia się za Tobą u prowadzącego
+0
+
+karta_wyjscie_z_wiezienia
+Prowadzący zajęcia uznaje zaświadczenie wystawione przez prezesa KSI. Możesz ominąć ćwiczenia, by uczestniczyć w Walnym Zgromadzeniu koła
+0
+
+oplata_za_domki
+Rektor UJ zarządził wymianę okien na wydziale. Za każdy domek zapłać 250, a za każdy hotel 750
+250
+
+oplata_za_domki
+Wzrost cen prądu. Za każdy domek zapłać 400, a za każdy hotel 1200
+400

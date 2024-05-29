@@ -34,7 +34,9 @@ class KartaSzansy:
             gracz.wykonaj_oplate(gra, cena)
             
         elif self.typ == "przejdz_na_pole":
-            gra.przesun_gracza(self, gracz, self.wartosc)
+            stara_pozycja = gracz.pionek.numer_pola
+            ruch = (stara_pozycja - self.wartosc) % 40
+            gra.przesun_gracza(self, gracz, ruch)
             
         #brak poboru oplaty za przejscie przez start 
         elif self.typ == "cofnij_na_pole":
@@ -43,9 +45,6 @@ class KartaSzansy:
         elif self.typ == "cofnij_do_wiezienia":
             gracz.uwiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
-            
-        elif self.typ == "cofnij_na_start":
-            gra.przesun_gracza_bez_raportu(gracz, 0)
         
         elif self.typ == "karta_wyjscie_z_wiezienia":
             gracz.liczba_kart_wyjdz_z_wiezienia += 1
@@ -70,7 +69,7 @@ class Karty:
                 wartosc = int(lines[i + 2].strip())
                 karta = KartaSzansy(typ, tresc, wartosc)
                 karty.append(karta)
-                i += 3
+                i += 4
         return karty
 
     def nastepna_karta(self):
