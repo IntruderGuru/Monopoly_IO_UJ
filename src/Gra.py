@@ -209,7 +209,7 @@ class Gra:
                 self.czy_akcja_zakonczona = False
                 self.akcja_wiezienie_okno.czy_wiezienie = True
                 gracz.uwiezienie = True
-                self.przesun_gracza_bez_raportu(gracz, 10)
+                self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             else:
                 gracz.liczba_kart_wyjdz_z_wiezienia -= 1
                 self.kontroler_wiadomosci.dodaj_wiadomosc("Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'")

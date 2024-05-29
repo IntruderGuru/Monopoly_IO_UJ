@@ -63,7 +63,7 @@ class Karty:
             i = 0
             while i < len(lines):
                 if i + 2 >= len(lines):
-                    raise ValueError(f"Unexpected end of file at line {i}. Each card must have exactly 3 lines.")
+                    raise ValueError(f"Problem w linii {i}. Każda karta powinna mieć 3 linie danych.")
                 typ = lines[i].strip()
                 tresc = lines[i + 1].strip()
                 wartosc = int(lines[i + 2].strip())
