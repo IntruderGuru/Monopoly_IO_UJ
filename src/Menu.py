@@ -22,14 +22,13 @@ class Menu:
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
         self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
 
-    def handle_event(self, event):
+    def handle_event(self, event, W, H):
 
-        if event.type == pygame.VIDEORESIZE:
-            self.W = event.w
-            self.H = event.h
-            self.przyciski.aktualizuj_rozmiar(self.W, self.H)
+        self.W = W
+        self.H = H
+        self.przyciski.aktualizuj_rozmiar(self.W, self.H)
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if self.stan == "witaj":
                 if self.przyciski.nowa_gra.is_clicked(event):
                     self.stan = "liczba_graczy"
@@ -65,17 +64,18 @@ class Menu:
                     self.gracze[-1] += event.unicode
 
 
-    def draw(self, screen):
+    def draw(self, screen, W, H):
 
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(None, int(W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
             self.przyciski.nowa_gra.draw(screen)
             self.przyciski.wczytaj_gre.draw(screen)
             self.przyciski.wyjscie.draw(screen)
 
-            self.logo = pygame.transform.scale(self.logo, (0.5 * self.W, 0.3 * self.H))
-            screen.blit(self.logo, (self.W * 0.25, self.H * 0.05))
+            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.3 * H))
+            screen.blit(self.logo, (W * 0.25, H * 0.05))
 
         elif self.stan == "liczba_graczy":
             text = self.font.render("Wprowadź liczbę graczy", True, (0, 0, 0))
@@ -90,7 +90,7 @@ class Menu:
                 (0, 0, 0),
             )
 
-            screen.blit(text, (self.W * 0.32, self.H * 0.35))
+            screen.blit(text, (W * 0.32, H * 0.35))
 
         elif self.stan == "nazwy_graczy":
             text = self.font.render(
@@ -98,7 +98,7 @@ class Menu:
                 True,
                 (0, 0, 0)
             )
-            screen.blit(text, (self.W * 0.3, self.H * 0.35))
+            screen.blit(text, (W * 0.3, H * 0.35))
             
             odstep = 0.05
             ile_wpisanych = len(self.gracze)
@@ -115,8 +115,5 @@ class Menu:
                     True,
                     kolor_czcionki
                 )
-                screen.blit(gracz, (self.W * 0.45, self.H * (0.45 + (i * odstep))))
+                screen.blit(gracz, (W * 0.45, H * (0.45 + (i * odstep))))
             
-    def aktualizuj_rozmiar_okna(self, width, height):
-        self.W = width
-        self.H = height

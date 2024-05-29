@@ -41,16 +41,17 @@ class Main:
         self._kontroler_wiadomosci.dodaj_wiadomosc("Witaj w UJpoly!")
         while self.menu.stan != "stop":
             
-            self.menu.aktualizuj_rozmiar_okna(self._screen_width, self._screen_height)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
-                self.menu.handle_event(event)
+                elif event.type == pygame.VIDEORESIZE:
+                    self._screen_width = event.w
+                    self._screen_height = event.h
+                self.menu.handle_event(event, self._screen_width, self._screen_height)
 
             self._screen.fill((255, 255, 255))
             if self.menu.stan != "stop":
-                self.menu.draw(self._screen)
+                self.menu.draw(self._screen, self._screen_width, self._screen_height)
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Wprowadź liczbę graczy między (2-5) :"
