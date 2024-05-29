@@ -20,6 +20,7 @@ class Menu:
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -42,6 +43,10 @@ class Menu:
                 self.gracze.append("")
 
         elif event.type == pygame.KEYDOWN:
+            
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+
             if self.stan == "nazwy_graczy":
                 if event.key == pygame.K_RETURN:
                     if len(self.gracze) < self.liczba_graczy:
@@ -53,9 +58,6 @@ class Menu:
                 else:
                     self.gracze[-1] += event.unicode
 
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
 
     def draw(self, screen):
 
@@ -86,8 +88,26 @@ class Menu:
 
         elif self.stan == "nazwy_graczy":
             text = self.font.render(
-                "Wprowadź nazwę gracza " + str(len(self.gracze)) + str(self.gracze[-1]),
+                "Wprowadź nazwę gracza: " + str(len(self.gracze)),
                 True,
-                (0, 0, 0),
+                (0, 0, 0)
             )
-            screen.blit(text, (self.W * 0.32, self.H * 0.35))
+            screen.blit(text, (self.W * 0.3, self.H * 0.35))
+            
+            odstep = 0.05
+            ile_wpisanych = len(self.gracze)
+
+            for i in range(0, len(self.gracze)):
+
+                if i < ile_wpisanych - 1:
+                    kolor_czcionki = (96, 247, 134)
+                else:
+                    kolor_czcionki = (70, 70, 70)
+
+                gracz = self.font_gracze.render(
+                    str(self.gracze[i]),
+                    True,
+                    kolor_czcionki
+                )
+                screen.blit(gracz, (self.W * 0.45, self.H * (0.45 + (i * odstep))))
+            
