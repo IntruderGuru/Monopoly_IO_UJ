@@ -1,5 +1,6 @@
 import pygame
 from src.Przycisk import Przycisk
+from src.PrzyciskiMenu import PrzyciskiMenu
 
 class Menu:
     def __init__(self):
@@ -11,59 +12,40 @@ class Menu:
         self.H = 800
         self.W = 1200
 
-        self.nowa_gra = Przycisk(
-            self.W * 0.35,
-            self.H * 0.4,
-            self.W * 0.3,
-            self.H * 0.1,
-            (70,70,70),
-            (150,150,150),
-            "Nowa gra",
-            (200,200,200),
-        )
-
-        self.wczytaj_gre = Przycisk(
-            self.W * 0.35,
-            self.H * 0.52,
-            self.W * 0.3,
-            self.H * 0.1,
-            (70,70,70),
-            (150,150,150),
-            "Wczytaj zapis",
-            (200,200,200),
-        )
-
-        self.wyjscie = Przycisk(
-            self.W * 0.35,
-            self.H * 0.64,
-            self.W * 0.3,
-            self.H * 0.1,
-            (70,70,70),
-            (150,150,150),
-            "Wyjscie",
-            (200,200,200),
-        )
+        self.przyciski = PrzyciskiMenu(self.H, self. W)
 
         self.logo = pygame.transform.scale(
             pygame.image.load("graphics/logo.png"), (0.5 * self.W, 0.5 * self.H)
         )
 
+        self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+
 
     def handle_event(self, event):
 
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
 
             if self.stan == "witaj":
-                if self.nowa_gra.is_clicked(event):
-                    self.stan == "liczba_graczy"
-                elif self.wyjscie.is_clicked(event):
+                if self.przyciski.nowa_gra.is_clicked(event):
+                    self.stan = "liczba_graczy"
+                elif self.przyciski.wyjscie.is_clicked(event):
                     pygame.quit()
                     
             elif self.stan == "liczba_graczy":
-                if pygame.K_2 <= event.key <= pygame.K_5:
-                    self.liczba_graczy = event.key - pygame.K_0
-                    self.stan = "nazwy_graczy"
-                    self.gracze.append("")
+
+                if self.przyciski.two.is_clicked(event):
+                     self.liczba_graczy = 2
+                elif self.przyciski.three.is_clicked(event):
+                     self.liczba_graczy = 3
+                elif self.przyciski.four.is_clicked(event):
+                     self.liczba_graczy = 4
+                elif self.przyciski.five.is_clicked(event):
+                     self.liczba_graczy = 5
+
+                self.stan = "nazwy_graczy"
+                self.gracze.append("")
+
             elif self.stan == "nazwy_graczy":
                 if event.key == pygame.K_RETURN:
                     if len(self.gracze) < self.liczba_graczy:
@@ -75,12 +57,19 @@ class Menu:
                 else:
                     self.gracze[-1] += event.unicode
 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+
+            
     def draw(self, screen):
 
+        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+
         if self.stan == "witaj":
-            self.nowa_gra.draw(screen)
-            self.wczytaj_gre.draw(screen)
-            self.wyjscie.draw(screen)
+            self.przyciski.nowa_gra.draw(screen)
+            self.przyciski.wczytaj_gre.draw(screen)
+            self.przyciski.wyjscie.draw(screen)
 
             self.logo = pygame.transform.scale(
                 self.logo, (0.5 * self.W, 0.3 * self.H)
@@ -89,6 +78,19 @@ class Menu:
 
         elif self.stan == "liczba_graczy":
             text = self.font.render("Wprowadź liczbę graczy", True, (0, 0, 0))
+            self.przyciski.two.draw(screen)
+            self.przyciski.three.draw(screen)
+            self.przyciski.four.draw(screen)
+            self.przyciski.five.draw(screen)
+
+            text = self.font.render(
+                "Wybierz liczbę graczy",
+                True,
+                (0, 0, 0),
+            )
+
+            screen.blit(text, (self.W * 0.32, self.H * 0.35))
+
         elif self.stan == "nazwy_graczy":
             text = self.font.render(
                 "Wprowadź nazwę gracza " + str(len(self.gracze)),
