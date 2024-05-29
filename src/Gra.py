@@ -182,7 +182,22 @@ class Gra:
         
         self.akcja_nieruchomosci_okno.czy_kupno = True
         self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
-                
+     
+    def wykup_z_wiezienia_rzutem(self):
+        liczba_siodemek = 0
+        for x in range(3):
+            kostka_pierwsza = random.randint(1, 6)
+            kostka_druga = random.randint(1, 6)
+            suma += kostka_pierwsza + kostka_druga
+            if suma == 7:
+                liczba_siodemek +=1
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}")
+        if(liczba_siodemek < 2):
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok")
+            return False
+        self.kontroler_wiadomosci.dodaj_wiadomosc(f"Gratulacje! Wyrzuciłeś {liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia")
+        return True
+    
     def wykonaj_akcje_na_polu(self, gracz, pole):
         self.kontroler_wiadomosci.dodaj_wiadomosc(pole.zwroc_info())
 
@@ -195,25 +210,29 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            karta = self._plansza.karta_szansy.nastepna_karta()
-            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Szansa: {karta}")
-            self._plansza.karta_szansy.wykonaj_karte(self, gracz, karta)
+            karta = self._plansza.karty.nastepna_karta()
+            karta.wyswietl_tresc(self)
+            karta.wykonaj_akcje(self, gracz)
 
         elif pole.typ == "Wiezienie":
-            self.czy_akcja_zakonczona = False
-            self.akcja_wiezienie_okno.czy_wiezienie = True
-            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
-            gracz.uwiezienie = True
-
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
+                
+        #TODO: mozliwosc wykupienia sie z wiezienia za pomoca wyrzucenia 2 siodemek na 3 rzuty kostka
         elif pole.typ == "idz_do_wiezienia":
-            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz musi iść na pole 10 (więzienie)")
-            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
-            gracz.uwiezienie = True
+            self.kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
+            if self.wykup_z_wiezienia_rzutem():
+                return
+            if not gracz.liczba_kart_wyjdz_z_wiezienia:
+                self.czy_akcja_zakonczona = False
+                self.akcja_wiezienie_okno.czy_wiezienie = True
+                gracz.uwiezienie = True
+                self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
+            else:
+                gracz.liczba_kart_wyjdz_z_wiezienia -= 1
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'")
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
-#                 self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
-
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:

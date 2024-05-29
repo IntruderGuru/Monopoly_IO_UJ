@@ -6,6 +6,7 @@ class Gracz:
         self.pozycja = 0
         self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
+        self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
 
@@ -17,6 +18,7 @@ class Gracz:
                 self.tury_w_wiezieniu = 0
                 print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
 
+    #TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych >= len(self.lista_posiadlosci):
             gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz już posiadłości, które mógłbyś zastawić") 
@@ -58,7 +60,7 @@ class Gracz:
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz(gra)
         self.wykonaj_oplate(gra, czynsz)
-        posiadlosc.wlasciciel.kwota += czynsz
+        posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
     
     def ile_w_kolorze(self, kolor):
         liczba_w_kolorze = 0
@@ -100,10 +102,11 @@ class Gracz:
             self.kwota -= cena
             return 1
         return 0
+    
+    def dodaj_pieniadze(self, gra, cena):
+        self.kwota += cena
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self.id} otrzymał {cena} pieniędzy")
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
-            self.kwota += 2000
-            gra.kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {self.id} przeszedł przez start. Otrzymuje 2000"
-            )
+            self.dodaj_pieniadze(gra, 2000)
