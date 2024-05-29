@@ -115,19 +115,19 @@ class AkcjaZagadekOkno(Okno):
     def zaktualizuj_rozmiar_czcionki(self):
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
         self.podatek = self.font.render(
-            self.informacja_o_podatku_z_cena, True, (0, 0, 0)
+            self.informacja_o_podatku_z_cena, True, self.gra.kolor_czcionki
         )
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki) - 15)
-        self.info = self.font.render(self.informacja_o_zagadce, True, (0, 0, 0))
-        self.zagadka = self.font.render(self.tekst_zagadki, True, (0, 0, 0))
+        self.info = self.font.render(self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
+        self.zagadka = self.font.render(self.tekst_zagadki, True, self.gra.kolor_czcionki)
 
         # odpowiedzi
-        self.oA = self.font.render(self.odpowiedz_A, True, (0, 0, 0))
-        self.oB = self.font.render(self.odpowiedz_B, True, (0, 0, 0))
-        self.oC = self.font.render(self.odpowiedz_C, True, (0, 0, 0))
+        self.oA = self.font.render(self.odpowiedz_A, True, self.gra.kolor_czcionki)
+        self.oB = self.font.render(self.odpowiedz_B, True, self.gra.kolor_czcionki)
+        self.oC = self.font.render(self.odpowiedz_C, True, self.gra.kolor_czcionki)
 
     def wyswietl_teksty(self, screen):
-        screen.fill((255, 255, 255))
+        screen.fill(self.gra.kolor_tla)
         screen.blit(self.podatek, (self.W * 0.18, self.H * 0.2))
         screen.blit(self.info, (self.W * 0.19, self.H * 0.27))
         screen.blit(self.zagadka, (self.W * 0.2, self.H * 0.4))

@@ -2,6 +2,7 @@ import os
 import pygame
 from src.Gra import Gra
 from src.KontrolerWiadomosci import KontrolerWiadomosci
+from src.Wizualizator import Wizualizator
 from src.Menu import Menu
 
 
@@ -24,14 +25,14 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font)
         self._gra = None  # Gra(self._screen, self._kontroler_wiadomosci)
         self._clock = pygame.time.Clock()
         self._running = True
         self._delta_time = 0
         self.input_text = ""
-        # self.messages = []
-        self.menu = Menu()
+        self.wizualizator = Wizualizator()
+        self.menu = Menu(self.wizualizator)
+        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
 
     def __del__(self):
         pygame.quit()
@@ -49,7 +50,7 @@ class Main:
                     self._screen_height = event.h
                 self.menu.handle_event(event, self._screen_width, self._screen_height)
 
-            self._screen.fill((255, 255, 255))
+            self._screen.fill(self.wizualizator.kolor_tla)
             if self.menu.stan != "stop":
                 self.menu.draw(self._screen, self._screen_width, self._screen_height)
             else:
@@ -61,6 +62,7 @@ class Main:
                     self._kontroler_wiadomosci,
                     self.menu.liczba_graczy,
                     self.menu.gracze,
+                    self.wizualizator
                 )
                 self._petla_gry()
 
@@ -103,11 +105,11 @@ class Main:
         self._gra.aktualizacja()
 
     def render_text(self, text, pos):
-        text_surface = self.font.render(text, True, (0, 0, 0))
+        text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
         self._screen.blit(text_surface, pos)
 
     def _wyswietlaj(self):
-        self._screen.fill(Main._background_color)
+        self._screen.fill(self.wizualizator.kolor_tla)
 
         # Wyświetlanie komunikatów z prawej strony
         # y_offset = 10

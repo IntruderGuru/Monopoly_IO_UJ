@@ -1,17 +1,19 @@
 import pygame
+from src.Wizualizator import Wizualizator
 
 
 class KontrolerWiadomosci:
     MAKSYMALNA_ILOSC_WIADOMOSCI = 15
 
-    def __init__(self, font):
+    def __init__(self, font, wizualizator):
         self.wiadomosci: list[str] = list()
         self.ilosc_wiadomosci = 0
         self.ostatnia_pozycyjnie_wiadomosc_index = 0
         self.font: pygame.font.Font = font
+        self.wizualizator = wizualizator
 
     def _render_text(self, text: str, pos, okno: pygame.Surface):
-        text_surface = self.font.render(text, True, (0, 0, 0))
+        text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
         okno.blit(text_surface, pos)
 
     def dodaj_wiadomosc(self, tresc: str):

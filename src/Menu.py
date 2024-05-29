@@ -1,18 +1,20 @@
 import pygame
 from src.Przycisk import Przycisk
 from src.PrzyciskiMenu import PrzyciskiMenu
+from src.Wizualizator import Wizualizator
 
 
 class Menu:
-    def __init__(self):
+    def __init__(self, wizualizator):
         self.stan = "witaj"
         self.liczba_graczy = 0
         self.gracze = []
         self.font = pygame.font.Font(None, 32)
+        self.wizualizator = wizualizator
         self.H = 800
         self.W = 1200
 
-        self.przyciski = PrzyciskiMenu(self.H, self.W)
+        self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
 
         self.logo = pygame.transform.scale(
             pygame.image.load("graphics/logo.png"), (0.5 * self.W, 0.5 * self.H)
@@ -78,7 +80,7 @@ class Menu:
             screen.blit(self.logo, (W * 0.25, H * 0.05))
 
         elif self.stan == "liczba_graczy":
-            text = self.font.render("Wprowadź liczbę graczy", True, (0, 0, 0))
+            text = self.font.render("Wprowadź liczbę graczy", True, self.wizualizator.kolor_czcionki)
             self.przyciski.two.draw(screen)
             self.przyciski.three.draw(screen)
             self.przyciski.four.draw(screen)
@@ -87,7 +89,7 @@ class Menu:
             text = self.font.render(
                 "Wybierz liczbę graczy",
                 True,
-                (0, 0, 0),
+                self.wizualizator.kolor_czcionki,
             )
 
             screen.blit(text, (W * 0.32, H * 0.35))
@@ -96,7 +98,7 @@ class Menu:
             text = self.font.render(
                 "Wprowadź nazwę gracza: " + str(len(self.gracze)),
                 True,
-                (0, 0, 0)
+                self.wizualizator.kolor_czcionki
             )
             screen.blit(text, (W * 0.3, H * 0.35))
             
@@ -106,9 +108,9 @@ class Menu:
             for i in range(0, len(self.gracze)):
 
                 if i < ile_wpisanych - 1:
-                    kolor_czcionki = (96, 247, 134)
+                    kolor_czcionki = self.wizualizator.kolor_akceptacji_nazwy_gracza
                 else:
-                    kolor_czcionki = (70, 70, 70)
+                    kolor_czcionki = self.wizualizator.kolor_czcionki
 
                 gracz = self.font_gracze.render(
                     str(self.gracze[i]),

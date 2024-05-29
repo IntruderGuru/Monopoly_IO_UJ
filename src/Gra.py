@@ -7,6 +7,7 @@ from src.Okno.AkcjaKartOkno import AkcjaKartOkno
 from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
 from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
 from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
+from src.Wizualizator import Wizualizator
 from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
@@ -29,39 +30,6 @@ PIECE_COLORS: [pygame.Color] = [
 ]
 
 
-class StosOtwartychOkien:
-    def __init__(self):
-        self.stos: list[Okno] = list()
-        self.rozmiar_stosu = 0
-
-    def dodaj(self, okno: Okno):
-        self.stos.append(okno)
-        self.rozmiar_stosu += 1
-
-    def usun(self):
-        if self.rozmiar_stosu > 0:
-            self.stos.pop()
-            self.rozmiar_stosu -= 1
-
-    def gora(self):
-        return self.stos[self.rozmiar_stosu - 1]
-
-    def czy_pusty(self):
-        return self.rozmiar_stosu == 0
-
-    def aktualizacja(self):
-        if not self.czy_pusty():
-            self.gora().aktualizacja()
-
-    def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if not self.czy_pusty():
-            self.gora().aktualizacja_zdarzen(event)
-
-    def wyswietl(self, okno: pygame.Surface):
-        if not self.czy_pusty():
-            self.gora().wyswietl(okno)
-
-
 class Gra:
     def __init__(
         self,
@@ -69,6 +37,7 @@ class Gra:
         kontroler_wiadomosci: KontrolerWiadomosci,
         liczba_graczy: int,
         gracze: list[str],
+        wizualizator
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
@@ -85,16 +54,19 @@ class Gra:
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
         self._kontroler_wiadomosci = kontroler_wiadomosci
+        self.wizualizator = wizualizator
 
         # sekcja wizualna
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_gdy_kursor = (150, 150, 150)
-        self.kolor_tekstu = (200, 200, 200)
+        self.kolor_przycisku = self.wizualizator.kolor_przycisku
+        self.kolor_gdy_kursor = self.wizualizator.kolor_gdy_kursor
+        self.kolor_tekstu = self.wizualizator.kolor_czcionki_na_przycisku
+        self.kolor_tla = self.wizualizator.kolor_tla
+        self.kolor_czcionki = self.wizualizator.kolor_czcionki
+
 
         # sekcja okien
         self._plansza = Plansza()
 
-        self._stos_otwartych_okien = StosOtwartychOkien()
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
         self.akcja_kart_okno = AkcjaKartOkno(self)

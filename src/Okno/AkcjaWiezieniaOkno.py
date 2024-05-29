@@ -43,7 +43,7 @@ class AkcjaWiezieniaOkno(Okno):
         W = self.W
 
         if self.czy_wiezienie:
-            screen.fill((255, 255, 255))
+            screen.fill(self.gra.kolor_tla)
 
             self.zaktualizuj_rozmiar_czcionki()
             self.wyswietl_teksty(screen)

@@ -14,8 +14,8 @@ class AkcjaZastawOkno(Okno):
             pygame.image.load("graphics/zastaw.jpg"), (0.28 * self.W, 0.64 * self.H)
         )
 
-        self.kolor_przycisku = (70, 70, 70)
-        self.kolor_hovera = (150, 150, 150)
+        self.kolor_przycisku = self.gra.kolor_przycisku
+        self.kolor_hovera = self.gra.kolor_gdy_kursor
 
         self.przycisk_zastaw = Przycisk(
             self.W * 0.6,
@@ -25,7 +25,7 @@ class AkcjaZastawOkno(Okno):
             self.kolor_przycisku,
             self.kolor_hovera,
             "zastaw",
-            (255, 255, 255),
+            self.gra.kolor_tla,
         )
         self.wyjscie = Przycisk(
             self.W * 0.6,
@@ -35,7 +35,7 @@ class AkcjaZastawOkno(Okno):
             self.kolor_przycisku,
             self.kolor_hovera,
             "wyjscie",
-            (255, 255, 255),
+            self.gra.kolor_tla,
         )
         self.czy_zastaw = False
 

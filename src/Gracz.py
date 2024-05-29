@@ -69,9 +69,9 @@ class Gracz:
         
     def caly_kolor(self, kolor):
         if kolor == "brazowy" or kolor == "granatowy" or kolor == "pozaWmii":
-            return ile_w_kolorze(kolor) == 2
+            return self.ile_w_kolorze(kolor) == 2
         else:
-            return ile_w_kolorze(kolor) == 3  
+            return self.ile_w_kolorze(kolor) == 3  
               
     def czy_cztery_domki(self, posiadlosc):
         if posiadlosc.liczba_domow < 4 :

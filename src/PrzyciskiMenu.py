@@ -1,18 +1,22 @@
 from src.Przycisk import Przycisk
+from src.Wizualizator import Wizualizator
 
 
 class PrzyciskiMenu:
     
-    def __init__(self, H, W):
+    def __init__(self, H, W, wizualizator):
+
+        self.wizualizator = wizualizator
+
         self.nowa_gra = Przycisk(
             W * 0.35,
             H * 0.4,
             W * 0.3,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "Nowa gra",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.wczytaj_gre = Przycisk(
@@ -20,10 +24,10 @@ class PrzyciskiMenu:
             H * 0.52,
             W * 0.3,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "Wczytaj zapis",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.wyjscie = Przycisk(
@@ -31,10 +35,10 @@ class PrzyciskiMenu:
             H * 0.64,
             W * 0.3,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "Wyjscie",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.two = Przycisk(
@@ -42,10 +46,10 @@ class PrzyciskiMenu:
             H * 0.5,
             H * 0.1,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "2",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.three = Przycisk(
@@ -53,10 +57,10 @@ class PrzyciskiMenu:
             H * 0.5,
             H * 0.1,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "3",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.four = Przycisk(
@@ -64,10 +68,10 @@ class PrzyciskiMenu:
             H * 0.5,
             H * 0.1,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "4",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.five = Przycisk(
@@ -75,10 +79,10 @@ class PrzyciskiMenu:
             H * 0.5,
             H * 0.1,
             H * 0.1,
-            (70,70,70),
-            (150,150,150),
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
             "5",
-            (200,200,200),
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
     def aktualizuj_rozmiar(self, W, H):
