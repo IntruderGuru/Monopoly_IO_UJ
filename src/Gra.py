@@ -11,6 +11,7 @@ from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 from src.KontrolerWiadomosci import KontrolerWiadomosci
+from interface.IGra import IGra
 
 
 KWOTA_POCZATKOWA = 10000
@@ -62,7 +63,7 @@ class StosOtwartychOkien:
             self.gora().wyswietl(okno)
 
 
-class Gra:
+class Gra(IGra):
     def __init__(self, glowne_okno: pygame.Surface, kontroler_wiadomosci: KontrolerWiadomosci):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze: list[Gracz] = []
@@ -295,12 +296,12 @@ class Gra:
 
 #         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
 
-    def aktualizacja_zdarzenia(self, event: pygame.event.Event):
+    def wykonaj_zdarzenie(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona:
             self.tura()
 
-        # if not self._stos_otwartych_okien.czy_pusty():
-        #     self._stos_otwartych_okien.gora().aktualizacja_zdarzen(event)
+            # if not self._stos_otwartych_okien.czy_pusty():
+            #     self._stos_otwartych_okien.gora().aktualizacja_zdarzen(event)
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
@@ -308,6 +309,9 @@ class Gra:
         self.akcja_zastaw_okno.aktualizacja_zdarzen(event)
         self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
         self.akcja_wiezienie_okno.aktualizacja_zdarzen(event)
+
+    def aktualizacja_zdarzenia(self, event: pygame.event.Event):
+        self.wykonaj_zdarzenie(event)
 
     def wyswietl(self):
 
