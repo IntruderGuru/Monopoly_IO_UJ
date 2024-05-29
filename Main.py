@@ -40,6 +40,9 @@ class Main:
     def start(self):
         self._kontroler_wiadomosci.dodaj_wiadomosc("Witaj w UJpoly!")
         while self.menu.stan != "stop":
+            
+            self.menu.aktualizuj_rozmiar_okna(self._screen_width, self._screen_height)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False

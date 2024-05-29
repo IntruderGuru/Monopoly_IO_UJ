@@ -23,7 +23,13 @@ class Menu:
         self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
+
+        if event.type == pygame.VIDEORESIZE:
+            self.W = event.w
+            self.H = event.h
+            self.przyciski.aktualizuj_rozmiar(self.W, self.H)
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if self.stan == "witaj":
                 if self.przyciski.nowa_gra.is_clicked(event):
                     self.stan = "liczba_graczy"
@@ -111,3 +117,6 @@ class Menu:
                 )
                 screen.blit(gracz, (self.W * 0.45, self.H * (0.45 + (i * odstep))))
             
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height
