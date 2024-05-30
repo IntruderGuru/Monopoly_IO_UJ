@@ -40,7 +40,7 @@ class AkcjaPolaOkno(Okno):
             "wyjscie",
             self.gra.kolor_tekstu,
         )
-        self.board_png = None
+        self.pole_png= None
 
         self.czy_akcja_pola = False
         self.gracz_majacy_mozliwosc_zakupu = None
@@ -64,21 +64,42 @@ class AkcjaPolaOkno(Okno):
 
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_akcja_pola:
+            
+            self.zakup.updateSize(
+                self.W * 0.6,
+                self.H * 0.2,
+                self.W * 0.2,
+                self.H * 0.15
+            )
+            self.licytacja.updateSize(
+                self.W * 0.6,
+                self.H * 0.4,
+                self.W * 0.2,
+                self.H * 0.15,
+            )
+            self.wyjscie.updateSize(
+                self.W * 0.6,
+                self.H * 0.6,
+                self.W * 0.2,
+                self.H * 0.15,
+            )
+
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
-            if self.board_png:
-                plansza_wymiary_pozycja = self.board_png.get_rect(
-                    center=(self.W // 3, self.H // 2)
-                )
-                screen.blit(self.board_png, plansza_wymiary_pozycja)
+
+            self.pole_png = pygame.transform.scale(
+                self.pole_png, (0.24 * self.W, 0.64 * self.H)
+            )
+            screen.blit(self.pole_png, (self.W * 0.2, self.H * 0.15))
+
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
         self.gracz_majacy_mozliwosc_zakupu = gracz
-        self.board_png = pygame.transform.scale(
+        self.pole_png = pygame.transform.scale(
             pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
-            (0.28 * self.W, 0.64 * self.H),
+            (0.24 * self.W, 0.64 * self.H),
         )
 
     def kup_pole(self):

@@ -53,7 +53,7 @@ class AkcjaZastawOkno(Okno):
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_zastaw:
             self.pole_png = pygame.transform.scale(
-                self.pole_png, (0.28 * self.W, 0.64 * self.H)
+                self.pole_png, (0.24 * self.W, 0.64 * self.H)
             )
             screen.blit(self.pole_png, (self.W * 0.2, self.H * 0.15))
             self.przycisk_zastaw.updateSize(
@@ -70,3 +70,7 @@ class AkcjaZastawOkno(Okno):
 
     def zastaw(self):
         self.gracz.zastaw_posiadlosci(self.gra)
+
+    def aktualizuj_rozmiar_okna(self, width, height):
+        self.W = width
+        self.H = height

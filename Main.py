@@ -25,7 +25,7 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._gra = None  # Gra(self._screen, self._kontroler_wiadomosci)
+        self._gra = None 
         self._clock = pygame.time.Clock()
         self._running = True
         self._delta_time = 0
@@ -62,7 +62,9 @@ class Main:
                     self._kontroler_wiadomosci,
                     self.menu.liczba_graczy,
                     self.menu.gracze,
-                    self.wizualizator
+                    self.wizualizator,
+                    self._screen_width,
+                    self._screen_height
                 )
                 self._petla_gry()
 
@@ -110,22 +112,11 @@ class Main:
 
     def _wyswietlaj(self):
         self._screen.fill(self.wizualizator.kolor_tla)
-
-        # Wyświetlanie komunikatów z prawej strony
-        # y_offset = 10
-        # for message in self.messages[-15:]:  # Wyświetla ostatnie 15 komunikatów
-        #     self.render_text(message, (self._screen_width - 400, y_offset))
-        #     y_offset += 40
-
         self._kontroler_wiadomosci.wyswietl(self._screen, self._screen_width)
 
         # Wyświetlanie pola tekstowego
-        self.render_text(
-            self.input_text, (self._screen_width - 400, self._screen_height - 50)
-        )
-
+        self.render_text(self.input_text, (self._screen_width - 400, self._screen_height - 50))
         self._gra.wyswietl()
-
         pygame.display.update()
 
     def process_input(self, input_text):

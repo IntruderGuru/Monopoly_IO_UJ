@@ -37,7 +37,9 @@ class Gra:
         kontroler_wiadomosci: KontrolerWiadomosci,
         liczba_graczy: int,
         gracze: list[str],
-        wizualizator
+        wizualizator,
+        szerokosc_ekranu,
+        wysokosc_ekranu
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
@@ -51,8 +53,8 @@ class Gra:
         self._kolejny_rzut_kostka = False
         self._aktualny_gracz = 1
         self.messages = []
-        self.aktualna_szerokosc_ekranu = 1200
-        self.aktualna_wysokosc_ekranu = 800
+        self.aktualna_szerokosc_ekranu = szerokosc_ekranu
+        self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
 
@@ -319,5 +321,8 @@ class Gra:
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
         self.akcja_wiezienie_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_zastaw_okno.aktualizuj_rozmiar_okna(
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )

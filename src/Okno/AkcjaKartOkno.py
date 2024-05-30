@@ -34,6 +34,14 @@ class AkcjaKartOkno(Okno):
             self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
+
+        self.wyjscie.updateSize(
+                self.W * 0.42,
+                self.H * 0.7,
+                self.W * 0.2,
+                self.H * 0.1
+            )
+
         if self.czy_szansa:
             self.szansa_png = pygame.transform.scale(
                 self.szansa_png, (0.64 * self.W, 0.5 * self.H)
