@@ -13,7 +13,7 @@ class Posiadlosc(Pole):
         self.czynsz = czynsz
         self.zastaw_kwota = zastaw
         self.cena_domu = cena_domu
-        self.wlasciciel = None 
+        self.wlasciciel = None
         self.czy_zastawiona = False
         self.liczba_domow = 0
         self.liczba_hoteli = 0
@@ -42,7 +42,7 @@ class Posiadlosc(Pole):
     def oblicz_czynsz(self, gra):
         liczba_w_kolorze = self.wlasciciel.ile_w_kolorze(self.kolor)
         if self.kolor == 'pozaWmii':
-            if  liczba_w_kolorze == 2:
+            if liczba_w_kolorze == 2:
                 return gra._suma_oczek * 10 * 10
             else:
                 return gra._suma_oczek * 4 * 10
@@ -63,9 +63,9 @@ class Posiadlosc(Pole):
             
             cena = 0
             if self.liczba_domow == 1:
-                cena =  5 * self.czynsz
+                cena = 5 * self.czynsz
             elif self.liczba_domow == 2:
-                cena =  15 * self.czynsz
+                cena = 15 * self.czynsz
             elif self.liczba_domow == 3:
                 cena = 45 * self.czynsz
             elif self.liczba_domow == 4:
@@ -73,8 +73,7 @@ class Posiadlosc(Pole):
             
             cena += self.czynsz * 125 * self.liczba_hoteli
             return cena
-            
-    
+
     def kup_posiadlosc(self, gra, gracz):
         x = gracz.wykonaj_oplate(gra, self.cena)
         if x == 1:
