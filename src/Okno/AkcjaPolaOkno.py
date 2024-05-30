@@ -1,4 +1,4 @@
-from src.okno.Okno import Okno
+from src.Okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 from enum import Enum
@@ -10,10 +10,37 @@ class AkcjaPolaOkno(Okno):
         self.H = 800
         self.gra = gra
 
-        self.zakup = Przycisk(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "kupuję", self.gra.kolor_tekstu)
-        self.licytacja = Przycisk(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "licytacja", self.gra.kolor_tekstu)
-        self.wyjscie = Przycisk(self.W * 0.6, self.H * 0.6, self.W * 0.2, self.H * 0.15, self.gra.kolor_przycisku, self.gra.kolor_gdy_kursor, "wyjscie", self.gra.kolor_tekstu)
-        self.board_png = None
+        self.zakup = Przycisk(
+            self.W * 0.6,
+            self.H * 0.2,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "kupuję",
+            self.gra.kolor_tekstu,
+        )
+        self.licytacja = Przycisk(
+            self.W * 0.6,
+            self.H * 0.4,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "licytacja",
+            self.gra.kolor_tekstu,
+        )
+        self.wyjscie = Przycisk(
+            self.W * 0.6,
+            self.H * 0.6,
+            self.W * 0.2,
+            self.H * 0.15,
+            self.gra.kolor_przycisku,
+            self.gra.kolor_gdy_kursor,
+            "wyjscie",
+            self.gra.kolor_tekstu,
+        )
+        self.pole_png= None
 
         self.czy_akcja_pola = False
         self.gracz_majacy_mozliwosc_zakupu = None
@@ -37,21 +64,49 @@ class AkcjaPolaOkno(Okno):
 
     def wyswietl(self, screen: pygame.Surface):
         if self.czy_akcja_pola:
+            
+            self.zakup.updateSize(
+                self.W * 0.6,
+                self.H * 0.2,
+                self.W * 0.2,
+                self.H * 0.15
+            )
+            self.licytacja.updateSize(
+                self.W * 0.6,
+                self.H * 0.4,
+                self.W * 0.2,
+                self.H * 0.15,
+            )
+            self.wyjscie.updateSize(
+                self.W * 0.6,
+                self.H * 0.6,
+                self.W * 0.2,
+                self.H * 0.15,
+            )
+
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
-            if self.board_png:
-                plansza_wymiary_pozycja = self.board_png.get_rect(center=(self.W // 3, self.H // 2))
-                screen.blit(self.board_png, plansza_wymiary_pozycja)
+
+            self.pole_png = pygame.transform.scale(
+                self.pole_png, (0.24 * self.W, 0.64 * self.H)
+            )
+            screen.blit(self.pole_png, (self.W * 0.2, self.H * 0.15))
+
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
         self.gracz_majacy_mozliwosc_zakupu = gracz
-        self.board_png = pygame.transform.scale(pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki), (0.28 * self.W, 0.64 * self.H))
+        self.pole_png = pygame.transform.scale(
+            pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
+            (0.24 * self.W, 0.64 * self.H),
+        )
 
     def kup_pole(self):
-        self.posiadlosc_do_zakupu.kup_posiadlosc(self.gra, self.gracz_majacy_mozliwosc_zakupu)
-        
+        self.posiadlosc_do_zakupu.kup_posiadlosc(
+            self.gra, self.gracz_majacy_mozliwosc_zakupu
+        )
+
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
