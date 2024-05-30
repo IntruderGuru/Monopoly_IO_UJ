@@ -146,9 +146,6 @@ class Gra:
         stara_pozycja = gracz.pionek.numer_pola
         gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
 
-    # def akcja_dostepnego_pola(self, gracz, pole, nr_pola=1):
-    #     self.akcja_pola_okno.czy_akcja_pola = True
-
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         if posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii":
             return
@@ -202,7 +199,6 @@ class Gra:
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
-                #                 self._stos_otwartych_okien.dodaj(self._akcja_pola_okno)
 
                 posiadlosc = pole
                 posiadlosc.wyswietl_info(self)
@@ -252,24 +248,6 @@ class Gra:
             self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
             self.messages.append(f"Teraz tura gracza: {self._aktualny_gracz}")
 
-    def get_messages(self):
-        messages = self.messages.copy()
-        self.messages.clear()
-        return messages
-
-    def aktualizacja(self):
-        pass
-        # if not self._stos_otwartych_okien.czy_pusty():
-        #     self._stos_otwartych_okien.gora().aktualizacja()
-
-        # if not self.akcja_pola_okno.czy_koniec_zakupu():
-        #     self._czy_gracz_ma_ture = False
-        #     self._stos_otwartych_okien.usun()
-
-    #     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
-
-    #         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
-
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         if (
             event.type == pygame.KEYDOWN
@@ -277,9 +255,6 @@ class Gra:
             and self.czy_akcja_zakonczona
         ):
             self.tura()
-
-        # if not self._stos_otwartych_okien.czy_pusty():
-        #     self._stos_otwartych_okien.gora().aktualizacja_zdarzen(event)
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
@@ -295,10 +270,6 @@ class Gra:
 
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
-
-        # self._akcja_pola_okno.wyswietl(self._glowne_okno)
-        # if not self._stos_otwartych_okien.czy_pusty():
-        #     self._stos_otwartych_okien.gora().wyswietl(self._glowne_okno)
 
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)

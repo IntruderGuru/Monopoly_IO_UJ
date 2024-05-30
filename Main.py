@@ -104,7 +104,6 @@ class Main:
 
     def _aktualizuj(self, delta_time):
         _delta_time = delta_time
-        self._gra.aktualizacja()
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
