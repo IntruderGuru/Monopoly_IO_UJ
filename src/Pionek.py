@@ -16,7 +16,7 @@ class Vector2(NamedTuple):
 
 
 class Pionek:
-    MIN_LICZBA_OCZEK = 1
+    MIN_LICZBA_OCZEK = 2
     MAX_LICZBA_OCZEK = 12
     DLUGOSC_SCIANKI_W_POLACH = 10
     LICZBA_POL = 40
