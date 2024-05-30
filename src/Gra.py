@@ -11,7 +11,7 @@ from src.Plansza import Plansza
 from src.Posiadlosc import *
 from src.Pionek import Pionek
 from src.KontrolerWiadomosci import KontrolerWiadomosci
-from interface.IGra import IGra
+from src.interface.IGra import IGra
 
 
 KWOTA_POCZATKOWA = 10000
@@ -77,6 +77,7 @@ class Gra(IGra):
         self.aktualna_szerokosc_ekranu = 1200
         self.aktualna_wysokosc_ekranu = 800
         self.kontroler_wiadomosci = kontroler_wiadomosci
+        self.font = pygame.font.Font(None, 20)
 
 
         #sekcja wizualna
@@ -95,6 +96,10 @@ class Gra(IGra):
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
         self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
         self.czy_akcja_zakonczona = True
+
+        # feature_testingMechanism
+        self.input_text = ""
+        print("HELLO from Gra")
 
     def przygotuj_graczy(self):
         self.kontroler_wiadomosci.dodaj_wiadomosc(f"Liczba graczy: {self._liczba_graczy}")
@@ -283,6 +288,7 @@ class Gra(IGra):
         self.messages.clear()
         return messages
 
+    # override
     def aktualizacja(self):
         pass
         # if not self._stos_otwartych_okien.czy_pusty():
@@ -292,13 +298,36 @@ class Gra(IGra):
         #     self._czy_gracz_ma_ture = False
         #     self._stos_otwartych_okien.usun()
 
-#     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
+    def process_input(self, input_text):
+        self.kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
+        if input_text.isdigit():
+            liczba_graczy = int(input_text)
+            if liczba_graczy >= 2 and liczba_graczy <= 5:
+                self._liczba_graczy = liczba_graczy
+                self.kontroler_wiadomosci.dodaj_wiadomosc(f"Ustaw liczbe graczy na {liczba_graczy}")
+                self.przygotuj_graczy()
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Naciśnij spację, aby rzucić kostką")
+            else:
+                self.kontroler_wiadomosci.dodaj_wiadomosc("Nieprawidłowa liczba graczy.")
+        else:
+            self.kontroler_wiadomosci.dodaj_wiadomosc(f"Nieznana komenda: {input_text}")
 
-#         # self._akcja_pola_okno.aktulizacja_zdarzen(event)
-
+    # metoda pomocnicza w celu wykonania pojdynczego zdarzenia
+    # oddzielona od aktualizacja_zdarzenia, na rzecz architektury i wykorzystania klasy GraProxy(event injection, tracking)
     def wykonaj_zdarzenie(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona:
             self.tura()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                self.process_input(self.input_text)
+                self.input_text = ""
+            elif event.key == pygame.K_BACKSPACE:
+                self.input_text = self.input_text[:-1]
+            else:
+                self.input_text += event.unicode
+        elif event.type == pygame.VIDEORESIZE:
+            self.aktualna_szerokosc_ekranu = event.w
+            self.aktualna_wysokosc_ekranu = event.h
 
             # if not self._stos_otwartych_okien.czy_pusty():
             #     self._stos_otwartych_okien.gora().aktualizacja_zdarzen(event)
@@ -310,12 +339,23 @@ class Gra(IGra):
         self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
         self.akcja_wiezienie_okno.aktualizacja_zdarzen(event)
 
+    # override
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         self.wykonaj_zdarzenie(event)
 
+    def render_text(self, text, pos):
+        text_surface = self.font.render(text, True, (0, 0, 0))
+        self._glowne_okno.blit(text_surface, pos)
+
+    # override
     def wyswietl(self):
 
         self.aktualizuj_rozmiar_okien()
+
+        self.render_text(
+            self.input_text, (self.aktualna_szerokosc_ekranu - 400, self.aktualna_wysokosc_ekranu - 50)
+        )
+
         self._plansza.render(self._glowne_okno)
 
         for gracz in self._gracze:
