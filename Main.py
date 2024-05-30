@@ -8,7 +8,6 @@ from src.Menu import Menu
 
 class Main:
     _SEC_TO_MS = 1000
-    _background_color = pygame.Color(77,77,115,255)
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
