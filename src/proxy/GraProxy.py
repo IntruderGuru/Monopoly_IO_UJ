@@ -17,7 +17,7 @@ class Kolejka:
         self._kolejka.append(element)
 
     def pobierz(self) -> pygame.event.Event | None:
-        if self.czy_pusta():
+        if not self.czy_pusta():
             return self._kolejka.pop(0)
 
         return None
