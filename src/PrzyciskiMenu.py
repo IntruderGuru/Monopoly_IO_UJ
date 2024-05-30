@@ -3,7 +3,7 @@ from src.Wizualizator import Wizualizator
 
 
 class PrzyciskiMenu:
-    
+
     def __init__(self, H, W, wizualizator):
 
         self.wizualizator = wizualizator
@@ -86,6 +86,12 @@ class PrzyciskiMenu:
         )
 
     def aktualizuj_rozmiar(self, W, H):
+        # skalowanie do jakiejsc czesci, testowo
+        MIN_W = 500
+        MIN_H = 400
+        W = max(W, MIN_W)
+        H = max(H, MIN_H)
+
         self.nowa_gra.updateSize(W * 0.35,
             H * 0.4,
             W * 0.3,

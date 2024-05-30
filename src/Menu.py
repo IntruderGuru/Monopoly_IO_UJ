@@ -10,7 +10,7 @@ class Menu:
         self.liczba_graczy = 0
         self.gracze = []
         self.font = pygame.font.Font(None, 32)
-        self.wizualizator = wizualizator
+        self.wizualizator: Wizualizator = wizualizator
         self.H = 800
         self.W = 1200
 
@@ -46,8 +46,10 @@ class Menu:
                     self.liczba_graczy = 4
                 elif self.przyciski.five.is_clicked(event):
                     self.liczba_graczy = 5
-                self.stan = "nazwy_graczy"
-                self.gracze.append("")
+
+                if self.liczba_graczy > 1:
+                    self.stan = "nazwy_graczy"
+                    self.gracze.append("")
 
         elif event.type == pygame.KEYDOWN:
             
@@ -80,7 +82,6 @@ class Menu:
             screen.blit(self.logo, (W * 0.25, H * 0.05))
 
         elif self.stan == "liczba_graczy":
-            text = self.font.render("Wprowadź liczbę graczy", True, self.wizualizator.kolor_czcionki)
             self.przyciski.two.draw(screen)
             self.przyciski.three.draw(screen)
             self.przyciski.four.draw(screen)

@@ -1,12 +1,12 @@
 import random
 import pygame
 
-from src.Okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
-from src.Okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
-from src.Okno.AkcjaKartOkno import AkcjaKartOkno
-from src.Okno.AkcjaZastawOkno import AkcjaZastawOkno
-from src.Okno.AkcjaZagadekOkno import AkcjaZagadekOkno
-from src.Okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
+from src.okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
+from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
+from src.okno.AkcjaKartOkno import AkcjaKartOkno
+from src.okno.AkcjaZastawOkno import AkcjaZastawOkno
+from src.okno.AkcjaZagadekOkno import AkcjaZagadekOkno
+from src.okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
 from src.Wizualizator import Wizualizator
 from src.Plansza import Plansza
 from src.Posiadlosc import *

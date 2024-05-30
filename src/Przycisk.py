@@ -26,7 +26,7 @@ class Przycisk:
 
     def is_clicked(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and self.rect.collidepoint(event.pos):
+            if event.button == pygame.BUTTON_LEFT and self.rect.collidepoint(event.pos):
                 return True
         return False
 
