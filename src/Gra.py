@@ -147,6 +147,7 @@ class Gra:
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
+
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
         gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
