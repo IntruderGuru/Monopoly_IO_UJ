@@ -31,4 +31,7 @@ class Przycisk:
         return False
 
     def updateSize(self, x, y, width, height):
+        if width <= 0 or height <= 0:
+            return
+
         self.rect = pygame.Rect(x, y, width, height)
