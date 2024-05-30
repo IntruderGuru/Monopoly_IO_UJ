@@ -4,8 +4,8 @@ import pygame
 class Przycisk:
     def __init__(self, x, y, width, height, color, hover_color, text, text_color):
         self.rect = pygame.Rect(x, y, width, height)
-        self.color = color
-        self.hover_color = hover_color
+        self.color: pygame.Color = color
+        self.hover_color: pygame.Color = hover_color
         self.text = text
         self.text_color = text_color
         self.font = pygame.font.Font(None, 36)
