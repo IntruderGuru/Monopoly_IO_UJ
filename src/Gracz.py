@@ -6,6 +6,7 @@ class Gracz:
         self.pozycja = 0
         self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
+        self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
 
@@ -17,13 +18,14 @@ class Gracz:
                 self.tury_w_wiezieniu = 0
                 print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
 
+    #TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych >= len(self.lista_posiadlosci):
-            gra.messages.append("Nie masz już posiadłości, które mógłbyś zastawić") 
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz już posiadłości, które mógłbyś zastawić") 
             gra.akcja_zastaw_okno.czy_zastaw = False
             return
           
-        gra.messages.append("To wszystkie Twoje posiadłości, które możesz zastawić:")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc("To wszystkie Twoje posiadłości, które możesz zastawić:")
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
                 posiadlosc.wyswietl_info(gra)
@@ -36,11 +38,11 @@ class Gracz:
         
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
-            gra.messages.append("Nie masz zastawionych posiadlosci") 
+            gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz zastawionych posiadlosci") 
             gra.akcja_zastaw_okno.czy_zdejmij_zastaw = False
             return
 
-        gra.messages.append("To wszystkie Twoje posiadłości, które masz zastawione:")
+        gra.kontroler_wiadomosci.dodaj_wiadomosc("To wszystkie Twoje posiadłości, które masz zastawione:")
         for posiadlosc in self.lista_posiadlosci:
             if posiadlosc.czy_zastawiona:
                 posiadlosc.wyswietl_info(gra)
@@ -53,12 +55,12 @@ class Gracz:
             self.liczba_zastawionych -= 1
             self.kwota-= cena
         else:
-              gra.messages.append("Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości")
+              gra.kontroler_wiadomosci.dodaj_wiadomosc("Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości")
            
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz(gra)
         self.wykonaj_oplate(gra, czynsz)
-        posiadlosc.wlasciciel.kwota += czynsz
+        posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
     
     def ile_w_kolorze(self, kolor):
         liczba_w_kolorze = 0
@@ -93,17 +95,18 @@ class Gracz:
         
     def wykonaj_oplate(self, gra, cena):
         if (cena > self.kwota):
-                    gra.messages.append(f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?")
+                    gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?")
                     gra.akcja_zastaw_okno.czy_zastaw = True
                     gra.akcja_zastaw_okno.akcja_zastawiania(self)    
         else:
             self.kwota -= cena
             return 1
         return 0
+    
+    def dodaj_pieniadze(self, gra, cena):
+        self.kwota += cena
+        gra.kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self.id} otrzymał {cena} pieniędzy")
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
-            self.kwota += 2000
-            gra.messages.append(
-                f"Gracz {self.id} przeszedł przez start. Otrzymuje 2000"
-            )
+            self.dodaj_pieniadze(gra, 2000)

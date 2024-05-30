@@ -3,7 +3,7 @@ import pygame.color
 from src.Pole import Pole
 from src.Pionek import Pionek
 from src.Posiadlosc import Posiadlosc
-from src.KartaSzansy import KartaSzansy
+from src.KartaSzansy import *
 from src.PodatekDochodowy import Zagadki
 from src.PodatekDochodowy import PodatekDochodowy
 
@@ -57,7 +57,7 @@ class Plansza:
 
     def __init__(self):
         self.plansza: [Pole] = self.inicializacja_planszy()
-        self.karta_szansy = KartaSzansy()
+        self.karty = Karty()
         self.zagadki = Zagadki()
         self.wczytaj_grafiki()
 
