@@ -25,7 +25,7 @@ class Main:
         self._screen_width = self._screen_info.current_w
         self._screen_height = self._screen_info.current_h
 
-        self._gra = None 
+        self._gra = None
         self._clock = pygame.time.Clock()
         self._running = True
         self._delta_time = 0
@@ -41,7 +41,7 @@ class Main:
     def start(self):
         self._kontroler_wiadomosci.dodaj_wiadomosc("Witaj w UJpoly!")
         while self.menu.stan != "stop":
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
@@ -64,7 +64,7 @@ class Main:
                     self.menu.gracze,
                     self.wizualizator,
                     self._screen_width,
-                    self._screen_height
+                    self._screen_height,
                 )
                 self._petla_gry()
 
@@ -114,7 +114,9 @@ class Main:
         self._kontroler_wiadomosci.wyswietl(self._screen, self._screen_width)
 
         # Wyświetlanie pola tekstowego
-        self.render_text(self.input_text, (self._screen_width - 400, self._screen_height - 50))
+        self.render_text(
+            self.input_text, (self._screen_width - 400, self._screen_height - 50)
+        )
         self._gra.wyswietl()
         pygame.display.update()
 
