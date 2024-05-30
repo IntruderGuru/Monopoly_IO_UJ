@@ -22,7 +22,7 @@ class Pole:
     MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
     # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
     DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
-    KOLOR_TLA = pygame.color.THECOLORS["red"]
+    KOLOR_TLA = pygame.Color(28,28,30,255)
     OFF_SET: Vector2 = Vector2(100, 100)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
@@ -89,9 +89,21 @@ class Pole:
     def render(self, screen):
         szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
         wysokosc_aktualny_kierunek = self.wymiary.y if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.x
+        
+        if self.numer in (0, 10, 20, 30):
+            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.DUZE_POLE_WYMIARY)
+        elif self.kierunek_sciany == KierunekPol.Dol:
+            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
+        elif self.kierunek_sciany == KierunekPol.Lewo:
+            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
+            pole_surface = pygame.transform.rotate(pole_surface, 270)
+        elif self.kierunek_sciany == KierunekPol.Gora:
+            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
+            pole_surface = pygame.transform.rotate(pole_surface, 180)
+        elif self.kierunek_sciany == KierunekPol.Prawo:
+            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
+            pole_surface = pygame.transform.rotate(pole_surface, 90)
 
-        my_font = pygame.font.SysFont('Arial', 15)
-        text_surface = my_font.render(str(self.numer), False, pygame.color.THECOLORS["black"])
-        screen.blit(text_surface, (self.pozycja.x, self.pozycja.y))
+        screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
         pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(self.pozycja.x, self.pozycja.y, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)

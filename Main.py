@@ -6,7 +6,7 @@ from src.KontrolerWiadomosci import KontrolerWiadomosci
 
 class Main:
     _SEC_TO_MS = 1000
-    _background_color = pygame.color.THECOLORS["white"]
+    _background_color = pygame.Color(77,77,115,255)
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
