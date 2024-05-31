@@ -7,9 +7,19 @@ class Statystyka:
         self.ilosc_domkow = 0
         self.ilosc_hoteli = 0
 
-    def aktualizuj_statystyke(self, pieniadze, kupil_posiadlosc, kupil_dom, kupil_hotel):
+    def aktualizuj_stan_pieniedzy(self, pieniadze):
         self.pieniadze = pieniadze
-        self.ilosc_posiadlosci += kupil_posiadlosc
-        self.ilosc_domkow += kupil_dom
-        self.ilosc_hoteli += kupil_hotel
+
+    def dodaj_posiadlosc(self):
+        self.ilosc_posiadlosci += 1
+
+    def dodaj_hotel(self, ile):
+        self.ilosc_hoteli += ile
+
+    def dodaj_domek(self, ile):
+        self.ilosc_domkow += ile
+
+    def odejmij_domek(self, ile):
+        self.ilosc_domkow -= ile
+
     

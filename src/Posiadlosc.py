@@ -89,6 +89,7 @@ class Posiadlosc(Pole):
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Gratulacje, dokonałeś zakupu {self.nazwa}!"
             )
+            gracz.statystyka.dodaj_posiadlosc()
             gra.akcja_pola_okno.czy_akcja_pola = False
         elif not gra.akcja_zastaw_okno.czy_zastaw:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
@@ -98,9 +99,12 @@ class Posiadlosc(Pole):
     def kup_dom(self, gra, gracz, ile_domow):
         if gracz.wykonaj_oplate(gra, self.cena_domu * ile_domow):
             self.liczba_domow += ile_domow
+            gracz.statystyka.dodaj_dom(ile_domow)
             while self.liczba_domow >= 5:
                 self.liczba_domow -= 5
+                gracz.statystyka.odejmij_dom(5)
                 self.liczba_hoteli += 1
+                gracz.statystyka.dodaj_hotel(1)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli"
             )
@@ -111,6 +115,7 @@ class Posiadlosc(Pole):
         if self.liczba_domow > 0:
             gracz.kwota = gracz.kwota + self.cena_domu * KOSZT_SPRZEDAZY
             self.liczba_domow -= 1
+            gracz.statystyka.odejmij_dom(1)
 
     def sprzedaj_hotel(self, gra, gracz):
         if self.liczba_hoteli > 0:
@@ -119,3 +124,4 @@ class Posiadlosc(Pole):
                 + (self.liczba_hoteli * 5 * self.cena_domu) * KOSZT_SPRZEDAZY
             )
             self.liczba_hoteli -= 1
+            gracz.statystyka.odejmij_hotel(1)

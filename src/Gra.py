@@ -376,13 +376,13 @@ class Gra:
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
 
+        self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
         self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
-        self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(

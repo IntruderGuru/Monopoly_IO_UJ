@@ -42,6 +42,7 @@ class Gracz:
         self.lista_posiadlosci[x].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[x].zastaw_kwota
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
@@ -69,6 +70,7 @@ class Gracz:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości"
             )
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz(gra)
@@ -115,7 +117,10 @@ class Gracz:
             gra.akcja_zastaw_okno.akcja_zastawiania(self)
         else:
             self.kwota -= cena
+            self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
             return 1
+        
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
         return 0
 
     def dodaj_pieniadze(self, gra, cena):
@@ -123,6 +128,7 @@ class Gracz:
         gra._kontroler_wiadomosci.dodaj_wiadomosc(
             f"Gracz {self.id} otrzymał {cena} pieniędzy"
         )
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
