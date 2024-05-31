@@ -30,6 +30,18 @@ class Pionek:
     # dla sciany = ilosc malych pol + jedno duze pole
     DLUGOSC_SCIANY_W_POLACH = 10
 
+    def __init__(self, numer_pola: int, color: pygame.color, grafika: str):
+        self.numer_pola = numer_pola
+        self.color = color
+        self.sciezka_do_grafiki = grafika
+        self.kierunek: KierunekPol = KierunekPol.Gora
+        self.wymiary: Vector2 = Vector2(20, 20)
+        self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
+        )
+
+        
     @staticmethod
     def oblicz_nowa_pozycje(numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
@@ -56,13 +68,6 @@ class Pionek:
 
         return Vector2(lewo, gora)
 
-    def __init__(self, numer_pola: int, color: pygame.color, grafika: str):
-        self.numer_pola = numer_pola
-        self.color = color
-        self.grafika = grafika
-        self.kierunek: KierunekPol = KierunekPol.Gora
-        self.wymiary: Vector2 = Vector2(20, 20)
-        self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
     def przesun(self, liczba_pol: int) -> bool:
         if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
@@ -75,5 +80,6 @@ class Pionek:
         return False
 
     def wyswietl(self, okno: pygame.Surface):
-        pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
+        #pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
+        okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
 

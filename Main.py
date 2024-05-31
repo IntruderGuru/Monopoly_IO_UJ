@@ -85,14 +85,6 @@ class Main:
             if event.type == pygame.QUIT:
                 self._running = False
                 break
-            # elif event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_RETURN:
-            #         self.process_input(self.input_text)
-            #         self.input_text = ""
-            #     elif event.key == pygame.K_BACKSPACE:
-            #         self.input_text = self.input_text[:-1]
-            #     else:
-            #         self.input_text += event.unicode
             elif event.type == pygame.VIDEORESIZE:
                 self._screen_width = event.w
                 self._screen_height = event.h
@@ -108,29 +100,8 @@ class Main:
 
     def _wyswietlaj(self):
         self._screen.fill(self.wizualizator.kolor_tla)
-        #self._kontroler_wiadomosci.wyswietl(self._screen, self._screen_width)
-
-        # Wyświetlanie pola tekstowego
-        # self.render_text(
-        #     self.input_text, (self._screen_width - 400, self._screen_height - 50)
-        # )
-
         self._gra.wyswietl()
         pygame.display.update()
-
-    # def process_input(self, input_text):
-    #     self._kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
-    #     if input_text.isdigit():
-    #         liczba_graczy = int(input_text)
-    #         if liczba_graczy >= 2 and liczba_graczy <= 5:
-    #             self._gra._liczba_graczy = liczba_graczy
-    #             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Ustaw liczbe graczy na {liczba_graczy}")
-    #             self._gra.przygotuj_graczy()
-    #             self._kontroler_wiadomosci.dodaj_wiadomosc("Naciśnij spację, aby rzucić kostką")
-    #         else:
-    #             self._kontroler_wiadomosci.dodaj_wiadomosc("Nieprawidłowa liczba graczy.")
-    #     else:
-    #         self._kontroler_wiadomosci.dodaj_wiadomosc(f"Nieznana komenda: {input_text}")
 
 
 if __name__ == "__main__":

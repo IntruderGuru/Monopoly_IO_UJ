@@ -45,7 +45,7 @@ class Gra:
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
-            Gracz(name, KWOTA_POCZATKOWA, Pionek(0, PIECE_COLORS[i], "path"))
+            Gracz(name, KWOTA_POCZATKOWA, Pionek(0, PIECE_COLORS[i], "graphics/pionek/PionekColor" + str(i + 1) + ".png"))
             for i, name in enumerate(gracze)
         ]
         self._plansza: Plansza = Plansza()
@@ -84,19 +84,6 @@ class Gra:
         self.input_text = ""
         print("HELLO from Gra")
 
-    def przygotuj_graczy(self):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Liczba graczy: {self._liczba_graczy}"
-        )
-        for i in range(1, self._liczba_graczy + 1):
-            pionek = Pionek(0, PIECE_COLORS[i - 1], "path")
-            gracz = Gracz(i, self._kwota_poczatkowa, pionek)
-            gracz.pozycja = 0
-            self._gracze.append(gracz)
-            color = PIECE_COLORS[i - 1]
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {i} gotowy z pionkiem w kolorze {color.r}, {color.g}, {color.b}"
-            )
 
     def wybierz_kolejnego_gracza(self):
         self._suma_oczek = 0

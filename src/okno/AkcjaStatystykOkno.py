@@ -35,6 +35,12 @@ class AkcjaStatystykOkno(Okno):
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)
                 self.zaktualizuj_tekst_i_rozmiar(gracz, nazwa_gracza)
 
+                self.zdjecie_pionek = pygame.transform.scale(
+                    pygame.image.load(gracz.pionek.sciezka_do_grafiki), (0.02 * self.W, 0.02 * self.W)
+                )
+
+                screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+
                 screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
                 screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.12), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
                 screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
