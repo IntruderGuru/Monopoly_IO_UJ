@@ -108,7 +108,7 @@ class Main:
 
     def _wyswietlaj(self):
         self._screen.fill(self.wizualizator.kolor_tla)
-        self._kontroler_wiadomosci.wyswietl(self._screen, self._screen_width)
+        #self._kontroler_wiadomosci.wyswietl(self._screen, self._screen_width)
 
         # Wyświetlanie pola tekstowego
         # self.render_text(

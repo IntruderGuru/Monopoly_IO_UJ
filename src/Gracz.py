@@ -1,3 +1,5 @@
+from src.Statystyka import Statystyka
+
 class Gracz:
     def __init__(self, id, kwota, pionek):
         self.id = id
@@ -9,6 +11,7 @@ class Gracz:
         self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
+        self.statystyka = Statystyka(kwota, self.id)
 
     def odczekajJednaTure(self):
         if self.uwiezienie:

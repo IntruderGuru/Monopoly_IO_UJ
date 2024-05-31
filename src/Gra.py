@@ -1,12 +1,13 @@
 import random
 import pygame
 
-from src.okno.AkcjaPolaOkno import Okno, AkcjaPolaOkno
+from src.okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
 from src.okno.AkcjaKartOkno import AkcjaKartOkno
 from src.okno.AkcjaZastawOkno import AkcjaZastawOkno
 from src.okno.AkcjaZagadekOkno import AkcjaZagadekOkno
 from src.okno.AkcjaWiezieniaOkno import AkcjaWiezieniaOkno
+from src.okno.AkcjaStatystykOkno import AkcjaStatystykOkno
 from src.Wizualizator import Wizualizator
 from src.Plansza import Plansza
 from src.Posiadlosc import *
@@ -76,6 +77,7 @@ class Gra:
         self.akcja_zastaw_okno = AkcjaZastawOkno(self)
         self.akcja_zagadek_okno = AkcjaZagadekOkno(self)
         self.akcja_wiezienie_okno = AkcjaWiezieniaOkno(self)
+        self.akcja_statystyk_okno = AkcjaStatystykOkno(self)
         self.czy_akcja_zakonczona = True
 
         # feature_testingMechanism
@@ -380,6 +382,7 @@ class Gra:
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
         self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
+        self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -398,5 +401,8 @@ class Gra:
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
         self.akcja_zastaw_okno.aktualizuj_rozmiar_okna(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+        self.akcja_statystyk_okno.aktualizuj_rozmiar_okna(
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
