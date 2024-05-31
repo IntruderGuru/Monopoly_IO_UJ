@@ -3,7 +3,7 @@ from src.Statystyka import Statystyka
 import pygame
 
 
-MAKSYMALNA_DLUGOSC_NAZWY_GRACZA = 10
+MAKSYMALNA_DLUGOSC_NAZWY_GRACZA = 12
 
 class AkcjaStatystykOkno(Okno):
     def __init__(self, gra):
@@ -12,13 +12,12 @@ class AkcjaStatystykOkno(Okno):
         self.gra = gra
         self.czy_akcja_statystyk = True
 
-        self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
+        self.skalar_czcionki = 40 # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
 
-        self.odleglosc_pionowa = 0.1
-        self.odleglosc_pozioma = 0.1
+        self.odleglosc_pionowa = 0.06
         self.mnoznik_wysokosci = 0.1
-        self.mnoznik_szerokosci = 0.6
+        self.mnoznik_szerokosci = 0.62
 
     def aktualizacja(self):
         pass
@@ -32,13 +31,15 @@ class AkcjaStatystykOkno(Okno):
             
             i = 0
             for gracz in self.gra._gracze:
-                self.zaktualizuj_tekst_i_rozmiar(gracz)
 
-                screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci + (self.odleglosc_pozioma * 1)), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + (self.odleglosc_pozioma * 2)), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + (self.odleglosc_pozioma * 3)), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + (self.odleglosc_pozioma * 4)), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + (self.odleglosc_pozioma * 5)), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)
+                self.zaktualizuj_tekst_i_rozmiar(gracz, nazwa_gracza)
+
+                screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.12), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
                 i += 1
 
 
@@ -56,11 +57,11 @@ class AkcjaStatystykOkno(Okno):
         else:
             return nazwa
         
-    def zaktualizuj_tekst_i_rozmiar(self, gracz):
+    def zaktualizuj_tekst_i_rozmiar(self, gracz, nazwa_gracza):
         self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
 
         self.nazwa = self.font.render(
-            str(gracz.statystyka.nazwa_gracza), True, self.gra.kolor_czcionki
+            str(nazwa_gracza), True, self.gra.kolor_czcionki
         )
         self.pieniadze = self.font.render(
             str(gracz.statystyka.pieniadze), True, self.gra.kolor_czcionki
