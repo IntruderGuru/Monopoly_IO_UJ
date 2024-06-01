@@ -67,6 +67,7 @@ class Gra:
         self.kolor_tekstu = self.wizualizator.kolor_czcionki_na_przycisku
         self.kolor_tla = self.wizualizator.kolor_tla
         self.kolor_czcionki = self.wizualizator.kolor_czcionki
+        self.kolor_czcionki_tyl_karty = self.wizualizator.kolor_czcionki_tyl_karty
 
         # sekcja okien
         self._plansza = Plansza()

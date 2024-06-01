@@ -35,3 +35,8 @@ class Przycisk:
             return
 
         self.rect = pygame.Rect(x, y, width, height)
+
+    def czy_najechano(self):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hover = self.rect.collidepoint(mouse_pos)
+        return is_hover
