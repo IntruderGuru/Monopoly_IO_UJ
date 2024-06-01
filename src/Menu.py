@@ -9,8 +9,8 @@ class Menu:
         self.stan = "witaj"
         self.liczba_graczy = 0
         self.gracze = []
-        self.font = pygame.font.Font(None, 32)
         self.wizualizator: Wizualizator = wizualizator
+        self.font = pygame.font.Font(self.wizualizator.czcionka, 32)
         self.H = 800
         self.W = 1200
 
@@ -21,8 +21,8 @@ class Menu:
         )
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
     def handle_event(self, event, W, H):
 
@@ -70,8 +70,8 @@ class Menu:
 
     def draw(self, screen, W, H):
 
-        self.font = pygame.font.Font(None, int(W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(self.wizualizator.czcionka, int(W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
             self.przyciski.nowa_gra.draw(screen)

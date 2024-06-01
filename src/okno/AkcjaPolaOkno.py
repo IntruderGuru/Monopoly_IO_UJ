@@ -59,7 +59,7 @@ class AkcjaPolaOkno(Okno):
         self.posiadlosc_do_zakupu = None
 
         self.skalar_czcionki = 60  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
     def aktualizacja(self):
         pass
@@ -162,7 +162,7 @@ class AkcjaPolaOkno(Okno):
         self.gra.czy_akcja_zakonczona = True
 
     def zaktualizuj_tekst_i_rozmiar(self):
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
         self.czynsz_bez_nieruchomosci = self.font.render(
             "Czynsz bez nieruchomości: " + str(100), True, self.gra.kolor_czcionki_tyl_karty

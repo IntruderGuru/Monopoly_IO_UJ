@@ -13,7 +13,7 @@ class AkcjaStatystykOkno(Okno):
         self.czy_akcja_statystyk = True
 
         self.skalar_czcionki = 40 # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
         self.odleglosc_pionowa = 0.06
         self.mnoznik_wysokosci = 0.1
@@ -64,7 +64,7 @@ class AkcjaStatystykOkno(Okno):
             return nazwa
         
     def zaktualizuj_tekst_i_rozmiar(self, gracz, nazwa_gracza):
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
         self.nazwa = self.font.render(
             str(nazwa_gracza), True, self.gra.kolor_czcionki

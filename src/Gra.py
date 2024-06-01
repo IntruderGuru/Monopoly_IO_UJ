@@ -55,7 +55,6 @@ class Gra:
         self._kolejny_rzut_kostka = False
         self._aktualny_gracz = 1
         self.messages = []
-        self.font = pygame.font.Font(None, 20)
         self.aktualna_szerokosc_ekranu = szerokosc_ekranu
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
@@ -68,6 +67,8 @@ class Gra:
         self.kolor_tla = self.wizualizator.kolor_tla
         self.kolor_czcionki = self.wizualizator.kolor_czcionki
         self.kolor_czcionki_tyl_karty = self.wizualizator.kolor_czcionki_tyl_karty
+        self.czcionka = self.wizualizator.czcionka
+        self.font = pygame.font.Font(self.czcionka, 20)
 
         # sekcja okien
         self._plansza = Plansza()

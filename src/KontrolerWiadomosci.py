@@ -14,15 +14,15 @@ class KontrolerWiadomosci:
         self.W = 1200
         self.H = 800
         self.skalar_czcionki = 60 # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
 
     def _render_text(self, text: str, pos, okno: pygame.Surface, ostatnia_wiadomosc):
 
         if ostatnia_wiadomosc:
-            self.font = pygame.font.Font(None, int(self.W / (self.skalar_czcionki - 15)))
+            self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki - 15)))
             text_surface = self.font.render(text, True, (0,0,0))
         else:
-            self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+            self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
             text_surface = self.font.render(text, True, self.wizualizator.kolor_wiadomosci)
         okno.blit(text_surface, pos)
 

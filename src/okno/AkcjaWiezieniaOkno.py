@@ -27,7 +27,7 @@ class AkcjaWiezieniaOkno(Okno):
         self.czy_wiezienie = False
 
         self.skalar_czcionki = 24  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_wiezeniu = "idziesz do więzienia, stoisz 2 tury"
 
     def aktualizacja(self):
@@ -60,7 +60,7 @@ class AkcjaWiezieniaOkno(Okno):
         self.H = height
 
     def zaktualizuj_rozmiar_czcionki(self):
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.tekst = self.font.render(self.informacja_o_wiezeniu, True, (0, 0, 0))
 
     def wyswietl_teksty(self, screen):

@@ -49,7 +49,7 @@ class AkcjaZagadekOkno(Okno):
         self.odpowiedz_C = "empty"
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + "x"
         self.informacja_o_zagadce = (
@@ -116,11 +116,11 @@ class AkcjaZagadekOkno(Okno):
         self.pole = pole
 
     def zaktualizuj_rozmiar_czcionki(self):
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.podatek = self.font.render(
             self.informacja_o_podatku_z_cena, True, self.gra.kolor_czcionki
         )
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki) - 15)
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki) - 15)
         self.info = self.font.render(self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
         self.zagadka = self.font.render(self.tekst_zagadki, True, self.gra.kolor_czcionki)
 
