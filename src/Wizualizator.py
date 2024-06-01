@@ -11,3 +11,7 @@ class Wizualizator:
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
         self.kolor_tla = (255, 255, 255)
         self.kolor_czcionki = (10, 10, 10)
+
+        #kolory wypisywania komunikatow
+        self.kolor_wiadomosci = (100, 100, 100)
+        self.kolor_ostatniej_wiadomosci = (255, 255, 255)
