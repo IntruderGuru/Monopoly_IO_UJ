@@ -43,6 +43,12 @@ class AkcjaKartOkno(Okno):
             )
 
         if self.czy_szansa:
+
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
+
             self.szansa_png = pygame.transform.scale(
                 self.szansa_png, (0.64 * self.W, 0.5 * self.H)
             )

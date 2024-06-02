@@ -68,6 +68,8 @@ class Gra:
         self.kolor_czcionki = self.wizualizator.kolor_czcionki
         self.kolor_czcionki_tyl_karty = self.wizualizator.kolor_czcionki_tyl_karty
         self.czcionka = self.wizualizator.czcionka
+        self.kolor_nakladki = self.wizualizator.kolor_nakladki
+        self.przezroczystosc_nakladki = self.wizualizator.przezroczystosc_nakladki
         self.font = pygame.font.Font(self.czcionka, 20)
 
         # sekcja okien
@@ -209,6 +211,7 @@ class Gra:
 
         # TODO: mozliwosc wykupienia sie z wiezienia za pomoca wyrzucenia 2 siodemek na 3 rzuty kostka
         elif pole.typ == "idz_do_wiezienia":
+
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
                 return

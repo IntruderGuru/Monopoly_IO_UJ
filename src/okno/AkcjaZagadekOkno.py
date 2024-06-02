@@ -48,7 +48,7 @@ class AkcjaZagadekOkno(Okno):
         self.odpowiedz_B = "empty"
         self.odpowiedz_C = "empty"
 
-        self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
+        self.skalar_czcionki = 28  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + "x"

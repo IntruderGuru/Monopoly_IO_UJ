@@ -43,7 +43,11 @@ class AkcjaWiezieniaOkno(Okno):
         W = self.W
 
         if self.czy_wiezienie:
-            screen.fill(self.gra.kolor_tla)
+            
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
 
             self.zaktualizuj_rozmiar_czcionki()
             self.wyswietl_teksty(screen)

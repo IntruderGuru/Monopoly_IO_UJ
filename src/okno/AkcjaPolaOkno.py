@@ -124,6 +124,12 @@ class AkcjaPolaOkno(Okno):
                 0.64 * self.H
             )
 
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
+
+
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
@@ -168,8 +174,8 @@ class AkcjaPolaOkno(Okno):
             "Czynsz bez nieruchomości: " + str(100), True, self.gra.kolor_czcionki_tyl_karty
         )
         self.wzrost_czynszu_dom = self.font.render(
-            "Wzrost czynszu (domek +) " + str(70), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (domek +): " + str(70), True, self.gra.kolor_czcionki_tyl_karty
         )
         self.wzrost_czynszu_hotel = self.font.render(
-            "Wzrost czynszu (hotel +) " + str(100), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (hotel +): " + str(100), True, self.gra.kolor_czcionki_tyl_karty
         )

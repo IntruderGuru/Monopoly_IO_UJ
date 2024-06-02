@@ -20,7 +20,7 @@ class KontrolerWiadomosci:
 
         if ostatnia_wiadomosc:
             self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki - 15)))
-            text_surface = self.font.render(text, True, (0,0,0))
+            text_surface = self.font.render(text, True, self.wizualizator.kolor_ostatniej_wiadomosci)
         else:
             self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
             text_surface = self.font.render(text, True, self.wizualizator.kolor_wiadomosci)
