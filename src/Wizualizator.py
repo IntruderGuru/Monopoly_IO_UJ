@@ -9,15 +9,15 @@ class Wizualizator:
 
         # inne kolory
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
-        self.kolor_tla = (255,255,255)
-        self.kolor_czcionki = (10, 10, 10)
-        self.kolor_czcionki_tyl_karty = (220, 220, 220)
+        self.kolor_tla = (77, 77, 115)
+        self.kolor_czcionki = (255, 255, 255)
+        self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)
         self.przezroczystosc_nakladki = 100
 
         #kolory wypisywania komunikatow
-        self.kolor_wiadomosci = (100, 100, 100)
-        self.kolor_ostatniej_wiadomosci = (0, 0, 0)
+        self.kolor_wiadomosci = (255, 255, 255)
+        self.kolor_ostatniej_wiadomosci = (255, 255, 255)
 
         #czcionka
         #self.czcionka = "fonts/Lato-Black.ttf"
