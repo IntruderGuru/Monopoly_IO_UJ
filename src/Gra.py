@@ -354,7 +354,7 @@ class Gra:
         self._glowne_okno.blit(text_surface, pos)
 
     # override
-    def wyswietl(self):
+    def wyswietl(self, okno: pygame.Surface, W, H):
 
         self.aktualizuj_rozmiar_okien()
 
@@ -369,6 +369,7 @@ class Gra:
             gracz.pionek.wyswietl(self._glowne_okno)
 
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
+        self._kontroler_wiadomosci.wyswietl(okno, W, H)
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)

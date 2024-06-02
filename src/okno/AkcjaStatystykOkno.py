@@ -30,6 +30,23 @@ class AkcjaStatystykOkno(Okno):
         if self.czy_akcja_statystyk:
             
             i = 0
+            self.ramka = pygame.transform.scale(
+                pygame.image.load("graphics/tlo_do_statystyk.png"),
+                (self.W * 0.45, self.H * 0.36)
+            )
+            screen.blit(self.ramka, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci - 0.08)))
+
+            self.tlo_wiad = pygame.transform.scale(
+                pygame.image.load("graphics/tlo_do_wiadomosci.png"),
+                (self.W * 0.45, self.H * 0.56)
+            )
+            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.28)))
+
+            self.tlo_glowna = pygame.transform.scale(
+                pygame.image.load("graphics/tlo_do_glownej_wiadomosci.png"),
+                (self.W * 0.45, self.H * 0.05)
+            )
+            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.755)))
             for gracz in self.gra._gracze:
 
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)
