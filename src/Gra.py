@@ -133,7 +133,9 @@ class Gra:
             self._kolejny_rzut_kostka = False
 
         if self._suma_oczek == 21:
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Idziesz do więzienia")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
+            )
             self._gracze[self._aktualny_gracz - 1].pozycja = 10
             self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             self._gracze[self._aktualny_gracz - 1].uwiezienie = True
