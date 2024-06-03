@@ -45,7 +45,15 @@ class Gra:
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
-            Gracz(name, KWOTA_POCZATKOWA, Pionek(0, PIECE_COLORS[i], "graphics/pionek/PionekColor" + str(i + 1) + ".png"))
+            Gracz(
+                name,
+                KWOTA_POCZATKOWA,
+                Pionek(
+                    0,
+                    PIECE_COLORS[i],
+                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                ),
+            )
             for i, name in enumerate(gracze)
         ]
         self._plansza: Plansza = Plansza()
@@ -84,10 +92,16 @@ class Gra:
         self.akcja_statystyk_okno = AkcjaStatystykOkno(self)
         self.czy_akcja_zakonczona = True
 
+        # Załaduj obrazy kostek
+        self.dice_images = []
+        for i in range(1, 7):
+            image_path = f"graphics/dice/dice{i}.png"
+            image = pygame.image.load(image_path)
+            self.dice_images.append(pygame.transform.scale(image, (100, 100)))
+
         # feature_testingMechanism
         self.input_text = ""
         print("HELLO from Gra")
-
 
     def wybierz_kolejnego_gracza(self):
         self._suma_oczek = 0
@@ -127,6 +141,27 @@ class Gra:
             self._kolejny_rzut_kostka = False
             self._suma_oczek = 0
 
+    def wyswietl_kostki(self, screen, dice1, dice2):
+        dice_x = self.aktualna_szerokosc_ekranu * 0.05
+        dice_y = self.aktualna_wysokosc_ekranu * 0.8
+        screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
+        screen.blit(self.dice_images[dice2 - 1], (dice_x + 110, dice_y))
+
+    def symuluj_rzut(self):
+        liczba_klatek = 5  # Liczba klatek animacji
+        for _ in range(liczba_klatek):
+            # Losowe wartości dla obu kostek
+            dice1 = random.randint(1, 6)
+            dice2 = random.randint(1, 6)
+            self.wyswietl_kostki(self._glowne_okno, dice1, dice2)
+            pygame.display.update()
+            pygame.time.wait(100)  # Czas oczekiwania między klatkami animacji
+
+        # Ostateczne wartości kostek
+        kostka_1 = random.randint(1, 6)
+        kostka_2 = random.randint(1, 6)
+        return kostka_1, kostka_2
+
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
@@ -139,7 +174,6 @@ class Gra:
 
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
-
 
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
@@ -254,15 +288,20 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Ruch gracza: {self._aktualny_gracz}"
             )
-
-            kostka_pierwsza = random.randint(1, 6)
-            kostka_druga = random.randint(1, 6)
+            kostka_pierwsza, kostka_druga = self.symuluj_rzut()
+            # kostka_pierwsza = random.randint(1, 6)
+            # kostka_druga = random.randint(1, 6)
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Suma: {self._suma_oczek}")
+
+            # Wyświetl kostki
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
+            pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
+            pygame.time.wait(2000)
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
             self.przesun_gracza(
