@@ -4,6 +4,12 @@ import pytest
 from src.Pole import Pole, Vector2, KierunekPol
 
 
+def numery_malych_pol():
+    male_pola = filter(lambda numer_pola: numer_pola % 10 != 0, list(range(0, Pole.MAKSYMALNA_LICZBA_POL)))
+
+    return male_pola
+
+
 class TestPole:
     DOMYSLNY_NUMER_POLA = 10
 
@@ -28,13 +34,19 @@ class TestPole:
         with pytest.raises(Exception):
             wynik = Pole.oblicz_zwrot_naglowka_pola(10, dlugosc_sciany_w_polach=0, maksymalna_liczba_pol=Pole.MAKSYMALNA_LICZBA_POL)
 
-    def test_oblicz_zwrot_naglowka_pola_poprawna_maksymalna_liczba_pol_duze_wymiary(self):
-        pass
+    @pytest.mark.parametrize("numer_malego_pola", numery_malych_pol())
+    def test_oblicz_zwrot_naglowka_pola_poprawna_male_wymiary(self, numer_malego_pola):
+        # Aby zwrocilo male wymiary pola, numer pola nie może byc wielokrotnoscia dlugosc_sciany_w_polach
+        wynikowe_wymiary = Pole.oblicz_rozmiar_pola(numer_malego_pola, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
 
-    def test_oblicz_zwrot_naglowka_pola_poprawna_maksymalna_liczba_pol_male_wymiary(self):
+        assert wynikowe_wymiary == Pole.MALE_POLE_WYMIARY
+
+    @pytest.mark.parametrize("numer_duzego_pola", list(range(0, len(KierunekPol), Pole.DLUGOSC_SCIANY_W_POLACH)))
+    def test_oblicz_rozmiar_pola_poprawna_duze_wymiary(self, numer_duzego_pola):
         # Aby zwrocilo duze wymiary pola, numer pola musi byc wielokrotnoscia dlugosc_sciany_w_polach
-        wynikowe_wymiary = Pole.oblicz_zwrot_naglowka_pola(len(KierunekPol) * Pole.DLUGOSC_SCIANY_W_POLACH, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
-        pass
+        wynikowe_wymiary = Pole.oblicz_rozmiar_pola(numer_duzego_pola, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
+
+        assert wynikowe_wymiary == Pole.DUZE_POLE_WYMIARY
 
     def test_oblicz_rozmiar_pola(self):
         pass

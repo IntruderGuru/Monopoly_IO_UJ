@@ -20,8 +20,7 @@ class TestPosiadlosc:
 
     def setup_method(self):
         pygame.init()
-
-            # przepisz na mocki
+        # przepisz na mocki
         self.font = pygame.font.Font(None, 20)
         self.screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
         self._kontroler_wiadomosci = KontrolerWiadomosci(self.font)
@@ -30,7 +29,6 @@ class TestPosiadlosc:
         self.posiadlosc = Posiadlosc(TestPosiadlosc.NUMER, TestPosiadlosc.NAZWA, TestPosiadlosc.KOLOR,
                                      TestPosiadlosc.CENA, TestPosiadlosc.CZYNSZ, TestPosiadlosc.ZASTAW,
                                      TestPosiadlosc.CENA_DOMU)
-
 
     def test_inicjalizacja_typow(self):
         assert isinstance(self.posiadlosc.nazwa, str)
