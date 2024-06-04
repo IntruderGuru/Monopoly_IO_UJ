@@ -19,7 +19,7 @@ class Main:
         self.font = pygame.font.Font(None, 20)
 
         pygame.display.set_caption("Monopoly")
-        self._screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
+        self._screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
 
         self._screen_info = pygame.display.Info()
         self._screen_width = self._screen_info.current_w
@@ -193,10 +193,17 @@ class Gra:
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
-            Gracz(name, KWOTA_POCZATKOWA, Pionek(0, PIECE_COLORS[i], "graphics/pionek/PionekColor" + str(i + 1) + ".png"))
+            Gracz(
+                name,
+                KWOTA_POCZATKOWA,
+                Pionek(
+                    0,
+                    PIECE_COLORS[i],
+                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                ),
+            )
             for i, name in enumerate(gracze)
         ]
-        self._plansza: Plansza = Plansza()
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
@@ -222,6 +229,7 @@ class Gra:
 
         # sekcja okien
         self._plansza = Plansza()
+        self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
 
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -232,10 +240,16 @@ class Gra:
         self.akcja_statystyk_okno = AkcjaStatystykOkno(self)
         self.czy_akcja_zakonczona = True
 
+        # Załaduj obrazy kostek
+        self.dice_images = []
+        for i in range(1, 7):
+            image_path = f"graphics/dice/dice{i}.png"
+            image = pygame.image.load(image_path)
+            self.dice_images.append(pygame.transform.scale(image, (100, 100)))
+
         # feature_testingMechanism
         self.input_text = ""
         print("HELLO from Gra")
-
 
     def wybierz_kolejnego_gracza(self):
         self._suma_oczek = 0
@@ -267,13 +281,48 @@ class Gra:
             self._kolejny_rzut_kostka = False
 
         if self._suma_oczek == 21:
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Idziesz do więzienia")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
+            )
             self._gracze[self._aktualny_gracz - 1].pozycja = 10
             self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
             self._gracze[self._aktualny_gracz - 1].uwiezienie = True
             self._gracze[self._aktualny_gracz - 1].tury_w_wiezieniu = 0
             self._kolejny_rzut_kostka = False
             self._suma_oczek = 0
+
+    def wyswietl_kostki(self, screen, dice1, dice2):
+        #im wieksze tym mniejszy odstep
+        oddalenie_kostek_od_siebie = 8.1
+        self.aktualizuj_rozmiar_kotstek()
+        dice_x = self.aktualna_szerokosc_ekranu * 0.21
+        dice_y = self.aktualna_wysokosc_ekranu * 0.44
+        screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
+        screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
+
+    def aktualizuj_rozmiar_kotstek(self):
+        #im wiekszy tym mniejsze kostki
+        skalar_kostek = 10
+
+        for i in range(1, 7):
+            image_path = f"graphics/dice/dice{i}.png"
+            image = pygame.image.load(image_path)
+            self.dice_images[i - 1] = pygame.transform.scale(image, (self.aktualna_wysokosc_ekranu / skalar_kostek, self.aktualna_wysokosc_ekranu / skalar_kostek))
+
+    def symuluj_rzut(self):
+        liczba_klatek = 5  # Liczba klatek animacji
+        for _ in range(liczba_klatek):
+            # Losowe wartości dla obu kostek
+            dice1 = random.randint(1, 6)
+            dice2 = random.randint(1, 6)
+            self.wyswietl_kostki(self._glowne_okno, dice1, dice2)
+            pygame.display.update()
+            pygame.time.wait(100)  # Czas oczekiwania między klatkami animacji
+
+        # Ostateczne wartości kostek
+        kostka_1 = random.randint(1, 6)
+        kostka_2 = random.randint(1, 6)
+        return kostka_1, kostka_2
 
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
@@ -287,7 +336,6 @@ class Gra:
 
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
-
 
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
@@ -402,15 +450,20 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Ruch gracza: {self._aktualny_gracz}"
             )
-
-            kostka_pierwsza = random.randint(1, 6)
-            kostka_druga = random.randint(1, 6)
+            kostka_pierwsza, kostka_druga = self.symuluj_rzut()
+            # kostka_pierwsza = random.randint(1, 6)
+            # kostka_druga = random.randint(1, 6)
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Suma: {self._suma_oczek}")
+
+            # Wyświetl kostki
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
+            pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
+            pygame.time.wait(2000)
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
             self.przesun_gracza(
@@ -485,6 +538,13 @@ class Gra:
         elif event.type == pygame.VIDEORESIZE:
             self.aktualna_szerokosc_ekranu = event.w
             self.aktualna_wysokosc_ekranu = event.h
+
+            # Rozmiar nie moze byc mniejszy niz 500 na 500
+            # if event.w > 1000 and event.h > 550:
+            self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+
+            for gracz in self._gracze:
+                gracz.pionek.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
@@ -845,7 +905,7 @@ class KontrolerWiadomosci:
             wiadomosc = self.wiadomosci[wiadomosc_index]
 
             if isinstance(wiadomosc, str | bytes):
-                self._render_text(wiadomosc, (W * 0.595, H * (0.45 + (i * y_offset))), okno, ostatnia_wiadomosc)
+                self._render_text(wiadomosc, (W * 0.595, H * (0.48 + (i * y_offset))), okno, ostatnia_wiadomosc)
 
             wiadomosc_index = (
                 wiadomosc_index + 1
@@ -867,7 +927,8 @@ class Menu:
         self.gracze = []
         self.wizualizator: Wizualizator = wizualizator
         self.font = pygame.font.Font(self.wizualizator.czcionka, 32)
-        self.H = 800
+        self.H = 660
+        # self.H = 800
         self.W = 1200
 
         self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
@@ -921,8 +982,11 @@ class Menu:
                 elif event.key == pygame.K_BACKSPACE:
                     self.gracze[-1] = self.gracze[-1][:-1]
                 else:
-                    self.gracze[-1] += event.unicode
-
+                    if event.key == pygame.K_SPACE:
+                        if len(self.gracze[-1]) != 0 and self.gracze[-1][-1] != " ":
+                            self.gracze[-1] += event.unicode
+                    else:
+                        self.gracze[-1] += event.unicode
 
     def draw(self, screen, W, H):
 
@@ -1010,10 +1074,10 @@ class Pionek:
     DLUGOSC_SCIANKI_W_POLACH = 10
     LICZBA_POL = 40
 
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(37, 65)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(65, 65)
+    OFF_SET: Vector2 = Vector2(35, 100)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
@@ -1023,6 +1087,8 @@ class Pionek:
         self.numer_pola = numer_pola
         self.color = color
         self.sciezka_do_grafiki = grafika
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
         self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
@@ -1030,33 +1096,30 @@ class Pionek:
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
 
-        
-    @staticmethod
-    def oblicz_nowa_pozycje(numer_pola, kierunek_sciany) -> Vector2:
+    def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
         gora = Pionek.OFF_SET.y
 
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
             case KierunekPol.Gora:
-                lewo += ((Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
-                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
+                lewo += ((Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING))
 
             case KierunekPol.Prawo:
-                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING
-                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
-                gora += ((Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING
+                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING))
+                gora += ((Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
 
             case KierunekPol.Dol:
-                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING)
-                lewo += (Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
-                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
+                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)
+                lewo += (Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
+                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
+                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
 
         return Vector2(lewo, gora)
-
 
     def przesun(self, liczba_pol: int) -> bool:
         if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
@@ -1067,6 +1130,15 @@ class Pionek:
             return True
 
         return False
+
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 800
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
     def wyswietl(self, okno: pygame.Surface):
         #pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
@@ -1148,7 +1220,9 @@ class Plansza:
     #
     # def wysrodkuj_plansze(self):
 
-    # def update(self):
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        for pole in self.plansza:
+            pole.aktualizacja_rozmiaru(szerokosc, wysokosc)
 
     def render(self, screen):
         for pole in self.plansza:
@@ -1275,11 +1349,11 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(44, 70)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(70, 70)
     KOLOR_TLA = pygame.Color(28,28,30,255)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    OFF_SET: Vector2 = Vector2(12, 12)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
@@ -1304,8 +1378,32 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    @staticmethod
-    def inicjalizacja_pozycji(numer_pola, kierunek_sciany) -> Vector2:
+    # def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
+    #     lewo = Pole.OFF_SET.x
+    #     gora = Pole.OFF_SET.y
+    #
+    #     # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
+    #     match kierunek_sciany:
+    #         case KierunekPol.Gora:
+    #             lewo += ((Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
+    #             lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING))
+    #
+    #         case KierunekPol.Prawo:
+    #             lewo += 9 * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING
+    #             gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING))
+    #             gora += ((Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
+    #
+    #         case KierunekPol.Dol:
+    #             lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)
+    #             lewo += (Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
+    #             gora += 9 * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
+    #
+    #         case KierunekPol.Lewo:
+    #             gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
+    #
+    #     return Vector2(lewo, gora)
+
+    def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
 
@@ -1328,11 +1426,13 @@ class Pole:
             case KierunekPol.Lewo:
                 gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
-        return Vector2(lewo, gora)
+        return Vector2(lewo * self.szerokosc_ratio, gora * self.wysokosc_ratio)
 
     def __init__(self, numer: int, typ: str):
         self.numer = numer
         self.typ = typ
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
         self.kolor_naglowka = pygame.color.THECOLORS["violet"]
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
@@ -1342,23 +1442,49 @@ class Pole:
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
 
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 660
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        # print((szerokosc, wysokosc))
+
+        self.pozycja = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
+
     def render(self, screen):
         szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
         wysokosc_aktualny_kierunek = self.wymiary.y if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.x
-        
-        if self.numer in (0, 10, 20, 30):
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.DUZE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Dol:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Lewo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 270)
-        elif self.kierunek_sciany == KierunekPol.Gora:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 180)
-        elif self.kierunek_sciany == KierunekPol.Prawo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 90)
+
+        szerokosc_aktualny_kierunek *= self.szerokosc_ratio
+        wysokosc_aktualny_kierunek *= self.wysokosc_ratio
+
+        test_wymiary = Pole.DUZE_POLE_WYMIARY if self.numer in (0, 10, 20, 30) else Pole.MALE_POLE_WYMIARY
+        nowa_szerokosc = test_wymiary.x
+        nowa_wysokosc = test_wymiary.y
+
+        obrot = 0
+        match self.kierunek_sciany:
+            case KierunekPol.Dol:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 0
+            case KierunekPol.Lewo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 270
+            case KierunekPol.Gora:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 180
+            case KierunekPol.Prawo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 90
+
+        pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
+        pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
         screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
@@ -1808,7 +1934,7 @@ class Wizualizator:
 
         # inne kolory
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
-        self.kolor_tla = (77, 77, 115)
+        self.kolor_tla = (119, 119, 175)
         self.kolor_czcionki = (255, 255, 255)
         self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)
@@ -1851,7 +1977,7 @@ import pygame
 class AkcjaKartOkno(Okno):
 
     def __init__(self, gra):
-        self.H = 800
+        self.H = 660
         self.W = 1200
         self.gra = gra
         self.szansa_png = pygame.transform.scale(
@@ -1894,10 +2020,10 @@ class AkcjaKartOkno(Okno):
             nakladka.fill(self.gra.kolor_nakladki)
             screen.blit(nakladka, (0, 0))
 
-            self.szansa_png = pygame.transform.scale(
+            szansa_png_tmp = pygame.transform.scale(
                 self.szansa_png, (0.64 * self.W, 0.5 * self.H)
             )
-            screen.blit(self.szansa_png, (self.W * 0.2, self.H * 0.15))
+            screen.blit(szansa_png_tmp, (self.W * 0.2, self.H * 0.15))
             self.wyjscie.updateSize(
                 self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1
             )
@@ -2225,7 +2351,7 @@ MAKSYMALNA_DLUGOSC_NAZWY_GRACZA = 12
 class AkcjaStatystykOkno(Okno):
     def __init__(self, gra):
         self.W = 1200
-        self.H = 800
+        self.H = 660
         self.gra = gra
         self.czy_akcja_statystyk = True
 
@@ -2249,21 +2375,22 @@ class AkcjaStatystykOkno(Okno):
             i = 0
             self.ramka = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_statystyk.png"),
-                (self.W * 0.45, self.H * 0.36)
+                (self.W * 0.43, self.H * 0.36)
             )
-            screen.blit(self.ramka, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci - 0.08)))
+            screen.blit(self.ramka, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci - 0.08)))
 
             self.tlo_wiad = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_wiadomosci.png"),
-                (self.W * 0.45, self.H * 0.56)
+                (self.W * 0.43, self.H * 0.583)
             )
-            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.28)))
+            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.3)))
 
             self.tlo_glowna = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_glownej_wiadomosci.png"),
-                (self.W * 0.45, self.H * 0.05)
+                (self.W * 0.43, self.H * 0.05)
             )
-            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.755)))
+            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.788)))
+
             for gracz in self.gra._gracze:
 
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)
@@ -2820,6 +2947,12 @@ import pytest
 from src.Pole import Pole, Vector2, KierunekPol
 
 
+def numery_malych_pol():
+    male_pola = filter(lambda numer_pola: numer_pola % 10 != 0, list(range(0, Pole.MAKSYMALNA_LICZBA_POL)))
+
+    return male_pola
+
+
 class TestPole:
     DOMYSLNY_NUMER_POLA = 10
 
@@ -2844,13 +2977,19 @@ class TestPole:
         with pytest.raises(Exception):
             wynik = Pole.oblicz_zwrot_naglowka_pola(10, dlugosc_sciany_w_polach=0, maksymalna_liczba_pol=Pole.MAKSYMALNA_LICZBA_POL)
 
-    def test_oblicz_zwrot_naglowka_pola_poprawna_maksymalna_liczba_pol_duze_wymiary(self):
-        pass
+    @pytest.mark.parametrize("numer_malego_pola", numery_malych_pol())
+    def test_oblicz_zwrot_naglowka_pola_poprawna_male_wymiary(self, numer_malego_pola):
+        # Aby zwrocilo male wymiary pola, numer pola nie może byc wielokrotnoscia dlugosc_sciany_w_polach
+        wynikowe_wymiary = Pole.oblicz_rozmiar_pola(numer_malego_pola, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
 
-    def test_oblicz_zwrot_naglowka_pola_poprawna_maksymalna_liczba_pol_male_wymiary(self):
+        assert wynikowe_wymiary == Pole.MALE_POLE_WYMIARY
+
+    @pytest.mark.parametrize("numer_duzego_pola", list(range(0, len(KierunekPol), Pole.DLUGOSC_SCIANY_W_POLACH)))
+    def test_oblicz_rozmiar_pola_poprawna_duze_wymiary(self, numer_duzego_pola):
         # Aby zwrocilo duze wymiary pola, numer pola musi byc wielokrotnoscia dlugosc_sciany_w_polach
-        wynikowe_wymiary = Pole.oblicz_zwrot_naglowka_pola(len(KierunekPol) * Pole.DLUGOSC_SCIANY_W_POLACH, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
-        pass
+        wynikowe_wymiary = Pole.oblicz_rozmiar_pola(numer_duzego_pola, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
+
+        assert wynikowe_wymiary == Pole.DUZE_POLE_WYMIARY
 
     def test_oblicz_rozmiar_pola(self):
         pass
@@ -2901,8 +3040,7 @@ class TestPosiadlosc:
 
     def setup_method(self):
         pygame.init()
-
-            # przepisz na mocki
+        # przepisz na mocki
         self.font = pygame.font.Font(None, 20)
         self.screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
         self._kontroler_wiadomosci = KontrolerWiadomosci(self.font)
@@ -2911,7 +3049,6 @@ class TestPosiadlosc:
         self.posiadlosc = Posiadlosc(TestPosiadlosc.NUMER, TestPosiadlosc.NAZWA, TestPosiadlosc.KOLOR,
                                      TestPosiadlosc.CENA, TestPosiadlosc.CZYNSZ, TestPosiadlosc.ZASTAW,
                                      TestPosiadlosc.CENA_DOMU)
-
 
     def test_inicjalizacja_typow(self):
         assert isinstance(self.posiadlosc.nazwa, str)
@@ -2943,6 +3080,7 @@ class TestPosiadlosc:
 
     def test_kup_posiadlosc_udany(self):
         self.posiadlosc.kup_posiadlosc()
+
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Przycisk.py
 import copy
