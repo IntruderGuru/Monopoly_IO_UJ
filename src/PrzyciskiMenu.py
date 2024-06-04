@@ -93,15 +93,15 @@ class PrzyciskiMenu:
         H = max(H, MIN_H)
 
         self.nowa_gra.updateSize(W * 0.35,
-            H * 0.4,
-            W * 0.3,
-            H * 0.1)
-        self.wyjscie.updateSize(W * 0.35,
-            H * 0.64,
+            H * 0.5,
             W * 0.3,
             H * 0.1)
         self.wczytaj_gre.updateSize(W * 0.35,
-            H * 0.52,
+            H * 0.62,
+            W * 0.3,
+            H * 0.1)
+        self.wyjscie.updateSize(W * 0.35,
+            H * 0.74,
             W * 0.3,
             H * 0.1)
         self.two.updateSize(W * 0.3,
