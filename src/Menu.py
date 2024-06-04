@@ -11,7 +11,8 @@ class Menu:
         self.gracze = []
         self.wizualizator: Wizualizator = wizualizator
         self.font = pygame.font.Font(self.wizualizator.czcionka, 32)
-        self.H = 800
+        self.H = 660
+        # self.H = 800
         self.W = 1200
 
         self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
@@ -70,8 +71,6 @@ class Menu:
                             self.gracze[-1] += event.unicode
                     else:
                         self.gracze[-1] += event.unicode
-
-
 
     def draw(self, screen, W, H):
 

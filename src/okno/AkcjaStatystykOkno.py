@@ -8,7 +8,7 @@ MAKSYMALNA_DLUGOSC_NAZWY_GRACZA = 12
 class AkcjaStatystykOkno(Okno):
     def __init__(self, gra):
         self.W = 1200
-        self.H = 800
+        self.H = 660
         self.gra = gra
         self.czy_akcja_statystyk = True
 
@@ -32,21 +32,22 @@ class AkcjaStatystykOkno(Okno):
             i = 0
             self.ramka = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_statystyk.png"),
-                (self.W * 0.45, self.H * 0.36)
+                (self.W * 0.43, self.H * 0.36)
             )
-            screen.blit(self.ramka, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci - 0.08)))
+            screen.blit(self.ramka, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci - 0.08)))
 
             self.tlo_wiad = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_wiadomosci.png"),
-                (self.W * 0.45, self.H * 0.56)
+                (self.W * 0.43, self.H * 0.56)
             )
-            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.28)))
+            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.28)))
 
             self.tlo_glowna = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_glownej_wiadomosci.png"),
-                (self.W * 0.45, self.H * 0.05)
+                (self.W * 0.43, self.H * 0.05)
             )
-            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.08), self.H * (self.mnoznik_wysokosci + 0.755)))
+            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.755)))
+            
             for gracz in self.gra._gracze:
 
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)

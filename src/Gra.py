@@ -380,11 +380,11 @@ class Gra:
             self.aktualna_wysokosc_ekranu = event.h
 
             # Rozmiar nie moze byc mniejszy niz 500 na 500
-            if event.w > 1000 and event.h > 550:
-                self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+            # if event.w > 1000 and event.h > 550:
+            self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
 
-                for gracz in self._gracze:
-                    gracz.pionek.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+            for gracz in self._gracze:
+                gracz.pionek.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
