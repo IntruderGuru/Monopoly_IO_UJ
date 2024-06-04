@@ -10,6 +10,7 @@ class Wizualizator:
         # inne kolory
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
         self.kolor_tla = (119, 119, 175)
+        self.kolor_napisu_gracz_tury = (255, 255, 255)
         self.kolor_czcionki = (255, 255, 255)
         self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)

@@ -147,8 +147,8 @@ class Gra:
         #im wieksze tym mniejszy odstep
         oddalenie_kostek_od_siebie = 8.1
         self.aktualizuj_rozmiar_kotstek()
-        dice_x = self.aktualna_szerokosc_ekranu * 0.21
-        dice_y = self.aktualna_wysokosc_ekranu * 0.44
+        dice_x = self.aktualna_szerokosc_ekranu * 0.213
+        dice_y = self.aktualna_wysokosc_ekranu * 0.38
         screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
         screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
 
@@ -315,7 +315,7 @@ class Gra:
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
-            pygame.time.wait(2000)
+            pygame.time.wait(1000)
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
             self.przesun_gracza(
@@ -428,6 +428,7 @@ class Gra:
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
 
+        self.wypisz_nazwe_gracza_tury()
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
         self._kontroler_wiadomosci.wyswietl(okno, W, H)
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
@@ -459,3 +460,20 @@ class Gra:
         self.akcja_statystyk_okno.aktualizuj_rozmiar_okna(
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
+
+    def wypisz_nazwe_gracza_tury(self):
+        napis = "Tura gracza:"
+        sciezka_do_pionka = self._gracze[self._aktualny_gracz - 1].pionek.sciezka_do_grafiki
+
+        self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki))
+
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(sciezka_do_pionka), (0.03 * self.aktualna_szerokosc_ekranu, 0.03 * self.aktualna_szerokosc_ekranu)
+        )
+
+        self._glowne_okno.blit(self.zdjecie_pionek, (self.aktualna_szerokosc_ekranu * 0.32, self.aktualna_wysokosc_ekranu * 0.285))
+
+        tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
+        self._glowne_okno.blit(tekst, (self.aktualna_szerokosc_ekranu * 0.21, self.aktualna_wysokosc_ekranu * 0.3))
+       
