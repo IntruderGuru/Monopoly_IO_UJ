@@ -87,23 +87,49 @@ class Pole:
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
 
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 800
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        # print((szerokosc, wysokosc))
+
+        self.pozycja = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
+
     def render(self, screen):
         szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
         wysokosc_aktualny_kierunek = self.wymiary.y if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.x
-        
-        if self.numer in (0, 10, 20, 30):
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.DUZE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Dol:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Lewo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 270)
-        elif self.kierunek_sciany == KierunekPol.Gora:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 180)
-        elif self.kierunek_sciany == KierunekPol.Prawo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 90)
+
+        szerokosc_aktualny_kierunek *= self.szerokosc_ratio
+        wysokosc_aktualny_kierunek *= self.wysokosc_ratio
+
+        test_wymiary = Pole.DUZE_POLE_WYMIARY if self.numer in (0, 10, 20, 30) else Pole.MALE_POLE_WYMIARY
+        nowa_szerokosc = test_wymiary.x
+        nowa_wysokosc = test_wymiary.y
+
+        obrot = 0
+        match self.kierunek_sciany:
+            case KierunekPol.Dol:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 0
+            case KierunekPol.Lewo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 270
+            case KierunekPol.Gora:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 180
+            case KierunekPol.Prawo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 90
+
+        pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
+        pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
         screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
