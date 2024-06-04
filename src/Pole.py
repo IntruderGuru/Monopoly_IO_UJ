@@ -19,11 +19,11 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(37, 65)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(65, 65)
     KOLOR_TLA = pygame.Color(28,28,30,255)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    OFF_SET: Vector2 = Vector2(35, 100)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
@@ -48,35 +48,36 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    @staticmethod
-    def inicjalizacja_pozycji(numer_pola, kierunek_sciany) -> Vector2:
+    def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
 
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
             case KierunekPol.Gora:
-                lewo += ((Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING) if numer_pola % 10 != 0 else 0)
-                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
+                lewo += ((Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING))
 
             case KierunekPol.Prawo:
-                lewo += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING
-                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING))
-                gora += ((Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 9 * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING
+                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING))
+                gora += ((Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
 
             case KierunekPol.Dol:
-                lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING)
-                lewo += (Pole.DUZE_POLE_WYMIARY.x + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
-                gora += 9 * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
+                lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)
+                lewo += (Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
+                gora += 9 * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
+                gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
 
         return Vector2(lewo, gora)
 
     def __init__(self, numer: int, typ: str):
         self.numer = numer
         self.typ = typ
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
         self.kolor_naglowka = pygame.color.THECOLORS["violet"]
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)

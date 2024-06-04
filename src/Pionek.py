@@ -21,10 +21,10 @@ class Pionek:
     DLUGOSC_SCIANKI_W_POLACH = 10
     LICZBA_POL = 40
 
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(37, 65)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(65, 65)
+    OFF_SET: Vector2 = Vector2(35, 100)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
@@ -34,6 +34,8 @@ class Pionek:
         self.numer_pola = numer_pola
         self.color = color
         self.sciezka_do_grafiki = grafika
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
         self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
@@ -41,33 +43,30 @@ class Pionek:
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
 
-        
-    @staticmethod
-    def oblicz_nowa_pozycje(numer_pola, kierunek_sciany) -> Vector2:
+    def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
         gora = Pionek.OFF_SET.y
 
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
             case KierunekPol.Gora:
-                lewo += ((Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
-                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
+                lewo += ((Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING))
 
             case KierunekPol.Prawo:
-                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING
-                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
-                gora += ((Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING
+                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING))
+                gora += ((Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
 
             case KierunekPol.Dol:
-                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING)
-                lewo += (Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
-                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
+                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)
+                lewo += (Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
+                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
+                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
 
         return Vector2(lewo, gora)
-
 
     def przesun(self, liczba_pol: int) -> bool:
         if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
@@ -78,6 +77,15 @@ class Pionek:
             return True
 
         return False
+
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 800
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
     def wyswietl(self, okno: pygame.Surface):
         #pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
