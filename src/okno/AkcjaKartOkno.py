@@ -6,7 +6,7 @@ import pygame
 class AkcjaKartOkno(Okno):
 
     def __init__(self, gra):
-        self.H = 800
+        self.H = 660
         self.W = 1200
         self.gra = gra
         self.szansa_png = pygame.transform.scale(
@@ -49,10 +49,10 @@ class AkcjaKartOkno(Okno):
             nakladka.fill(self.gra.kolor_nakladki)
             screen.blit(nakladka, (0, 0))
 
-            self.szansa_png = pygame.transform.scale(
+            szansa_png_tmp = pygame.transform.scale(
                 self.szansa_png, (0.64 * self.W, 0.5 * self.H)
             )
-            screen.blit(self.szansa_png, (self.W * 0.2, self.H * 0.15))
+            screen.blit(szansa_png_tmp, (self.W * 0.2, self.H * 0.15))
             self.wyjscie.updateSize(
                 self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1
             )
