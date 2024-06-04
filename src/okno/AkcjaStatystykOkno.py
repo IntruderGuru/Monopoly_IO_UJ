@@ -47,7 +47,7 @@ class AkcjaStatystykOkno(Okno):
                 (self.W * 0.43, self.H * 0.05)
             )
             screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.755)))
-            
+
             for gracz in self.gra._gracze:
 
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)

@@ -19,11 +19,11 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
-    MALE_POLE_WYMIARY: Vector2 = Vector2(45, 75)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(44, 74)
     # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(75, 75)
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(74, 74)
     KOLOR_TLA = pygame.Color(28,28,30,255)
-    OFF_SET: Vector2 = Vector2(0, 0)
+    OFF_SET: Vector2 = Vector2(12, 12)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
