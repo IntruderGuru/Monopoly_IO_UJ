@@ -69,7 +69,7 @@ class KontrolerWiadomosci:
             wiadomosc = self.wiadomosci[wiadomosc_index]
 
             if isinstance(wiadomosc, str | bytes):
-                self._render_text(wiadomosc, (W * 0.595, H * (0.45 + (i * y_offset))), okno, ostatnia_wiadomosc)
+                self._render_text(wiadomosc, (W * 0.595, H * (0.48 + (i * y_offset))), okno, ostatnia_wiadomosc)
 
             wiadomosc_index = (
                 wiadomosc_index + 1

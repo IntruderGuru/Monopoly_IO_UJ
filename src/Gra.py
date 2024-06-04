@@ -56,7 +56,6 @@ class Gra:
             )
             for i, name in enumerate(gracze)
         ]
-        self._plansza: Plansza = Plansza()
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
@@ -82,6 +81,7 @@ class Gra:
 
         # sekcja okien
         self._plansza = Plansza()
+        self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
 
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -144,10 +144,22 @@ class Gra:
             self._suma_oczek = 0
 
     def wyswietl_kostki(self, screen, dice1, dice2):
-        dice_x = self.aktualna_szerokosc_ekranu * 0.05
-        dice_y = self.aktualna_wysokosc_ekranu * 0.8
+        #im wieksze tym mniejszy odstep
+        oddalenie_kostek_od_siebie = 8.1
+        self.aktualizuj_rozmiar_kotstek()
+        dice_x = self.aktualna_szerokosc_ekranu * 0.21
+        dice_y = self.aktualna_wysokosc_ekranu * 0.44
         screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
-        screen.blit(self.dice_images[dice2 - 1], (dice_x + 110, dice_y))
+        screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
+
+    def aktualizuj_rozmiar_kotstek(self):
+        #im wiekszy tym mniejsze kostki
+        skalar_kostek = 10
+
+        for i in range(1, 7):
+            image_path = f"graphics/dice/dice{i}.png"
+            image = pygame.image.load(image_path)
+            self.dice_images[i - 1] = pygame.transform.scale(image, (self.aktualna_wysokosc_ekranu / skalar_kostek, self.aktualna_wysokosc_ekranu / skalar_kostek))
 
     def symuluj_rzut(self):
         liczba_klatek = 5  # Liczba klatek animacji

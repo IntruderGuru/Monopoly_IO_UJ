@@ -38,15 +38,15 @@ class AkcjaStatystykOkno(Okno):
 
             self.tlo_wiad = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_wiadomosci.png"),
-                (self.W * 0.43, self.H * 0.56)
+                (self.W * 0.43, self.H * 0.583)
             )
-            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.28)))
+            screen.blit(self.tlo_wiad, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.3)))
 
             self.tlo_glowna = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_glownej_wiadomosci.png"),
                 (self.W * 0.43, self.H * 0.05)
             )
-            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.755)))
+            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.788)))
 
             for gracz in self.gra._gracze:
 
