@@ -65,7 +65,12 @@ class Menu:
                 elif event.key == pygame.K_BACKSPACE:
                     self.gracze[-1] = self.gracze[-1][:-1]
                 else:
-                    self.gracze[-1] += event.unicode
+                    if event.key == pygame.K_SPACE:
+                        if len(self.gracze[-1]) != 0 and self.gracze[-1][-1] != " ":
+                            self.gracze[-1] += event.unicode
+                    else:
+                        self.gracze[-1] += event.unicode
+
 
 
     def draw(self, screen, W, H):
