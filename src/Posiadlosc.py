@@ -86,6 +86,7 @@ class Posiadlosc(Pole):
         if x == 1:
             gracz.lista_posiadlosci.append(self)
             self.wlasciciel = gracz
+            self.kupione_przez = int(gracz.pionek.sciezka_do_grafiki[27])
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Gratulacje, dokonałeś zakupu {self.nazwa}!"
             )

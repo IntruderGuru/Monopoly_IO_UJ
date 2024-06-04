@@ -103,6 +103,7 @@ class Pole:
         self.typ = typ
         self.szerokosc_ratio = 1
         self.wysokosc_ratio = 1
+        self.kupione_przez = 0 #jesli 0 to nie kupione
         self.kolor_naglowka = pygame.color.THECOLORS["violet"]
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
@@ -156,6 +157,26 @@ class Pole:
         pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
         pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
+        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
         screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
-        pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(self.pozycja.x, self.pozycja.y, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
+
+    def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
+        
+        color = (0, 0, 0)
+        
+
+        if self.kupione_przez == 0:
+            return
+        elif self.kupione_przez == 1:
+            color = (255, 0, 0)
+        elif self.kupione_przez == 2:
+            color = (0, 255, 0)
+        elif self.kupione_przez == 3:
+            color = (0, 0, 255)
+        elif self.kupione_przez == 4:
+            color = (255, 255, 0)
+        elif self.kupione_przez == 5:
+            color = (184, 3, 255)
+
+        pygame.draw.rect(screen, color, pygame.Rect(self.pozycja.x- 2.5, self.pozycja.y - 2.5, szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5), width = 100)
