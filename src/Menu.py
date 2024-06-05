@@ -78,12 +78,12 @@ class Menu:
         self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
+            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
+            screen.blit(self.logo, (W * 0.25, H * 0.05))
+
             self.przyciski.nowa_gra.draw(screen)
             self.przyciski.wczytaj_gre.draw(screen)
             self.przyciski.wyjscie.draw(screen)
-
-            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.3 * H))
-            screen.blit(self.logo, (W * 0.25, H * 0.05))
 
         elif self.stan == "liczba_graczy":
             self.przyciski.two.draw(screen)
