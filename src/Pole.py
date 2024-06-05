@@ -48,31 +48,6 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    # def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
-    #     lewo = Pole.OFF_SET.x
-    #     gora = Pole.OFF_SET.y
-    #
-    #     # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
-    #     match kierunek_sciany:
-    #         case KierunekPol.Gora:
-    #             lewo += ((Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
-    #             lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING))
-    #
-    #         case KierunekPol.Prawo:
-    #             lewo += 9 * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING
-    #             gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING))
-    #             gora += ((Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
-    #
-    #         case KierunekPol.Dol:
-    #             lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)
-    #             lewo += (Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
-    #             gora += 9 * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
-    #
-    #         case KierunekPol.Lewo:
-    #             gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
-    #
-    #     return Vector2(lewo, gora)
-
     def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y

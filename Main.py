@@ -18,7 +18,6 @@ class Main:
         self.font = pygame.font.Font(None, 20)
 
         pygame.display.set_caption("Monopoly")
-        self._screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
         self._screen = pygame.display.set_mode((1200, 660), pygame.RESIZABLE)
 
         self._screen_info = pygame.display.Info()
