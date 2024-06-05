@@ -46,7 +46,8 @@ class KartaSzansy:
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
 
         elif self.typ == "cofnij_do_wiezienia":
-            gracz.uwiezienie = True
+            gracz.tury_w_wiezieniu = 2
+            gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
 
         elif self.typ == "karta_wyjscie_z_wiezienia":

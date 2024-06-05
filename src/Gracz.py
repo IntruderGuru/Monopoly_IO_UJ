@@ -6,20 +6,11 @@ class Gracz:
         self.kwota = kwota
         self.pionek = pionek
         self.pozycja = 0
-        self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
         self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
-        self.statystyka = Statystyka(kwota, self.id)
-
-    def odczekajJednaTure(self):
-        if self.uwiezienie:
-            self.tury_w_wiezieniu += 1
-            if self.tury_w_wiezieniu >= 2:
-                self.uwiezienie = False
-                self.tury_w_wiezieniu = 0
-                print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
+        self.statystyka = Statystyka(kwota, self.id)  
 
     # TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
@@ -35,7 +26,8 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                #posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -57,7 +49,8 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                #posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -131,5 +124,5 @@ class Gracz:
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
-        if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
+        if self.pionek.numer_pola < stara_pozycja and self.tury_w_wiezieniu == 0:
             self.dodaj_pieniadze(gra, 2000)
