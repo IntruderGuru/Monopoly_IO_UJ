@@ -38,14 +38,15 @@ class KartaSzansy:
 
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
-            ruch = (stara_pozycja - self.wartosc) % 40
-            gra.przesun_gracza(gracz, ruch)
+            gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
+            gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
 
         elif self.typ == "cofnij_do_wiezienia":
+            gra._kontroler_wiadomosci.dodaj_wiadomosc("Nie masz mozliwości wykupić się rzutami lub kartą")
             gracz.tury_w_wiezieniu = 2
             gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)

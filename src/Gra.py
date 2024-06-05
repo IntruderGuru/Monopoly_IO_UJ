@@ -104,6 +104,7 @@ class Gra:
         print("HELLO from Gra")
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
+        self._kolejny_rzut_kostka = False
         
         if kostka_pierwsza + kostka_druga == 7:
             self._kolejny_rzut_kostka = True
@@ -115,21 +116,19 @@ class Gra:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu = 2
             self.akcja_wiezienie_okno.czy_wiezienie = True
             self._kolejny_rzut_kostka = False
-            self._suma_oczek = 0
         else:
-            self.przesun_gracza(self._gracze[self._indeks_aktualnego_gracza], kostka_pierwsza + kostka_druga)
-            
+            self.przesun_gracza(self._gracze[self._indeks_aktualnego_gracza], kostka_pierwsza + kostka_druga)   
 
     def wyswietl_kostki(self, screen, dice1, dice2):
         #im wieksze tym mniejszy odstep
         oddalenie_kostek_od_siebie = 8.1
-        self.aktualizuj_rozmiar_kotstek()
+        self.aktualizuj_rozmiar_kostek()
         dice_x = self.aktualna_szerokosc_ekranu * 0.213
         dice_y = self.aktualna_wysokosc_ekranu * 0.38
         screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
         screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
 
-    def aktualizuj_rozmiar_kotstek(self):
+    def aktualizuj_rozmiar_kostek(self):
         #im wiekszy tym mniejsze kostki
         skalar_kostek = 10
 
@@ -199,7 +198,7 @@ class Gra:
         liczba_siodemek = 0
         for x in range(3):
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
-            suma += kostka_pierwsza + kostka_druga
+            suma = kostka_pierwsza + kostka_druga
             if suma == 7:
                 liczba_siodemek += 1
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -238,7 +237,7 @@ class Gra:
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
             
-        elif pole.typ == "idz_do_wiezienia":
+        elif pole.typ == "Idz do wiezienia":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
 
@@ -289,12 +288,7 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Ruch gracza: {self._indeks_aktualnego_gracza + 1}")
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
             
-            # 3 siodemki test
-            if self._indeks_aktualnego_gracza == 0:
-                kostka_druga = 3
-                kostka_pierwsza = 4
-            #
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga},    suma: {self._suma_oczek}")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}")
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             # Wyświetl kostki
@@ -306,6 +300,7 @@ class Gra:
         
         if not self._kolejny_rzut_kostka:
             self._indeks_aktualnego_gracza = (self._indeks_aktualnego_gracza + 1) % self._liczba_graczy
+            self._suma_oczek = 0
 
 
     def get_messages(self):
