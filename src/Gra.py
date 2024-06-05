@@ -230,9 +230,7 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            karta = self._plansza.karty.nastepna_karta()
-            karta.wyswietl_tresc(self)
-            karta.wykonaj_akcje(self, gracz)
+            self.akcja_kart_okno.przygotuj_karte()
 
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
@@ -290,6 +288,11 @@ class Gra:
             
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}")
             self._suma_oczek += kostka_pierwsza + kostka_druga
+            
+            #
+            kostka_druga = 3
+            kostka_pierwsza = 4
+            #
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
