@@ -1,5 +1,6 @@
 from src.Pole import Pole
 from src.Gracz import Gracz
+import math
 
 KOSZT_SPRZEDAZY = 0.8
 
@@ -81,6 +82,12 @@ class Posiadlosc(Pole):
             cena += self.czynsz * 125 * self.liczba_hoteli
             return cena
 
+    def aktualizuj_czynsz(self):
+        if self.wlasciciel:
+            liczba_posiadlosci = len(self.wlasciciel.lista_posiadlosci)
+            self.czynsz *= 1 + 0.05 * liczba_posiadlosci
+            self.czynsz = math.ceil(self.czynsz)
+
     def kup_posiadlosc(self, gra, gracz):
         x = gracz.wykonaj_oplate(gra, self.cena)
         if x == 1:
@@ -91,6 +98,9 @@ class Posiadlosc(Pole):
             )
             gracz.statystyka.dodaj_posiadlosc()
             gra.akcja_pola_okno.czy_akcja_pola = False
+
+            for posiadlosc in gracz.lista_posiadlosci:
+                posiadlosc.aktualizuj_czynsz()
         elif not gra.akcja_zastaw_okno.czy_zastaw:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
             gra.akcja_pola_okno.czy_akcja_pola = False

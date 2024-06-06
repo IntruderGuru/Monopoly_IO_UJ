@@ -46,7 +46,9 @@ class KartaSzansy:
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
 
         elif self.typ == "cofnij_do_wiezienia":
-            gra._kontroler_wiadomosci.dodaj_wiadomosc("Nie masz mozliwości wykupić się rzutami lub kartą")
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Nie masz mozliwości wykupić się rzutami lub kartą"
+            )
             gracz.tury_w_wiezieniu = 2
             gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
@@ -60,6 +62,7 @@ class Karty:
         self.karty = self.wczytaj_karty("data/karty.txt")
         random.shuffle(self.karty)
         self.current_index = 0
+        self.aktualna_karta = self.karty[self.current_index]
 
     def wczytaj_karty(self, plik: str) -> list[KartaSzansy]:
         karty = []

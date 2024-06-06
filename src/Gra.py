@@ -81,7 +81,9 @@ class Gra:
 
         # sekcja okien
         self._plansza = Plansza()
-        self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self._plansza.aktualizacja_rozmiaru(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
 
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -105,37 +107,58 @@ class Gra:
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         self._kolejny_rzut_kostka = False
-        
+
         if kostka_pierwsza + kostka_druga == 7:
             self._kolejny_rzut_kostka = True
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Siódemka, otrzymujesz dodatkową turę")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Siódemka, otrzymujesz dodatkową turę"
+            )
 
         if self._suma_oczek == 21:
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia")
-            self.przesun_gracza_bez_raportu(self._gracze[self._indeks_aktualnego_gracza], 10)
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
+            )
+            self.przesun_gracza_bez_raportu(
+                self._gracze[self._indeks_aktualnego_gracza], 10
+            )
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu = 2
             self.akcja_wiezienie_okno.czy_wiezienie = True
             self._kolejny_rzut_kostka = False
         else:
-            self.przesun_gracza(self._gracze[self._indeks_aktualnego_gracza], kostka_pierwsza + kostka_druga)   
+            self.przesun_gracza(
+                self._gracze[self._indeks_aktualnego_gracza],
+                kostka_pierwsza + kostka_druga,
+            )
 
     def wyswietl_kostki(self, screen, dice1, dice2):
-        #im wieksze tym mniejszy odstep
+        # im wieksze tym mniejszy odstep
         oddalenie_kostek_od_siebie = 8.1
         self.aktualizuj_rozmiar_kostek()
         dice_x = self.aktualna_szerokosc_ekranu * 0.213
         dice_y = self.aktualna_wysokosc_ekranu * 0.38
         screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
-        screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
+        screen.blit(
+            self.dice_images[dice2 - 1],
+            (
+                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
+                dice_y,
+            ),
+        )
 
     def aktualizuj_rozmiar_kostek(self):
-        #im wiekszy tym mniejsze kostki
+        # im wiekszy tym mniejsze kostki
         skalar_kostek = 10
 
         for i in range(1, 7):
             image_path = f"graphics/dice/dice{i}.png"
             image = pygame.image.load(image_path)
-            self.dice_images[i - 1] = pygame.transform.scale(image, (self.aktualna_wysokosc_ekranu / skalar_kostek, self.aktualna_wysokosc_ekranu / skalar_kostek))
+            self.dice_images[i - 1] = pygame.transform.scale(
+                image,
+                (
+                    self.aktualna_wysokosc_ekranu / skalar_kostek,
+                    self.aktualna_wysokosc_ekranu / skalar_kostek,
+                ),
+            )
 
     def symuluj_rzut(self):
         liczba_klatek = 5  # Liczba klatek animacji
@@ -207,7 +230,7 @@ class Gra:
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
-            
+
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
@@ -234,7 +257,7 @@ class Gra:
 
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
-            
+
         elif pole.typ == "Idz do wiezienia":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
@@ -247,17 +270,16 @@ class Gra:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'"
                 )
-            else:    
+            else:
                 gracz.tury_w_wiezieniu = 2
                 self.przesun_gracza_bez_raportu(
                     self._gracze[self._indeks_aktualnego_gracza], 10
                 )
-               
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-                #posiadlosc.wyswietl_info(self)
+                # posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:
                     self.czy_akcja_zakonczona = False
                     self.akcja_pola_okno.czy_akcja_pola = True
@@ -273,26 +295,36 @@ class Gra:
                 raise Exception("Błąd. Posiadłość jest innym polem")
 
     def tura(self):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Teraz tura gracza: {self._indeks_aktualnego_gracza + 1}")
-        
+        self._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Teraz tura gracza: {self._indeks_aktualnego_gracza + 1}"
+        )
+
         if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
             if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
-                self._kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self._indeks_aktualnego_gracza + 1} opuszcza więzienie")
-            else: 
-                self._kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur.")
-        
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} opuszcza więzienie"
+                )
+            else:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                )
+
         else:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Ruch gracza: {self._indeks_aktualnego_gracza + 1}")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Ruch gracza: {self._indeks_aktualnego_gracza + 1}"
+            )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
-            
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}")
+
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+            )
             self._suma_oczek += kostka_pierwsza + kostka_druga
-            
-            #
-            kostka_druga = 3
-            kostka_pierwsza = 4
-            #
+
+            # #
+            # kostka_druga = 3
+            # kostka_pierwsza = 4
+            # #
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
@@ -300,11 +332,12 @@ class Gra:
             pygame.time.wait(1000)
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
-        
-        if not self._kolejny_rzut_kostka:
-            self._indeks_aktualnego_gracza = (self._indeks_aktualnego_gracza + 1) % self._liczba_graczy
-            self._suma_oczek = 0
 
+        if not self._kolejny_rzut_kostka:
+            self._indeks_aktualnego_gracza = (
+                self._indeks_aktualnego_gracza + 1
+            ) % self._liczba_graczy
+            self._suma_oczek = 0
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -366,10 +399,14 @@ class Gra:
 
             # Rozmiar nie moze byc mniejszy niz 500 na 500
             # if event.w > 1000 and event.h > 550:
-            self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+            self._plansza.aktualizacja_rozmiaru(
+                self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+            )
 
             for gracz in self._gracze:
-                gracz.pionek.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+                gracz.pionek.aktualizacja_rozmiaru(
+                    self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+                )
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
@@ -409,7 +446,7 @@ class Gra:
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
-        self.akcja_zagadek_okno.wyswietl(self._glowne_okno) 
+        self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -436,17 +473,36 @@ class Gra:
 
     def wypisz_nazwe_gracza_tury(self):
         napis = "Tura gracza:"
-        sciezka_do_pionka = self._gracze[self._indeks_aktualnego_gracza].pionek.sciezka_do_grafiki
+        sciezka_do_pionka = self._gracze[
+            self._indeks_aktualnego_gracza
+        ].pionek.sciezka_do_grafiki
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki))
-
-        self.zdjecie_pionek = pygame.transform.scale(
-            pygame.image.load(sciezka_do_pionka), (0.03 * self.aktualna_szerokosc_ekranu, 0.03 * self.aktualna_szerokosc_ekranu)
+        self.font = pygame.font.Font(
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
         )
 
-        self._glowne_okno.blit(self.zdjecie_pionek, (self.aktualna_szerokosc_ekranu * 0.32, self.aktualna_wysokosc_ekranu * 0.285))
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(sciezka_do_pionka),
+            (
+                0.03 * self.aktualna_szerokosc_ekranu,
+                0.03 * self.aktualna_szerokosc_ekranu,
+            ),
+        )
+
+        self._glowne_okno.blit(
+            self.zdjecie_pionek,
+            (
+                self.aktualna_szerokosc_ekranu * 0.32,
+                self.aktualna_wysokosc_ekranu * 0.285,
+            ),
+        )
 
         tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
-        self._glowne_okno.blit(tekst, (self.aktualna_szerokosc_ekranu * 0.21, self.aktualna_wysokosc_ekranu * 0.3))
-       
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.3,
+            ),
+        )
