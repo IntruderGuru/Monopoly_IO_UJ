@@ -49,7 +49,8 @@ class AkcjaZagadekOkno(Okno):
         self.odpowiedz_C = "empty"
 
         self.skalar_czcionki = 28  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + "x"
         self.informacja_o_zagadce = (
@@ -64,13 +65,15 @@ class AkcjaZagadekOkno(Okno):
 
         if self.A.is_clicked(event):
             self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_A)
+                self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                       Odpowiedz.Odpowiedz_A)
             )
             self.czy_zagadka = False
             self.zamknij()
         elif self.B.is_clicked(event):
             self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_B)
+                self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                       Odpowiedz.Odpowiedz_B)
             )
             self.czy_zagadka = False
             self.zamknij()
@@ -88,13 +91,17 @@ class AkcjaZagadekOkno(Okno):
             screen.fill(self.gra.kolor_tla)
             screen.blit(self.podatek, (self.W * 0.18, self.H * 0.2))
             screen.blit(self.info, (self.W * 0.19, self.H * 0.27))
-            offset_height_percent = self.wyswietl_lamana_tresc_zagadki(screen, self.tekst_zagadki, self.W * 0.2, self.H * 0.4)
+            offset_height_percent = self.wyswietl_lamana_tresc_zagadki(
+                screen, self.tekst_zagadki, self.W * 0.2, self.H * 0.4)
 
             # odpowiedzi
             offset_height_percent -= 0.05
-            screen.blit(self.oA, (self.W * 0.3, self.H * (0.54 + offset_height_percent)))
-            screen.blit(self.oB, (self.W * 0.3, self.H * (0.66 + offset_height_percent)))
-            screen.blit(self.oC, (self.W * 0.3, self.H * (0.78 + offset_height_percent)))
+            screen.blit(self.oA, (self.W * 0.3, self.H *
+                        (0.54 + offset_height_percent)))
+            screen.blit(self.oB, (self.W * 0.3, self.H *
+                        (0.66 + offset_height_percent)))
+            screen.blit(self.oC, (self.W * 0.3, self.H *
+                        (0.78 + offset_height_percent)))
 
             self.wyswietl_przyciski(screen, offset_height_percent)
 
@@ -116,18 +123,25 @@ class AkcjaZagadekOkno(Okno):
         self.pole = pole
 
     def zaktualizuj_rozmiar_czcionki(self):
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.podatek = self.font.render(
             self.informacja_o_podatku_z_cena, True, self.gra.kolor_czcionki
         )
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki) - 15)
-        self.info = self.font.render(self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
-        self.zagadka = self.font.render(self.tekst_zagadki, True, self.gra.kolor_czcionki)
+        self.font = pygame.font.Font(self.gra.czcionka, int(
+            self.W / self.skalar_czcionki) - 15)
+        self.info = self.font.render(
+            self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
+        self.zagadka = self.font.render(
+            self.tekst_zagadki, True, self.gra.kolor_czcionki)
 
         # odpowiedzi
-        self.oA = self.font.render(self.odpowiedz_A, True, self.gra.kolor_czcionki)
-        self.oB = self.font.render(self.odpowiedz_B, True, self.gra.kolor_czcionki)
-        self.oC = self.font.render(self.odpowiedz_C, True, self.gra.kolor_czcionki)
+        self.oA = self.font.render(
+            self.odpowiedz_A, True, self.gra.kolor_czcionki)
+        self.oB = self.font.render(
+            self.odpowiedz_B, True, self.gra.kolor_czcionki)
+        self.oC = self.font.render(
+            self.odpowiedz_C, True, self.gra.kolor_czcionki)
 
     def wyswietl_lamana_tresc_zagadki(self, screen, tekst: str, start_x, start_y) -> float:
         """
@@ -145,7 +159,8 @@ class AkcjaZagadekOkno(Okno):
         # ze stacka xD
         for line in wyrazy:
             for word in line:
-                word_surface = self.font.render(word, 0, self.gra.kolor_czcionki)
+                word_surface = self.font.render(
+                    word, 0, self.gra.kolor_czcionki)
                 word_width, word_height = word_surface.get_size()
                 if x + word_width >= maksymalna_szerokosc:
                     x = start_x         # Reset the x.
@@ -158,11 +173,14 @@ class AkcjaZagadekOkno(Okno):
         return (y - start_y) / self.gra.aktualna_wysokosc_ekranu
 
     def wyswietl_przyciski(self, screen, offset_height_percent):
-        self.A.updateSize(self.W * 0.2, self.H * (0.5 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.A.updateSize(self.W * 0.2, self.H * (0.5 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.A.draw(screen)
-        self.B.updateSize(self.W * 0.2, self.H * (0.62 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.B.updateSize(self.W * 0.2, self.H * (0.62 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.B.draw(screen)
-        self.C.updateSize(self.W * 0.2, self.H * (0.74 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.C.updateSize(self.W * 0.2, self.H * (0.74 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.C.draw(screen)
 
     def aktualizuj_rozmiar_okna(self, width, height):

@@ -53,9 +53,6 @@ class Main:
             if self.menu.stan != "stop":
                 self.menu.draw(self._screen, self._screen_width, self._screen_height)
             else:
-                self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    "Wprowadź liczbę graczy między (2-5) :"
-                )
                 self._gra = Gra(
                     self._screen,
                     self._kontroler_wiadomosci,

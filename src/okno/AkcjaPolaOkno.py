@@ -51,7 +51,7 @@ class AkcjaPolaOkno(Okno):
             self.gra.kolor_tekstu,
         )
 
-        self.pole_png= None
+        self.pole_png = None
         self.najechano_na_pole = False
 
         self.czy_akcja_pola = False
@@ -59,7 +59,9 @@ class AkcjaPolaOkno(Okno):
         self.posiadlosc_do_zakupu = None
 
         self.skalar_czcionki = 60  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
 
     def aktualizacja(self):
         pass
@@ -80,18 +82,16 @@ class AkcjaPolaOkno(Okno):
         if self.czy_akcja_pola:
             if self.karta.czy_najechano():
                 self.pole_png = pygame.transform.scale(
-                pygame.image.load("graphics/pola/pole_tyl_karty.png"),
-                (0.24 * self.W, 0.64 * self.H),
+                    pygame.image.load("graphics/pola/pole_tyl_karty.png"),
+                    (0.24 * self.W, 0.64 * self.H),
                 )
                 self.najechano_na_pole = True
             else:
                 self.pole_png = pygame.transform.scale(
-                pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
-                (0.24 * self.W, 0.64 * self.H),
+                    pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
+                    (0.24 * self.W, 0.64 * self.H),
                 )
                 self.najechano_na_pole = False
-
-
 
     def wyswietl(self, screen: pygame.Surface):
 
@@ -99,10 +99,7 @@ class AkcjaPolaOkno(Okno):
 
         if self.czy_akcja_pola:
             self.zakup.updateSize(
-                self.W * 0.6,
-                self.H * 0.2,
-                self.W * 0.2,
-                self.H * 0.15
+                self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
             )
             self.licytacja.updateSize(
                 self.W * 0.6,
@@ -118,17 +115,15 @@ class AkcjaPolaOkno(Okno):
             )
 
             self.karta.updateSize(
-                self.W * 0.2,
-                self.H * 0.15,
-                0.24 * self.W, 
-                0.64 * self.H
+                self.W * 0.2, self.H * 0.15, 0.24 * self.W, 0.64 * self.H
             )
 
             nakladka = pygame.Surface(screen.get_size())
-            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.set_alpha(
+                self.gra.przezroczystosc_nakladki
+            )  # Ustaw przezroczystość (0-255)
             nakladka.fill(self.gra.kolor_nakladki)
             screen.blit(nakladka, (0, 0))
-
 
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
@@ -142,10 +137,27 @@ class AkcjaPolaOkno(Okno):
             self.odleglosc_pionowa = 0.03
             self.wysokosc_napisow = 0.42
             if self.najechano_na_pole:
-                screen.blit(self.czynsz_bez_nieruchomosci, (self.W * 0.23, self.H * (self.wysokosc_napisow + (0 * self.odleglosc_pionowa))))
-                screen.blit(self.wzrost_czynszu_dom, (self.W * 0.23, self.H * (self.wysokosc_napisow + (1 * self.odleglosc_pionowa))))
-                screen.blit(self.wzrost_czynszu_hotel, (self.W * 0.23, self.H * (self.wysokosc_napisow + (2 * self.odleglosc_pionowa))))
-
+                screen.blit(
+                    self.czynsz_bez_nieruchomosci,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (0 * self.odleglosc_pionowa)),
+                    ),
+                )
+                screen.blit(
+                    self.wzrost_czynszu_dom,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (1 * self.odleglosc_pionowa)),
+                    ),
+                )
+                screen.blit(
+                    self.wzrost_czynszu_hotel,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (2 * self.odleglosc_pionowa)),
+                    ),
+                )
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
@@ -168,14 +180,29 @@ class AkcjaPolaOkno(Okno):
         self.gra.czy_akcja_zakonczona = True
 
     def zaktualizuj_tekst_i_rozmiar(self):
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-
-        self.czynsz_bez_nieruchomosci = self.font.render(
-            "Czynsz bez nieruchomości: " + str(100), True, self.gra.kolor_czcionki_tyl_karty
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
         )
+
+        if self.posiadlosc_do_zakupu is None:
+            self.czynsz_bez_nieruchomosci = self.font.render(
+                "Czynsz bez nieruchomości: " + str(100),
+                True,
+                self.gra.kolor_czcionki_tyl_karty,
+            )
+        else:
+            self.czynsz_bez_nieruchomosci = self.font.render(
+                "Czynsz bez nieruchomości: " + str(self.posiadlosc_do_zakupu.czynsz),
+                True,
+                self.gra.kolor_czcionki_tyl_karty,
+            )
         self.wzrost_czynszu_dom = self.font.render(
-            "Wzrost czynszu (domek +): " + str(70), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (domek +): " + str(70),
+            True,
+            self.gra.kolor_czcionki_tyl_karty,
         )
         self.wzrost_czynszu_hotel = self.font.render(
-            "Wzrost czynszu (hotel +): " + str(100), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (hotel +): " + str(100),
+            True,
+            self.gra.kolor_czcionki_tyl_karty,
         )

@@ -20,7 +20,8 @@ class KartaSzansy:
                     g.wykonaj_oplate(gra, self.wartosc)
                     gracz.dodaj_pieniadze(gra, self.wartosc)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {gracz.id} otrzymuje {self.wartosc} zł od każdego gracza"
+                f"Gracz {gracz.id} otrzymuje {
+                    self.wartosc} zł od każdego gracza"
             )
 
         elif self.typ == "oplata":
@@ -38,15 +39,19 @@ class KartaSzansy:
 
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
-            ruch = (stara_pozycja - self.wartosc) % 40
-            gra.przesun_gracza(gracz, ruch)
+            gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
+            gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
 
         elif self.typ == "cofnij_do_wiezienia":
-            gracz.uwiezienie = True
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Nie masz mozliwości wykupić się rzutami lub kartą"
+            )
+            gracz.tury_w_wiezieniu = 2
+            gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
 
         elif self.typ == "karta_wyjscie_z_wiezienia":
@@ -58,6 +63,7 @@ class Karty:
         self.karty = self.wczytaj_karty("data/karty.txt")
         random.shuffle(self.karty)
         self.current_index = 0
+        self.aktualna_karta = self.karty[self.current_index]
 
     def wczytaj_karty(self, plik: str) -> list[KartaSzansy]:
         karty = []
@@ -67,7 +73,8 @@ class Karty:
             while i < len(lines):
                 if i + 2 >= len(lines):
                     raise ValueError(
-                        f"Problem w linii {i}. Każda karta powinna mieć 3 linie danych."
+                        f"Problem w linii {
+                            i}. Każda karta powinna mieć 3 linie danych."
                     )
                 typ = lines[i].strip()
                 tresc = lines[i + 1].strip()
@@ -79,5 +86,6 @@ class Karty:
 
     def nastepna_karta(self):
         karta = self.karty[self.current_index]
+        self.aktualna_karta = karta
         self.current_index = (self.current_index + 1) % len(self.karty)
         return karta

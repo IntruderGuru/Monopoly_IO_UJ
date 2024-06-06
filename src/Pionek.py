@@ -42,7 +42,7 @@ class Pionek:
         self.zdjecie_pionek = pygame.transform.scale(
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
-
+        
     def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
         gora = Pionek.OFF_SET.y
@@ -69,14 +69,15 @@ class Pionek:
         return Vector2(lewo, gora)
 
     def przesun(self, liczba_pol: int) -> bool:
-        if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
-            self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
-            self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
-            self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        if liczba_pol <= 0:
+            return False
 
-            return True
+        self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
+        self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
-        return False
+        return True
+
 
     def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
         szerokosc_ekranu = 1200
