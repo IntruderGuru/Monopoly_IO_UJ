@@ -107,8 +107,7 @@ class Gracz:
     def wykonaj_oplate(self, gra, cena):
         if cena > self.kwota:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Brakuje Ci {
-                    cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?"
+                f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?"
             )
             gra.akcja_zastaw_okno.czy_zastaw = True
             gra.akcja_zastaw_okno.akcja_zastawiania(self)

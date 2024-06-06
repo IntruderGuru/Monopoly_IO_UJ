@@ -20,8 +20,7 @@ class KartaSzansy:
                     g.wykonaj_oplate(gra, self.wartosc)
                     gracz.dodaj_pieniadze(gra, self.wartosc)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {gracz.id} otrzymuje {
-                    self.wartosc} zł od każdego gracza"
+                f"Gracz {gracz.id} otrzymuje {self.wartosc} zł od każdego gracza"
             )
 
         elif self.typ == "oplata":
@@ -73,8 +72,7 @@ class Karty:
             while i < len(lines):
                 if i + 2 >= len(lines):
                     raise ValueError(
-                        f"Problem w linii {
-                            i}. Każda karta powinna mieć 3 linie danych."
+                        f"Problem w linii {i}. Każda karta powinna mieć 3 linie danych."
                     )
                 typ = lines[i].strip()
                 tresc = lines[i + 1].strip()
