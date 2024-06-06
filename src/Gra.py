@@ -320,7 +320,7 @@ class Gra:
 
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Ruch gracza: {self._indeks_aktualnego_gracza + 1}"
+                f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
             )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
