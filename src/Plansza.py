@@ -71,7 +71,9 @@ class Plansza:
     #
     # def wysrodkuj_plansze(self):
 
-    # def update(self):
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        for pole in self.plansza:
+            pole.aktualizacja_rozmiaru(szerokosc, wysokosc)
 
     def render(self, screen):
         for pole in self.plansza:

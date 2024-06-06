@@ -9,9 +9,10 @@ class Menu:
         self.stan = "witaj"
         self.liczba_graczy = 0
         self.gracze = []
-        self.font = pygame.font.Font(None, 32)
-        self.wizualizator = wizualizator
-        self.H = 800
+        self.wizualizator: Wizualizator = wizualizator
+        self.font = pygame.font.Font(self.wizualizator.czcionka, 32)
+        self.H = 660
+        # self.H = 800
         self.W = 1200
 
         self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
@@ -21,8 +22,8 @@ class Menu:
         )
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
     def handle_event(self, event, W, H):
 
@@ -46,8 +47,10 @@ class Menu:
                     self.liczba_graczy = 4
                 elif self.przyciski.five.is_clicked(event):
                     self.liczba_graczy = 5
-                self.stan = "nazwy_graczy"
-                self.gracze.append("")
+
+                if self.liczba_graczy > 1:
+                    self.stan = "nazwy_graczy"
+                    self.gracze.append("")
 
         elif event.type == pygame.KEYDOWN:
             
@@ -63,24 +66,26 @@ class Menu:
                 elif event.key == pygame.K_BACKSPACE:
                     self.gracze[-1] = self.gracze[-1][:-1]
                 else:
-                    self.gracze[-1] += event.unicode
-
+                    if event.key == pygame.K_SPACE:
+                        if len(self.gracze[-1]) != 0 and self.gracze[-1][-1] != " ":
+                            self.gracze[-1] += event.unicode
+                    else:
+                        self.gracze[-1] += event.unicode
 
     def draw(self, screen, W, H):
 
-        self.font = pygame.font.Font(None, int(W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(None, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(self.wizualizator.czcionka, int(W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
+            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
+            screen.blit(self.logo, (W * 0.25, H * 0.05))
+
             self.przyciski.nowa_gra.draw(screen)
             self.przyciski.wczytaj_gre.draw(screen)
             self.przyciski.wyjscie.draw(screen)
 
-            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.3 * H))
-            screen.blit(self.logo, (W * 0.25, H * 0.05))
-
         elif self.stan == "liczba_graczy":
-            text = self.font.render("Wprowadź liczbę graczy", True, self.wizualizator.kolor_czcionki)
             self.przyciski.two.draw(screen)
             self.przyciski.three.draw(screen)
             self.przyciski.four.draw(screen)

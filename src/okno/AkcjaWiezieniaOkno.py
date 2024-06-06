@@ -1,4 +1,4 @@
-from src.Okno.Okno import Okno
+from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 
@@ -27,23 +27,28 @@ class AkcjaWiezieniaOkno(Okno):
         self.czy_wiezienie = False
 
         self.skalar_czcionki = 24  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_wiezeniu = "idziesz do więzienia, stoisz 2 tury"
 
     def aktualizacja(self):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.wyjscie.is_clicked(event):
-            self.czy_wiezienie = False
-            self.zamknij()
+        if self.czy_wiezienie:
+            if self.wyjscie.is_clicked(event):
+                self.zamknij()
+                self.czy_wiezienie = False
 
     def wyswietl(self, screen: pygame.Surface):
         H = self.H
         W = self.W
 
         if self.czy_wiezienie:
-            screen.fill(self.gra.kolor_tla)
+            
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
 
             self.zaktualizuj_rozmiar_czcionki()
             self.wyswietl_teksty(screen)
@@ -60,7 +65,7 @@ class AkcjaWiezieniaOkno(Okno):
         self.H = height
 
     def zaktualizuj_rozmiar_czcionki(self):
-        self.font = pygame.font.Font(None, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.tekst = self.font.render(self.informacja_o_wiezeniu, True, (0, 0, 0))
 
     def wyswietl_teksty(self, screen):

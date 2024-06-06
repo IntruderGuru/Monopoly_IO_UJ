@@ -1,4 +1,4 @@
-from src.Okno.Okno import Okno
+from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 
@@ -61,20 +61,27 @@ class AkcjaNieruchomosciOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
-            self.kup_domek()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
-            self.kup_hotel()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.wyjscie.is_clicked(event):
-            self.czy_kupno = False
-            self.zamknij()
+        if self.czy_kupno:
+            if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
+                self.kup_domek()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
+                self.kup_hotel()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.wyjscie.is_clicked(event):
+                self.czy_kupno = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
+
         if self.czy_kupno:
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
+
             self.pole_png = pygame.transform.scale(
                 self.pole_png, (0.24 * self.W, 0.64 * self.H)
             )

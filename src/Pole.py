@@ -19,11 +19,11 @@ class Vector2(NamedTuple):
 
 class Pole:
     WYMIAR_NAGLOWKA: Vector2 = Vector2(30, 50)
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(44, 70)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(70, 70)
     KOLOR_TLA = pygame.Color(28,28,30,255)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    OFF_SET: Vector2 = Vector2(12, 12)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
@@ -48,8 +48,7 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    @staticmethod
-    def inicjalizacja_pozycji(numer_pola, kierunek_sciany) -> Vector2:
+    def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
 
@@ -72,11 +71,14 @@ class Pole:
             case KierunekPol.Lewo:
                 gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y + Pole.SPACING
 
-        return Vector2(lewo, gora)
+        return Vector2(lewo * self.szerokosc_ratio, gora * self.wysokosc_ratio)
 
     def __init__(self, numer: int, typ: str):
         self.numer = numer
         self.typ = typ
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
+        self.kupione_przez = 0 #jesli 0 to nie kupione
         self.kolor_naglowka = pygame.color.THECOLORS["violet"]
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
@@ -86,24 +88,70 @@ class Pole:
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
 
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 660
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        # print((szerokosc, wysokosc))
+
+        self.pozycja = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
+
     def render(self, screen):
         szerokosc_aktualny_kierunek = self.wymiary.x if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.y
         wysokosc_aktualny_kierunek = self.wymiary.y if self.kierunek_sciany in (KierunekPol.Gora, KierunekPol.Dol) else self.wymiary.x
-        
-        if self.numer in (0, 10, 20, 30):
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.DUZE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Dol:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-        elif self.kierunek_sciany == KierunekPol.Lewo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 270)
-        elif self.kierunek_sciany == KierunekPol.Gora:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 180)
-        elif self.kierunek_sciany == KierunekPol.Prawo:
-            pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), self.MALE_POLE_WYMIARY)
-            pole_surface = pygame.transform.rotate(pole_surface, 90)
 
+        szerokosc_aktualny_kierunek *= self.szerokosc_ratio
+        wysokosc_aktualny_kierunek *= self.wysokosc_ratio
+
+        test_wymiary = Pole.DUZE_POLE_WYMIARY if self.numer in (0, 10, 20, 30) else Pole.MALE_POLE_WYMIARY
+        nowa_szerokosc = test_wymiary.x
+        nowa_wysokosc = test_wymiary.y
+
+        obrot = 0
+        match self.kierunek_sciany:
+            case KierunekPol.Dol:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 0
+            case KierunekPol.Lewo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 270
+            case KierunekPol.Gora:
+                nowa_szerokosc *= self.szerokosc_ratio
+                nowa_wysokosc *= self.wysokosc_ratio
+                obrot = 180
+            case KierunekPol.Prawo:
+                nowa_szerokosc *= self.wysokosc_ratio
+                nowa_wysokosc *= self.szerokosc_ratio
+                obrot = 90
+
+        pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
+        pole_surface = pygame.transform.rotate(pole_surface, obrot)
+
+        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
         screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
-        pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(self.pozycja.x, self.pozycja.y, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
+
+    def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
+        
+        color = (0, 0, 0)
+        
+
+        if self.kupione_przez == 0:
+            return
+        elif self.kupione_przez == 1:
+            color = (255, 0, 0)
+        elif self.kupione_przez == 2:
+            color = (0, 255, 0)
+        elif self.kupione_przez == 3:
+            color = (0, 0, 255)
+        elif self.kupione_przez == 4:
+            color = (255, 255, 0)
+        elif self.kupione_przez == 5:
+            color = (184, 3, 255)
+
+        pygame.draw.rect(screen, color, pygame.Rect(self.pozycja.x- 2.5, self.pozycja.y - 2.5, szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5), width = 100)

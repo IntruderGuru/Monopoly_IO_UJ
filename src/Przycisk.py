@@ -1,4 +1,5 @@
 import pygame
+from src.Wizualizator import Wizualizator
 
 
 class Przycisk:
@@ -8,7 +9,8 @@ class Przycisk:
         self.hover_color: pygame.Color = hover_color
         self.text = text
         self.text_color = text_color
-        self.font = pygame.font.Font(None, 36)
+        self.wizualizator = Wizualizator()
+        self.font = pygame.font.Font(self.wizualizator.czcionka_przycisku, 36)
 
     def pobierz_wymiary(self) -> pygame.Rect:
         return self.rect
@@ -26,7 +28,7 @@ class Przycisk:
 
     def is_clicked(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and self.rect.collidepoint(event.pos):
+            if event.button == pygame.BUTTON_LEFT and self.rect.collidepoint(event.pos):
                 return True
         return False
 
@@ -35,3 +37,8 @@ class Przycisk:
             return
 
         self.rect = pygame.Rect(x, y, width, height)
+
+    def czy_najechano(self):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hover = self.rect.collidepoint(mouse_pos)
+        return is_hover

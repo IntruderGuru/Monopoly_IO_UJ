@@ -21,17 +21,31 @@ class Pionek:
     DLUGOSC_SCIANKI_W_POLACH = 10
     LICZBA_POL = 40
 
-    MALE_POLE_WYMIARY: Vector2 = Vector2(30, 50)
-    # warning: najlepiej gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(50, 50)
-    OFF_SET: Vector2 = Vector2(100, 100)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(44, 70)
+    # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(70, 70)
+    OFF_SET: Vector2 = Vector2(12, 12)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
     DLUGOSC_SCIANY_W_POLACH = 10
 
-    @staticmethod
-    def oblicz_nowa_pozycje(numer_pola, kierunek_sciany) -> Vector2:
+    def __init__(self, numer_pola: int, color: pygame.color, grafika: str, W, H):
+        self.numer_pola = numer_pola
+        self.color = color
+        self.sciezka_do_grafiki = grafika
+        self.szerokosc_ratio = 1
+        self.wysokosc_ratio = 1
+        self.W = W
+        self.H = H
+        self.kierunek: KierunekPol = KierunekPol.Gora
+        self.wymiary: Vector2 = Vector2(20, 20)
+        self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
+        )
+        
+    def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
         gora = Pionek.OFF_SET.y
 
@@ -54,26 +68,36 @@ class Pionek:
             case KierunekPol.Lewo:
                 gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
 
-        return Vector2(lewo, gora)
-
-    def __init__(self, numer_pola: int, color: pygame.color, grafika: str):
-        self.numer_pola = numer_pola
-        self.color = color
-        self.grafika = grafika
-        self.kierunek: KierunekPol = KierunekPol.Gora
-        self.wymiary: Vector2 = Vector2(20, 20)
-        self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        return Vector2(lewo * self.szerokosc_ratio, gora * self.wysokosc_ratio)
 
     def przesun(self, liczba_pol: int) -> bool:
-        if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
-            self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
-            self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
-            self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        if liczba_pol <= 0:
+            return False
 
-            return True
+        self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
+        self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
-        return False
+        return True
+
+
+    def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 660
+        self.W = szerokosc
+        self.H = wysokosc
+
+        self.szerokosc_ratio = szerokosc / szerokosc_ekranu
+        self.wysokosc_ratio = wysokosc / wysokosc_ekranu
+
+        print(self.pozycja)
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        print(self.pozycja)
 
     def wyswietl(self, okno: pygame.Surface):
-        pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
-
+        skalar = 35
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(self.sciezka_do_grafiki), (self.W / skalar, self.W / skalar)
+        )
+        # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
+        okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))

@@ -1,22 +1,17 @@
+from src.Statystyka import Statystyka
+
+
 class Gracz:
     def __init__(self, id, kwota, pionek):
         self.id = id
         self.kwota = kwota
         self.pionek = pionek
         self.pozycja = 0
-        self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
         self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
-
-    def odczekajJednaTure(self):
-        if self.uwiezienie:
-            self.tury_w_wiezieniu += 1
-            if self.tury_w_wiezieniu >= 2:
-                self.uwiezienie = False
-                self.tury_w_wiezieniu = 0
-                print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
+        self.statystyka = Statystyka(kwota, self.id)
 
     # TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
@@ -32,13 +27,16 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                # posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
         self.lista_posiadlosci[x].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[x].zastaw_kwota
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
@@ -53,7 +51,9 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                # posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -66,6 +66,7 @@ class Gracz:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości"
             )
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zaplac_czynsz(self, gra, posiadlosc):
         czynsz = posiadlosc.oblicz_czynsz(gra)
@@ -112,7 +113,10 @@ class Gracz:
             gra.akcja_zastaw_okno.akcja_zastawiania(self)
         else:
             self.kwota -= cena
+            self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
             return 1
+
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
         return 0
 
     def dodaj_pieniadze(self, gra, cena):
@@ -120,7 +124,8 @@ class Gracz:
         gra._kontroler_wiadomosci.dodaj_wiadomosc(
             f"Gracz {self.id} otrzymał {cena} pieniędzy"
         )
+        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
-        if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
+        if self.pionek.numer_pola < stara_pozycja and self.tury_w_wiezieniu == 0:
             self.dodaj_pieniadze(gra, 2000)

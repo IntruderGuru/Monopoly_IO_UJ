@@ -1,4 +1,4 @@
-from src.Okno.Okno import Okno
+from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
 import pygame
 
@@ -51,7 +51,14 @@ class AkcjaZastawOkno(Okno):
                 self.czy_zastaw = False
 
     def wyswietl(self, screen: pygame.Surface):
+
         if self.czy_zastaw:
+
+            nakladka = pygame.Surface(screen.get_size())
+            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.fill(self.gra.kolor_nakladki)
+            screen.blit(nakladka, (0, 0))
+            
             self.pole_png = pygame.transform.scale(
                 self.pole_png, (0.24 * self.W, 0.64 * self.H)
             )
