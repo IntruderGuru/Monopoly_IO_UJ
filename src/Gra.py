@@ -42,6 +42,7 @@ class Gra:
         wizualizator,
         szerokosc_ekranu,
         wysokosc_ekranu,
+        main_ref,
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
@@ -54,7 +55,7 @@ class Gra:
                     "graphics/pionek/PionekColor" + str(i + 1) + ".png",
                     szerokosc_ekranu,
                     wysokosc_ekranu,
-                    liczba_graczy
+                    liczba_graczy,
                 ),
             )
             for i, name in enumerate(gracze)
@@ -69,6 +70,7 @@ class Gra:
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
+        self.main = main_ref
 
         # sekcja wizualna
         self.kolor_przycisku = self.wizualizator.kolor_przycisku
@@ -144,8 +146,7 @@ class Gra:
         screen.blit(
             self.dice_images[dice2 - 1],
             (
-                dice_x + (self.aktualna_wysokosc_ekranu /
-                          oddalenie_kostek_od_siebie),
+                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
                 dice_y,
             ),
         )
@@ -232,8 +233,7 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self.wyswietl_kostki(
-                self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
@@ -262,15 +262,13 @@ class Gra:
             self.akcja_kart_okno.przygotuj_karte()
 
         elif pole.typ == "Wiezienie":
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Gracz odwiedza więzienie")
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
 
         elif pole.typ == "Idz do wiezienia":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
 
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Gracz idzie do więzienia")
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
                 return
             if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
@@ -295,11 +293,9 @@ class Gra:
                 elif posiadlosc.wlasciciel == gracz.id:
                     self.czy_akcja_zakonczona = False
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                    self.akcja_nieruchomosci_okno.akcja_kupowania(
-                        posiadlosc, gracz)
+                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc(
-                        "Gracz płaci czynsz")
+                    self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
                 raise Exception("Błąd. Posiadłość jest innym polem")
@@ -337,8 +333,7 @@ class Gra:
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             # Wyświetl kostki
-            self.wyswietl_kostki(
-                self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
@@ -349,6 +344,8 @@ class Gra:
                 self._indeks_aktualnego_gracza + 1
             ) % self._liczba_graczy
             self._suma_oczek = 0
+
+        self.main.turn_start_time = pygame.time.get_ticks()
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -366,8 +363,7 @@ class Gra:
         #     self._stos_otwartych_okien.usun()
 
     def process_input(self, input_text):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Wprowadzono: {input_text}")
+        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
         if input_text.isdigit():
             liczba_graczy = int(input_text)
             if liczba_graczy >= 2 and liczba_graczy <= 5:
@@ -435,6 +431,32 @@ class Gra:
         text_surface = self.font.render(text, True, (0, 0, 0))
         self._glowne_okno.blit(text_surface, pos)
 
+    def render_game_time(self):
+        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
+        tekst = self.font.render(
+            game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.20,
+            ),
+        )
+
+    def render_turn_time(self):
+        turn_time_text = f"Czas tury: {int(self.main.uplyniety_czas_tury):02}"
+        tekst = self.font.render(
+            turn_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.25,
+            ),
+        )
+
     # override
     def wyswietl(self, okno: pygame.Surface, W, H):
 
@@ -442,8 +464,7 @@ class Gra:
 
         self.render_text(
             self.input_text,
-            (self.aktualna_szerokosc_ekranu - 400,
-             self.aktualna_wysokosc_ekranu - 50),
+            (self.aktualna_szerokosc_ekranu - 400, self.aktualna_wysokosc_ekranu - 50),
         )
 
         self._plansza.render(self._glowne_okno)
@@ -485,6 +506,9 @@ class Gra:
         )
 
     def wypisz_nazwe_gracza_tury(self):
+        self.render_game_time()  # Wyświetlanie czasu gry
+        self.render_turn_time()  # Wyświetlanie czasu tury
+
         napis = "Tura gracza:"
         sciezka_do_pionka = self._gracze[
             self._indeks_aktualnego_gracza
@@ -492,8 +516,7 @@ class Gra:
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
-            self.czcionka, int(
-                self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
         )
 
         self.zdjecie_pionek = pygame.transform.scale(
@@ -512,8 +535,7 @@ class Gra:
             ),
         )
 
-        tekst = self.font.render(
-            napis, True, self.wizualizator.kolor_napisu_gracz_tury)
+        tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
         self._glowne_okno.blit(
             tekst,
             (

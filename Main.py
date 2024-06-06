@@ -8,6 +8,8 @@ from src.Menu import Menu
 
 class Main:
     _SEC_TO_MS = 1000
+    LIMIT_CZASU_GRY = 3600
+    LIMIT_CZASU_TURY = 30
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
@@ -32,6 +34,12 @@ class Main:
         self.wizualizator = Wizualizator()
         self.menu = Menu(self.wizualizator)
         self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
+
+        self.uplyniety_czas_gry = 0
+        self.uplyniety_czas_tury = 0
+        self.turn_start_time = (
+            pygame.time.get_ticks()
+        )  # Inicjalizacja czasu startu tury
 
     def __del__(self):
         pygame.quit()
@@ -61,14 +69,19 @@ class Main:
                     self.wizualizator,
                     self._screen_width,
                     self._screen_height,
+                    self,
                 )
                 self._petla_gry()
 
             pygame.display.flip()
 
     def _petla_gry(self):
+        self.turn_start_time = (
+            pygame.time.get_ticks()
+        )  # Zresetowanie czasu startu tury na początku gry
         while self._running:
             self._aktualizuj_delta_time()
+            self._aktualizuj_czas_gry()  # Wywołanie funkcji aktualizującej czas gry
             self._petla_zdarzen(pygame.event.get())
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
@@ -76,6 +89,23 @@ class Main:
     def _aktualizuj_delta_time(self):
         self._clock.tick(60)
         self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
+
+    def _aktualizuj_czas_gry(self):
+        self.uplyniety_czas_gry += self._delta_time
+        self.uplyniety_czas_tury = (
+            pygame.time.get_ticks() - self.turn_start_time
+        ) / Main._SEC_TO_MS
+
+        if self.uplyniety_czas_gry >= Main.LIMIT_CZASU_GRY:
+            self._running = False
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Czas gry minął! Koniec gry.")
+
+        if self.uplyniety_czas_tury >= Main.LIMIT_CZASU_TURY:
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Czas tury minął! Przechodzimy do następnego gracza."
+            )
+            self._gra.tura()
+            self.turn_start_time = pygame.time.get_ticks()
 
     def _petla_zdarzen(self, events_list):
         for event in events_list:
@@ -89,7 +119,7 @@ class Main:
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
-        _delta_time = delta_time
+        pass  # Aktualizacja gry, jeśli jest taka potrzeba
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
