@@ -26,7 +26,7 @@ class Posiadlosc(Pole):
         return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}"
 
     def pobierz_id_wlasciciela(self):
-        return self.IDwlasciciela
+        return self.wlasciciel
 
     def wyswietl_info(self, gra):
         czynsz = self.czynsz
@@ -36,7 +36,8 @@ class Posiadlosc(Pole):
         if self.kolor != "pozaWmii" and self.kolor != "kolo":
             gra._kontroler_wiadomosci.dodaj_wiadomosc(f"Nazwa: {self.nazwa}")
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}"
+                f"Cena: {self.cena}   Czynsz: {
+                    czynsz}  Zastaw: {self.zastaw_kwota}"
             )
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Cena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}"
@@ -44,7 +45,8 @@ class Posiadlosc(Pole):
         else:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(f"Nazwa: {self.nazwa}")
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Cena: {self.cena}   Czynsz: {czynsz}  Zastaw: {self.zastaw_kwota}"
+                f"Cena: {self.cena}   Czynsz: {
+                    czynsz}  Zastaw: {self.zastaw_kwota}"
             )
 
     def oblicz_czynsz(self, gra):
@@ -116,7 +118,8 @@ class Posiadlosc(Pole):
                 self.liczba_hoteli += 1
                 gracz.statystyka.dodaj_hotel(1)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli"
+                f"Zakup domu się udał posiadasz {
+                    self.liczba_domow} domów i {self.liczba_hoteli} hoteli"
             )
         else:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")

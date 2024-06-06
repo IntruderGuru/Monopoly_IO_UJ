@@ -140,7 +140,8 @@ class Gra:
         screen.blit(
             self.dice_images[dice2 - 1],
             (
-                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
+                dice_x + (self.aktualna_wysokosc_ekranu /
+                          oddalenie_kostek_od_siebie),
                 dice_y,
             ),
         )
@@ -182,7 +183,8 @@ class Gra:
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
+            f"Gracz {gracz.id} przesunął się z pozycji {
+                stara_pozycja} na {nowa_pozycja}"
         )
         gracz.pionek.wyswietl(self._glowne_okno)
         pole = self._plansza.pobierz_pole(nowa_pozycja)
@@ -210,7 +212,8 @@ class Gra:
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}"
+                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {
+                    posiadlosc.kolor}"
             )
             return
 
@@ -225,19 +228,23 @@ class Gra:
             if suma == 7:
                 liczba_siodemek += 1
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+                f"Kostka pierwsza: {
+                    kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(
+                self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
+                f"Niestety, wyrzuciłeś tylko {
+                    liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
             )
             return False
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gratulacje! Wyrzuciłeś {liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
+            f"Gratulacje! Wyrzuciłeś {
+                liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
         )
         return True
 
@@ -256,13 +263,15 @@ class Gra:
             self.akcja_kart_okno.przygotuj_karte()
 
         elif pole.typ == "Wiezienie":
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Gracz odwiedza więzienie")
 
         elif pole.typ == "Idz do wiezienia":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
 
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
                 return
             if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
@@ -287,9 +296,11 @@ class Gra:
                 elif posiadlosc.wlasciciel == gracz.id:
                     self.czy_akcja_zakonczona = False
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
+                    self.akcja_nieruchomosci_okno.akcja_kupowania(
+                        posiadlosc, gracz)
                 else:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz płaci czynsz")
+                    self._kontroler_wiadomosci.dodaj_wiadomosc(
+                        "Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
                 raise Exception("Błąd. Posiadłość jest innym polem")
@@ -303,11 +314,13 @@ class Gra:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
             if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza + 1} opuszcza więzienie"
+                    f"Gracz {self._indeks_aktualnego_gracza +
+                             1} opuszcza więzienie"
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {
+                        self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
                 )
 
         else:
@@ -317,17 +330,19 @@ class Gra:
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+                f"Kostka pierwsza: {
+                    kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self._suma_oczek += kostka_pierwsza + kostka_druga
 
-            # #
+            #
             # kostka_druga = 3
             # kostka_pierwsza = 4
-            # #
+            #
+            self._suma_oczek += kostka_pierwsza + kostka_druga
 
             # Wyświetl kostki
-            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(
+                self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
@@ -355,7 +370,8 @@ class Gra:
         #     self._stos_otwartych_okien.usun()
 
     def process_input(self, input_text):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
+        self._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Wprowadzono: {input_text}")
         if input_text.isdigit():
             liczba_graczy = int(input_text)
             if liczba_graczy >= 2 and liczba_graczy <= 5:
@@ -430,7 +446,8 @@ class Gra:
 
         self.render_text(
             self.input_text,
-            (self.aktualna_szerokosc_ekranu - 400, self.aktualna_wysokosc_ekranu - 50),
+            (self.aktualna_szerokosc_ekranu - 400,
+             self.aktualna_wysokosc_ekranu - 50),
         )
 
         self._plansza.render(self._glowne_okno)
@@ -479,7 +496,8 @@ class Gra:
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
-            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
+            self.czcionka, int(
+                self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
         )
 
         self.zdjecie_pionek = pygame.transform.scale(
@@ -498,7 +516,8 @@ class Gra:
             ),
         )
 
-        tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
+        tekst = self.font.render(
+            napis, True, self.wizualizator.kolor_napisu_gracz_tury)
         self._glowne_okno.blit(
             tekst,
             (
