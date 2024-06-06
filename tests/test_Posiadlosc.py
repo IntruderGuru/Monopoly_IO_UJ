@@ -1,6 +1,9 @@
 import pygame
 import pytest
+from unittest.mock import Mock, patch, MagicMock
 
+from src.Pionek import Pionek
+from src.Wizualizator import Wizualizator
 from src.Posiadlosc import Posiadlosc
 from src.Gracz import Gracz
 from src.Gra import Gra
@@ -23,8 +26,15 @@ class TestPosiadlosc:
         # przepisz na mocki
         self.font = pygame.font.Font(None, 20)
         self.screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
-        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font)
-        self._gra = Gra(self.screen, self._kontroler_wiadomosci)
+        self.wizualizator = Wizualizator()
+
+        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
+
+        liczba_graczy = 2
+        nazwy_graczy = ["test1", "test2"]
+        szerokosc_ekranu = 1200
+        wysokosc_ekranu = 660
+        self._gra = Gra(self.screen, self._kontroler_wiadomosci, liczba_graczy, nazwy_graczy, self.wizualizator, szerokosc_ekranu, wysokosc_ekranu)
 
         self.posiadlosc = Posiadlosc(TestPosiadlosc.NUMER, TestPosiadlosc.NAZWA, TestPosiadlosc.KOLOR,
                                      TestPosiadlosc.CENA, TestPosiadlosc.CZYNSZ, TestPosiadlosc.ZASTAW,
@@ -59,4 +69,15 @@ class TestPosiadlosc:
         assert zwrocone_info == przewidywane_info
 
     def test_kup_posiadlosc_udany(self):
-        self.posiadlosc.kup_posiadlosc()
+        mock_pionek = MagicMock()
+        mock_pionek.sciezka_do_grafiki = "123451234512345123451234512345"
+        kwota_poczatkowa = 10_000
+        gracz = Gracz(0, kwota_poczatkowa, mock_pionek)
+
+        self.posiadlosc.kup_posiadlosc(self._gra, gracz)
+
+        kwota_gracza_po_zakupie = gracz.kwota
+        przewidywana_kwota_po_zakupie =  kwota_poczatkowa - TestPosiadlosc.CENA
+
+        assert przewidywana_kwota_po_zakupie == kwota_gracza_po_zakupie
+
