@@ -72,7 +72,7 @@ class TestPosiadlosc:
         mock_pionek = MagicMock()
         mock_pionek.sciezka_do_grafiki = "123451234512345123451234512345"
         kwota_poczatkowa = 10_000
-        gracz = Gracz(0, kwota_poczatkowa, mock_pionek)
+        gracz = Gracz(0, kwota_poczatkowa, mock_pionek, "test_umiejetnosc")
 
         self.posiadlosc.kup_posiadlosc(self._gra, gracz)
 
