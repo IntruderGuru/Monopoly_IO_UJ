@@ -66,7 +66,7 @@ class AkcjaWiezieniaOkno(Okno):
 
     def zaktualizuj_rozmiar_czcionki(self):
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-        self.tekst = self.font.render(self.informacja_o_wiezeniu, True, (0, 0, 0))
+        self.tekst = self.font.render(self.informacja_o_wiezeniu, True, self.gra.kolor_czcionki)
 
     def wyswietl_teksty(self, screen):
         screen.blit(self.tekst, (self.W * 0.18, self.H * 0.7))
