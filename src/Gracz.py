@@ -1,8 +1,9 @@
 from src.Statystyka import Statystyka
 
+UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O = 20
 
 class Gracz:
-    def __init__(self, id, kwota, pionek):
+    def __init__(self, id, kwota, pionek, umiejetnosc):
         self.id = id
         self.kwota = kwota
         self.pionek = pionek
@@ -12,6 +13,17 @@ class Gracz:
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
+        self.umiejetnosc = umiejetnosc
+        print(umiejetnosc)
+
+        if umiejetnosc == "wiecej_pieniedzy_na_start":
+            self.kwota += 2000
+            self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+
+        if umiejetnosc == "karta_wyjscia_z_wiezienia":
+            self.liczba_kart_wyjdz_z_wiezienia += 1
+
+        
 
     # TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
@@ -69,7 +81,10 @@ class Gracz:
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zaplac_czynsz(self, gra, posiadlosc):
-        czynsz = posiadlosc.oblicz_czynsz(gra)
+        if self.umiejetnosc == "placi_mniejsze_czynsze":
+            czynsz = (posiadlosc.oblicz_czynsz(gra) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O)
+        else:
+            czynsz = posiadlosc.oblicz_czynsz(gra)
         self.wykonaj_oplate(gra, czynsz)
         posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
 
@@ -128,4 +143,7 @@ class Gracz:
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
         if self.pionek.numer_pola < stara_pozycja and self.tury_w_wiezieniu == 0:
-            self.dodaj_pieniadze(gra, 2000)
+            if self.umiejetnosc == "dostaje_wiecej_za_przejscie_przez_start":
+                self.dodaj_pieniadze(gra, 2200)
+            else:
+                self.dodaj_pieniadze(gra, 2000)

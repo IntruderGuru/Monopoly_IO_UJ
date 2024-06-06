@@ -124,15 +124,21 @@ class Posiadlosc(Pole):
 
     def sprzedaj_dom(self, gra, gracz):
         if self.liczba_domow > 0:
-            gracz.kwota = gracz.kwota + self.cena_domu * KOSZT_SPRZEDAZY
+
+            if gracz.umiejetnosc == "sprzedaje_nieruchomosci_za_oryginalna_ceny":
+                gracz.kwota = gracz.kwota + self.cena_domu
+            else:
+                gracz.kwota = gracz.kwota + self.cena_domu * KOSZT_SPRZEDAZY
+
             self.liczba_domow -= 1
             gracz.statystyka.odejmij_dom(1)
 
     def sprzedaj_hotel(self, gra, gracz):
         if self.liczba_hoteli > 0:
-            gracz.kwota = (
-                gracz.kwota
-                + (self.liczba_hoteli * 5 * self.cena_domu) * KOSZT_SPRZEDAZY
-            )
+
+            if gracz.umiejetnosc == "sprzedaje_nieruchomosci_za_oryginalna_ceny":
+                gracz.kwota = (gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu))
+            else:
+                gracz.kwota = (gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu) * KOSZT_SPRZEDAZY)
             self.liczba_hoteli -= 1
             gracz.statystyka.odejmij_hotel(1)

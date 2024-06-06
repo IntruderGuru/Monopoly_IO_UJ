@@ -31,6 +31,14 @@ PIECE_COLORS: list[pygame.Color] = [
     pygame.Color("purple"),
 ]
 
+umiejetnosci = [
+    "wiecej_pieniedzy_na_start",
+    "porusza_sie_o_1_pole_wiecej",
+    "karta_wyjscia_z_wiezienia",
+    "sprzedaje_nieruchomosci_za_oryginalna_ceny",
+    "dostaje_wiecej_za_przejscie_przez_start",
+    "placi_mniejsze_czynsze"
+]
 
 class Gra:
     def __init__(
@@ -43,6 +51,7 @@ class Gra:
         szerokosc_ekranu,
         wysokosc_ekranu,
     ):
+        random.shuffle(umiejetnosci)
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
             Gracz(
@@ -55,6 +64,7 @@ class Gra:
                     szerokosc_ekranu,
                     wysokosc_ekranu
                 ),
+                umiejetnosci[i]
             )
             for i, name in enumerate(gracze)
         ]
@@ -304,7 +314,7 @@ class Gra:
 
     def tura(self):
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Teraz tura gracza: {self._indeks_aktualnego_gracza + 1}"
+            f"Teraz tura gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
         )
 
         if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu:
@@ -333,6 +343,9 @@ class Gra:
             # kostka_pierwsza = 4
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
+
+            if self._gracze[self._indeks_aktualnego_gracza].umiejetnosc == "porusza_sie_o_1_pole_wiecej":
+                self._suma_oczek += 1
 
             # Wyświetl kostki
             self.wyswietl_kostki(
