@@ -61,17 +61,18 @@ class AkcjaNieruchomosciOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
-            self.kup_domek()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
-            self.kup_hotel()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.wyjscie.is_clicked(event):
-            self.czy_kupno = False
-            self.zamknij()
+        if self.czy_kupno:
+            if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
+                self.kup_domek()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
+                self.kup_hotel()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.wyjscie.is_clicked(event):
+                self.czy_kupno = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
 

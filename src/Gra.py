@@ -52,6 +52,8 @@ class Gra:
                     0,
                     PIECE_COLORS[i],
                     "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                    szerokosc_ekranu,
+                    wysokosc_ekranu
                 ),
             )
             for i, name in enumerate(gracze)

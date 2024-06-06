@@ -67,31 +67,34 @@ class AkcjaPolaOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.zakup.is_clicked(event):
-            self.kup_pole()
-            self.czy_akcja_pola = False
-            self.zamknij()
-        elif self.licytacja.is_clicked(event):
-            self.czy_akcja_pola = False
-            self.zamknij()
-            pass
-        elif self.wyjscie.is_clicked(event):
-            self.czy_akcja_pola = False
-            self.zamknij()
 
         if self.czy_akcja_pola:
-            if self.karta.czy_najechano():
-                self.pole_png = pygame.transform.scale(
-                    pygame.image.load("graphics/pola/pole_tyl_karty.png"),
-                    (0.24 * self.W, 0.64 * self.H),
-                )
-                self.najechano_na_pole = True
-            else:
-                self.pole_png = pygame.transform.scale(
-                    pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
-                    (0.24 * self.W, 0.64 * self.H),
-                )
-                self.najechano_na_pole = False
+
+            if self.zakup.is_clicked(event):
+                self.kup_pole()
+                self.czy_akcja_pola = False
+                self.zamknij()
+            elif self.licytacja.is_clicked(event):
+                self.czy_akcja_pola = False
+                self.zamknij()
+                pass
+            elif self.wyjscie.is_clicked(event):
+                self.czy_akcja_pola = False
+                self.zamknij()
+
+            if self.czy_akcja_pola:
+                if self.karta.czy_najechano():
+                    self.pole_png = pygame.transform.scale(
+                        pygame.image.load("graphics/pola/pole_tyl_karty.png"),
+                        (0.24 * self.W, 0.64 * self.H),
+                    )
+                    self.najechano_na_pole = True
+                else:
+                    self.pole_png = pygame.transform.scale(
+                        pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
+                        (0.24 * self.W, 0.64 * self.H),
+                    )
+                    self.najechano_na_pole = False
 
     def wyswietl(self, screen: pygame.Surface):
 

@@ -30,12 +30,14 @@ class Pionek:
     # dla sciany = ilosc malych pol + jedno duze pole
     DLUGOSC_SCIANY_W_POLACH = 10
 
-    def __init__(self, numer_pola: int, color: pygame.color, grafika: str):
+    def __init__(self, numer_pola: int, color: pygame.color, grafika: str, W, H):
         self.numer_pola = numer_pola
         self.color = color
         self.sciezka_do_grafiki = grafika
         self.szerokosc_ratio = 1
         self.wysokosc_ratio = 1
+        self.W = W
+        self.H = H
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
         self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
@@ -82,6 +84,8 @@ class Pionek:
     def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
         szerokosc_ekranu = 1200
         wysokosc_ekranu = 660
+        self.W = szerokosc
+        self.H = wysokosc
 
         self.szerokosc_ratio = szerokosc / szerokosc_ekranu
         self.wysokosc_ratio = wysokosc / wysokosc_ekranu
@@ -91,5 +95,9 @@ class Pionek:
         print(self.pozycja)
 
     def wyswietl(self, okno: pygame.Surface):
+        skalar = 35
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(self.sciezka_do_grafiki), (self.W / skalar, self.W / skalar)
+        )
         # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
         okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))

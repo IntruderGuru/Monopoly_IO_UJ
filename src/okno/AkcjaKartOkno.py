@@ -36,13 +36,14 @@ class AkcjaKartOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.wyjscie.is_clicked(event):
-            if self.karta:
-                self.gra._plansza.karty.aktualna_karta.wykonaj_akcje(
-                    self.gra, self.gra._gracze[self.gra._indeks_aktualnego_gracza]
-                )
-            self.czy_szansa = False
-            self.zamknij()
+        if self.czy_szansa:
+            if self.wyjscie.is_clicked(event):
+                if self.karta:
+                    self.gra._plansza.karty.aktualna_karta.wykonaj_akcje(
+                        self.gra, self.gra._gracze[self.gra._indeks_aktualnego_gracza]
+                    )
+                self.czy_szansa = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         self.zaktualizuj_rozmiar_czcionki()

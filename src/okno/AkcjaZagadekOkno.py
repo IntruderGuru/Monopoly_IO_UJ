@@ -63,26 +63,27 @@ class AkcjaZagadekOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.A.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz ==
-                                       Odpowiedz.Odpowiedz_A)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
-        elif self.B.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz ==
-                                       Odpowiedz.Odpowiedz_B)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
-        elif self.C.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
+        if self.czy_zagadka:
+            if self.A.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                        Odpowiedz.Odpowiedz_A)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
+            elif self.B.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                        Odpowiedz.Odpowiedz_B)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
+            elif self.C.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         self.zaktualizuj_rozmiar_czcionki()

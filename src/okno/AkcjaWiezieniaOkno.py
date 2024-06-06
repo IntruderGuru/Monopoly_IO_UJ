@@ -34,9 +34,10 @@ class AkcjaWiezieniaOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.wyjscie.is_clicked(event):
-            self.zamknij()
-            self.czy_wiezienie = False
+        if self.czy_wiezienie:
+            if self.wyjscie.is_clicked(event):
+                self.zamknij()
+                self.czy_wiezienie = False
 
     def wyswietl(self, screen: pygame.Surface):
         H = self.H
