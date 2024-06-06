@@ -1,6 +1,8 @@
 import os
 import pytest
 import pygame
+
+from src.Wizualizator import Wizualizator
 from src.proxy.GraProxy import GraProxy
 from src.Gra import Gra
 from src.KontrolerWiadomosci import KontrolerWiadomosci
@@ -13,9 +15,14 @@ class TestGra:
         pygame.font.init()
         os.environ["SDL_VIDEO_CENTERED"] = "1"
         self.font = pygame.font.Font(None, 20)
-        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font)
+        self.wizualizator = Wizualizator()
+
+        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
         self._screen = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
-        self.gra = GraProxy(Gra(self._screen, self._kontroler_wiadomosci))
+
+        liczba_graczy = 2
+        lista_nazw_graczy = ["test1", "test2"]
+        self.gra = GraProxy(Gra(self._screen, self._kontroler_wiadomosci, liczba_graczy, lista_nazw_graczy, self.wizualizator, 1200, 800))
 
     # ten test powinien wyrzucić wyjątek, "out of index"
     # Podawany event w metodzie gra.aktualizacja_zdarzen(event), event= jest rowny None, poniewaz korzystamy z wewnetrznie zorganizowanej kolejki eventow
