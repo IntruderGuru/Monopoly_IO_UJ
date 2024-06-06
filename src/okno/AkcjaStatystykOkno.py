@@ -18,6 +18,7 @@ class AkcjaStatystykOkno(Okno):
         self.odleglosc_pionowa = 0.06
         self.mnoznik_wysokosci = 0.1
         self.mnoznik_szerokosci = 0.62
+        self.miejsce_na_zdjecie = 0.04
 
     def aktualizacja(self):
         pass
@@ -50,6 +51,11 @@ class AkcjaStatystykOkno(Okno):
 
             for gracz in self.gra._gracze:
 
+                self.umiejetnosc = pygame.transform.scale(
+                    pygame.image.load("graphics/umiejetnosci/" + gracz.umiejetnosc + ".png"),
+                    (0.02 * self.W, 0.02 * self.W)
+                )
+
                 nazwa_gracza = self.sprawdz_czy_nazwa_gracza_nie_za_dluga(gracz.id)
                 self.zaktualizuj_tekst_i_rozmiar(gracz, nazwa_gracza)
 
@@ -57,13 +63,14 @@ class AkcjaStatystykOkno(Okno):
                     pygame.image.load(gracz.pionek.sciezka_do_grafiki), (0.02 * self.W, 0.02 * self.W)
                 )
 
+                screen.blit(self.umiejetnosc, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
                 screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
 
-                screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.12), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
                 i += 1
 
 
