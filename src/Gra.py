@@ -423,9 +423,9 @@ class Gra:
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona):
             self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
             self.tura()
-        if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
-            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
-            self.tura()
+            if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
+                self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
+                self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.process_input(self.input_text)
