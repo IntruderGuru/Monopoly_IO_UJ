@@ -9,7 +9,7 @@ class KontrolerWiadomosci:
         self.wiadomosci: list[str] = list()
         self.ilosc_wiadomosci = 0
         self.ostatnia_pozycyjnie_wiadomosc_index = 0
-        self.font: pygame.font.Font = font
+        # self.font: pygame.font.Font = font
         self.wizualizator = wizualizator
         self.W = 1200
         self.H = 800
