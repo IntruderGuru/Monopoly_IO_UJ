@@ -16,8 +16,8 @@ from src.KontrolerWiadomosci import KontrolerWiadomosci
 from src.interface.IGra import IGra
 
 
-#KWOTA_POCZATKOWA = 10000
-KWOTA_POCZATKOWA = 2000
+# KWOTA_POCZATKOWA = 10000
+KWOTA_POCZATKOWA = 2500
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -186,7 +186,8 @@ class Gra:
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
+            f"Gracz {gracz.id} przesunął się z pozycji {
+                stara_pozycja} na {nowa_pozycja}"
         )
         gracz.pionek.wyswietl(self._glowne_okno)
         pole = self._plansza.pobierz_pole(nowa_pozycja)
@@ -214,7 +215,8 @@ class Gra:
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}"
+                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {
+                    posiadlosc.kolor}"
             )
             return
 
@@ -229,7 +231,8 @@ class Gra:
             if suma == 7:
                 liczba_siodemek += 1
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+                f"Kostka pierwsza: {
+                    kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
             self.wyswietl_kostki(
                 self._glowne_okno, kostka_pierwsza, kostka_druga)
@@ -238,11 +241,13 @@ class Gra:
 
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
+                f"Niestety, wyrzuciłeś tylko {
+                    liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
             )
             return False
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gratulacje! Wyrzuciłeś {liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
+            f"Gratulacje! Wyrzuciłeś {
+                liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
         )
         return True
 
@@ -312,26 +317,30 @@ class Gra:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
             if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza +1} opuszcza więzienie"
+                    f"Gracz {self._indeks_aktualnego_gracza +
+                             1} opuszcza więzienie"
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {
+                        self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
                 )
 
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
+                f"Ruch gracza: {
+                    self._gracze[self._indeks_aktualnego_gracza].id}"
             )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+                f"Kostka pierwsza: {
+                    kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
 
             #
-            # kostka_druga = 3
-            # kostka_pierwsza = 4
+            kostka_druga = 3
+            kostka_pierwsza = 1
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
@@ -394,7 +403,7 @@ class Gra:
             self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
-                self.process_input(self.input_text)
+                #self.process_input(self.input_text)
                 self.input_text = ""
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]

@@ -1,5 +1,6 @@
 from src.Statystyka import Statystyka
 
+
 class Gracz:
     def __init__(self, id, kwota, pionek):
         self.id = id
@@ -12,11 +13,13 @@ class Gracz:
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
 
-    # TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra, nr_posiadlosci):
         self.lista_posiadlosci[nr_posiadlosci].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[nr_posiadlosci].zastaw_kwota
+        gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Zastawiłeś posiadłość {self.lista_posiadlosci[nr_posiadlosci].nazwa}"
+        )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zdejmij_zastaw_posiadlosci(self, gra):
@@ -88,13 +91,12 @@ class Gracz:
     def wykonaj_oplate(self, gra, cena):
         if cena > self.kwota:
             gra.akcja_zastaw_okno.czy_zastaw = True
+            gra.czy_akcja_zakonczona = False
             gra.akcja_zastaw_okno.ustaw_gracza(self, cena)
         else:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
             return 1
-
-        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
         return 0
 
     def dodaj_pieniadze(self, gra, cena):

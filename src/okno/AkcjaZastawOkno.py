@@ -50,48 +50,61 @@ class AkcjaZastawOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.stan == "czy_chcesz_zastawic":
-                if self.przycisk_zastaw.is_clicked(event):
+        if self.czy_zastaw:
+            if self.stan == "wyjscie":
+                self.zamknij()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.stan == "czy_chcesz_zastawic":
+                    self.wczytana_posiadlosc = ""
+                    if self.przycisk_zastaw.is_clicked(event):
                         self.stan = "wybierz_numer"
-                elif self.przycisk_wyjscie.is_clicked(event):
+                    elif self.przycisk_wyjscie.is_clicked(event):
+                        self.stan = "wyjscie"
+                        self.zamknij()
+
+            elif event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_ESCAPE:
                     self.zamknij()
 
-        elif event.type == pygame.KEYDOWN:
-
-            if event.key == pygame.K_ESCAPE:
-                self.zamknij()
-
-            if self.stan == "wybierz_numer":
-                if event.key == pygame.K_RETURN:
-                    self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
-                    if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
-                        self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
-                    else:
-                        self.stan = "blad"
-                        self.wczytana_posiadlosc = ""
-                elif event.key == pygame.K_BACKSPACE:
-                    self.wczytana_posiadlosc = self.wczytana_posiadlosc[:-1]
-                else:
-                    if event.unicode.isdigit():
-                        self.wczytana_posiadlosc += event.unicode
-
+                if self.stan == "wybierz_numer":
+                    if event.key == pygame.K_RETURN:
+                        self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
+                        if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
+                            self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
+                            """
+                            if self.gracz.liczba_zastawionych <= len(self.gracz.lista_posiadlosci):
+                                self.stan == "czy_chcesz_zastawic"
+                            else:
+                                self.zamknij()
+                            """
+                        else:
+                            self.stan = "blad"
+                            self.wczytana_posiadlosc = ""
+                    elif event.key == pygame.K_BACKSPACE:
+                        if len(self.wczytana_posiadlosc) > 0:
+                            self.wczytana_posiadlosc = self.wczytana_posiadlosc[:-1]
+                    elif event.unicode.isdigit():
+                            self.wczytana_posiadlosc += event.unicode
 
     def wyswietl(self, screen: pygame.Surface):
 
         if self.czy_zastaw:
             screen.fill(self.gra.kolor_tla)
-            
+
             if self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci):
+                self.gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Nie masz już posiadłości, które mógłbyś zastawić"
+                )
                 text = self.font.render(
                     "Nie masz już posiadłości, które mógłbyś zastawić",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
                 screen.blit(text, (self.W * 0.2, self.H * 0.1))
-                self.zamknij()
-            
-            if self.stan == "czy_chcesz_zastawic":
+                self.stan = "wyjscie"
+
+            elif self.stan == "czy_chcesz_zastawic":
                 self.przycisk_zastaw.updateSize(
                     self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
                 )
@@ -110,7 +123,7 @@ class AkcjaZastawOkno(Okno):
                 self.wyswietl_do_zastawu(screen)
             elif self.stan == "wybierz_numer":
                 text = self.font.render(
-                    f"Wpisz prawidłowy numer posiadłości",
+                    f"Wpisz numer posiadłości",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
@@ -125,13 +138,14 @@ class AkcjaZastawOkno(Okno):
                     kolor_czcionki
                 )
                 screen.blit(text, (self.W * 0.45, self.H * (0.45 + odstep)))
-            elif self.stan == "blad":   
+            elif self.stan == "blad":
                 text = self.font.render(
                     f"Wpisano zły numer",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))             
+                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                self.stan = "wybierz_numer"
 
     def wyswietl_do_zastawu(self, screen):
         odstep = 0.25
@@ -139,23 +153,24 @@ class AkcjaZastawOkno(Okno):
         for posiadlosc in self.gracz.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
                 text = self.font.render(
-                    f"{x}: {posiadlosc.nazwa}, kwota zastawu: {posiadlosc.zastaw_kwota}",
+                    f"{x}: {posiadlosc.nazwa}, kwota zastawu: {
+                        posiadlosc.zastaw_kwota}",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
                 screen.blit(text, (self.W * 0.2, self.H * odstep))
-                odstep+=0.05
-                x+=1
+                odstep += 0.05
+                x += 1
         self.ile_do_zastawienia = x
-                
+
     def ustaw_gracza(self, gracz, cena):
+        self.stan = "czy_chcesz_zastawic"
         self.gracz = gracz
         self.cena = cena
 
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
         self.H = height
-        
+
     def zamknij(self):
         self.czy_zastaw = False
-        self.gra.czy_akcja_zakonczona = True

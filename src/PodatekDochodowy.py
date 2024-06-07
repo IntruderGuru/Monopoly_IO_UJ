@@ -1,7 +1,6 @@
 from src.Pole import Pole
 from src.Gracz import Gracz
 from numpy import random
-from src.Odpowiedz import Odpowiedz
 
 
 class Zagadka:
@@ -11,7 +10,7 @@ class Zagadka:
         odpowiedz_a: str,
         odpowiedz_b: str,
         odpowiedz_c: str,
-        poprawna: Odpowiedz,
+        poprawna: str,
     ) -> None:
         self.tresc_zagadki = tresc_zagadki
         self.odpowiedz_a = odpowiedz_a
@@ -40,7 +39,8 @@ class Zagadki:
             while i < len(lines):
                 if i + 4 >= len(lines):
                     raise ValueError(
-                        f"Problem w linii {i}. Każda zagadka powinna mieć 5 linii danych."
+                        f"Problem w linii {
+                            i}. Każda zagadka powinna mieć 5 linii danych."
                     )
                 tresc = lines[i].strip()
                 odpowiedz_a = lines[i + 1].strip()
@@ -67,9 +67,18 @@ class PodatekDochodowy(Pole):
     def zaplac_podatek(self, gra, gracz: Gracz, czy_dobra: bool) -> None:
         do_zaplaty = self.podatek
         if czy_dobra:
-            gra._kontroler_wiadomosci.dodaj_wiadomosc(f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
-            do_zaplaty /= 2
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
+            do_zaplaty //= 2
 
+        if gracz.wykonaj_oplate(gra, do_zaplaty):
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Podatek został zapłacony, zapłacono: " + str(do_zaplaty)
+            )
+        else:
+            gra.messages.append("Bankrutujesz")
+
+        """
         if do_zaplaty > gracz.kwota:
             if gra.pobierz_info_tak_nie(
                 "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."
@@ -81,3 +90,4 @@ class PodatekDochodowy(Pole):
         gra._kontroler_wiadomosci.dodaj_wiadomosc(
             "Podatek został zapłacony, zapłacono: " + str(do_zaplaty)
         )
+        """

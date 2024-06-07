@@ -1,6 +1,5 @@
 from src.okno.Okno import Okno
 from src.Przycisk import Przycisk
-from src.Odpowiedz import Odpowiedz
 import pygame
 
 
@@ -47,6 +46,7 @@ class AkcjaZagadekOkno(Okno):
         self.odpowiedz_A = "empty"
         self.odpowiedz_B = "empty"
         self.odpowiedz_C = "empty"
+        self.poprawna_odpowiedz = "empty"
 
         self.skalar_czcionki = 28  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
@@ -64,23 +64,22 @@ class AkcjaZagadekOkno(Okno):
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
         if self.czy_zagadka:
+
             if self.A.is_clicked(event):
                 self.pole.zaplac_podatek(
-                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
-                                        Odpowiedz.Odpowiedz_A)
+                    self.gra, self.gracz, (self.poprawna_odpowiedz == "A")
                 )
                 self.czy_zagadka = False
                 self.zamknij()
             elif self.B.is_clicked(event):
                 self.pole.zaplac_podatek(
-                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
-                                        Odpowiedz.Odpowiedz_B)
+                    self.gra, self.gracz, (self.poprawna_odpowiedz == "B")
                 )
                 self.czy_zagadka = False
                 self.zamknij()
             elif self.C.is_clicked(event):
                 self.pole.zaplac_podatek(
-                    self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C)
+                    self.gra, self.gracz, (self.poprawna_odpowiedz == "C")
                 )
                 self.czy_zagadka = False
                 self.zamknij()
@@ -189,4 +188,7 @@ class AkcjaZagadekOkno(Okno):
         self.H = height
 
     def zamknij(self):
+        self.gra._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Poprawna odpowiedz to: {self.poprawna_odpowiedz}"
+        )
         self.gra.czy_akcja_zakonczona = True
