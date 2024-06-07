@@ -378,10 +378,6 @@ class Gra:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Naciśnij spację, aby rzucić kostką"
                 )
-            else:
-                self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    "Nieprawidłowa liczba graczy."
-                )
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Nieznana komenda: {input_text}"

@@ -21,8 +21,8 @@ class AkcjaZastawOkno(Okno):
                 "graphics/zastaw.jpg"), (0.28 * self.W, 0.64 * self.H)
         )
         self.czy_zastaw = False
-        self.wczytana_posiadlosc = 0
-        self.posiadlosci_do_zastawienia = []
+        self.wczytana_posiadlosc = ""
+        self.ile_do_zastawienia = 0
 
         self.przycisk_zastaw = Przycisk(
             self.W * 0.35,
@@ -64,15 +64,18 @@ class AkcjaZastawOkno(Okno):
 
             if self.stan == "wybierz_numer":
                 if event.key == pygame.K_RETURN:
-                    self.stan = "stop"
-                elif event.key == pygame.K_BACKSPACE:
-                    self.gracze[-1] = self.gracze[-1][:-1]
-                else:
-                    if event.key == pygame.K_SPACE:
-                        if len(self.gracze[-1]) != 0 and self.gracze[-1][-1] != " ":
-                            self.gracze[-1] += event.unicode
+                    self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
+                    if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
+                        self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
                     else:
-                        self.gracze[-1] += event.unicode
+                        self.stan = "blad"
+                        self.wczytana_posiadlosc = ""
+                elif event.key == pygame.K_BACKSPACE:
+                    self.wczytana_posiadlosc = self.wczytana_posiadlosc[:-1]
+                else:
+                    if event.unicode.isdigit():
+                        self.wczytana_posiadlosc += event.unicode
+
 
     def wyswietl(self, screen: pygame.Surface):
 
@@ -105,25 +108,49 @@ class AkcjaZastawOkno(Okno):
                 )
                 screen.blit(text, (self.W * 0.2, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
-
-    def wyswietl_do_zastawu(self, screen):
-        i = 0.25
-        for posiadlosc in self.gracz.lista_posiadlosci:
-            if not posiadlosc.czy_zastawiona:
+            elif self.stan == "wybierz_numer":
                 text = self.font.render(
-                    f"{posiadlosc.nazwa}, kwota zastawu: {posiadlosc.zastaw_kwota}",
+                    f"Wpisz prawidłowy numer posiadłości",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * i))
-                i+=0.05
+                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                self.wyswietl_do_zastawu(screen)
+                odstep = 0.05
+                kolor_czcionki = self.wizualizator.kolor_czcionki
+
+                text = self.font.render(
+                    str(self.wczytana_posiadlosc),
+                    True,
+                    kolor_czcionki
+                )
+                screen.blit(text, (self.W * 0.45, self.H * (0.45 + odstep)))
+            elif self.stan == "blad":   
+                text = self.font.render(
+                    f"Wpisano zły numer",
+                    True,
+                    self.wizualizator.kolor_czcionki,
+                )
+                screen.blit(text, (self.W * 0.2, self.H * 0.1))             
+
+    def wyswietl_do_zastawu(self, screen):
+        odstep = 0.25
+        x = 1
+        for posiadlosc in self.gracz.lista_posiadlosci:
+            if not posiadlosc.czy_zastawiona:
+                text = self.font.render(
+                    f"{x}: {posiadlosc.nazwa}, kwota zastawu: {posiadlosc.zastaw_kwota}",
+                    True,
+                    self.wizualizator.kolor_czcionki,
+                )
+                screen.blit(text, (self.W * 0.2, self.H * odstep))
+                odstep+=0.05
+                x+=1
+        self.ile_do_zastawienia = x
                 
     def ustaw_gracza(self, gracz, cena):
         self.gracz = gracz
         self.cena = cena
-
-    def zastaw(self):
-        self.gracz.zastaw_posiadlosci(self.gra)
 
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
