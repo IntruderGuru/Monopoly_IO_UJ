@@ -24,6 +24,9 @@ class Menu:
         self.strona1 = pygame.transform.scale(
             pygame.image.load("graphics/tutorial/strona1.png"), (0.5 * self.W, 0.5 * self.H)
         )
+        self.strona2 = pygame.transform.scale(
+            pygame.image.load("graphics/tutorial/strona2.png"), (0.5 * self.W, 0.5 * self.H)
+        )
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
@@ -60,6 +63,11 @@ class Menu:
                     self.stan = "stop"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "tutorial2"
+            elif self.stan == "tutorial2":
+                if self.przyciski.graj.is_clicked(event):
+                    self.stan = "stop"
+                elif self.przyciski.poprzedni.is_clicked(event):
+                    self.stan = "tutorial1"
 
         elif event.type == pygame.KEYDOWN:
             
@@ -99,9 +107,16 @@ class Menu:
             self.przyciski.graj.draw(screen)
             self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.nastepny.draw(screen)
-            self.strona1 = pygame.transform.scale(self.strona1, (0.5 * W, 0.45 * H))
-            screen.blit(self.strona1, (W * 0.25, H * 0.05))
-        
+            self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
+            screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
+        elif self.stan == "tutorial2":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.graj.draw(screen)
+            self.przyciski.poprzedni.draw(screen)
+            self.przyciski.nastepny_szary.draw(screen)
+            self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
+            screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
+
             
 
         elif self.stan == "liczba_graczy":
