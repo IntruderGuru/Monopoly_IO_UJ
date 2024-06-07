@@ -418,8 +418,10 @@ class Gra:
     # oddzielona od aktualizacja_zdarzenia, na rzecz architektury i wykorzystania klasy GraProxy(event injection, tracking)
     def wykonaj_zdarzenie(self, event: pygame.event.Event):
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona):
+            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
             self.tura()
         if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
+            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
             self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:

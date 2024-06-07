@@ -15,6 +15,7 @@ class KontrolerWiadomosci:
         self.H = 800
         self.skalar_czcionki = 60 # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
+        self.koordynaty_ostatniej_wiadomosci = 0
 
     def _render_text(self, text: str, pos, okno: pygame.Surface, ostatnia_wiadomosc):
 
@@ -70,6 +71,8 @@ class KontrolerWiadomosci:
 
             if isinstance(wiadomosc, str | bytes):
                 self._render_text(wiadomosc, (W * 0.595, H * (0.48 + (i * y_offset))), okno, ostatnia_wiadomosc)
+                if ostatnia_wiadomosc:
+                    self.koordynaty_ostatniej_wiadomosci = (H * (0.467 + (i * y_offset)))
 
             wiadomosc_index = (
                 wiadomosc_index + 1
