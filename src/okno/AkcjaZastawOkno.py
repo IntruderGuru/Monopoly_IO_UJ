@@ -10,6 +10,7 @@ class AkcjaZastawOkno(Okno):
         self.H = 800
         self.W = 1200
         self.gra = gra
+        self.gracz = None
         self.pole_png = pygame.transform.scale(
             pygame.image.load("graphics/zastaw.jpg"), (0.28 * self.W, 0.64 * self.H)
         )
