@@ -6,6 +6,9 @@ class Wizualizator:
         self.kolor_przycisku = (70, 70, 70)
         self.kolor_gdy_kursor = (150, 150, 150)
         self.kolor_czcionki_na_przycisku = (200, 200, 200)
+        self.kolor_przycisku_graj = (96, 247, 134)
+        self.kolor_gdy_kursor_przycisku_graj = (76, 227, 114)
+        self.kolor_niedzialajcego_przycisku = (50, 50, 50)
 
         # inne kolory
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
