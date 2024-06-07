@@ -300,11 +300,12 @@ class Gra:
                     self.czy_akcja_zakonczona = False
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
-                elif posiadlosc.wlasciciel == gracz.id:
+                elif posiadlosc.wlasciciel == gracz:
+                    self.akcja_nieruchomosci_okno.nieruchomosc = "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
+                    self.akcja_nieruchomosci_okno.czy_kupno = True
                     self.czy_akcja_zakonczona = False
+                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
-                    self.akcja_nieruchomosci_okno.akcja_kupowania(
-                        posiadlosc, gracz)
                 else:
                     self._kontroler_wiadomosci.dodaj_wiadomosc(
                         "Gracz płaci czynsz")
@@ -339,9 +340,9 @@ class Gra:
             )
 
             #
-            # kostka_druga = 3
-            # kostka_pierwsza = 4
-            #
+            # kostka_druga = 2
+            # kostka_pierwsza = 3
+            # 
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             if self._gracze[self._indeks_aktualnego_gracza].umiejetnosc == "porusza_sie_o_1_pole_wiecej":

@@ -110,7 +110,7 @@ class Posiadlosc(Pole):
     def kup_dom(self, gra, gracz, ile_domow):
         if gracz.wykonaj_oplate(gra, self.cena_domu * ile_domow):
             self.liczba_domow += ile_domow
-            gracz.statystyka.dodaj_dom(ile_domow)
+            gracz.statystyka.dodaj_domek(ile_domow)
             while self.liczba_domow >= 5:
                 self.liczba_domow -= 5
                 gracz.statystyka.odejmij_dom(5)
