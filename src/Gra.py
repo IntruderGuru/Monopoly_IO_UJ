@@ -14,6 +14,7 @@ from src.Posiadlosc import *
 from src.Pionek import Pionek
 from src.KontrolerWiadomosci import KontrolerWiadomosci
 from src.interface.IGra import IGra
+from src.Przycisk import Przycisk
 
 
 KWOTA_POCZATKOWA = 10000
@@ -116,6 +117,19 @@ class Gra:
         # feature_testingMechanism
         self.input_text = ""
         print("HELLO from Gra")
+
+        #nowa tura
+        self.nastepna_tura = Przycisk(
+            szerokosc_ekranu * 0.3,
+            wysokosc_ekranu * 0.7,
+            szerokosc_ekranu * 0.2,
+            wysokosc_ekranu * 0.15,
+            self.wizualizator.kolor_przycisku_tury,
+            self.wizualizator.kolor_przycisku_tury_gdy_kursor,
+            "tura",
+            self.wizualizator.kolor_czcionki,
+            26
+        )
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         self._kolejny_rzut_kostka = False
@@ -403,11 +417,9 @@ class Gra:
     # metoda pomocnicza w celu wykonania pojdynczego zdarzenia
     # oddzielona od aktualizacja_zdarzenia, na rzecz architektury i wykorzystania klasy GraProxy(event injection, tracking)
     def wykonaj_zdarzenie(self, event: pygame.event.Event):
-        if (
-            event.type == pygame.KEYDOWN
-            and event.key == pygame.K_SPACE
-            and self.czy_akcja_zakonczona
-        ):
+        if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona):
+            self.tura()
+        if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
             self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
@@ -459,6 +471,7 @@ class Gra:
         )
 
         self._plansza.render(self._glowne_okno)
+        self.nastepna_tura.draw(self._glowne_okno)
 
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno)
@@ -494,6 +507,13 @@ class Gra:
         )
         self.akcja_statystyk_okno.aktualizuj_rozmiar_okna(
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
+
+        self.nastepna_tura.updateSize(
+            self.aktualna_szerokosc_ekranu * 0.218,
+            self.aktualna_wysokosc_ekranu * 0.7,
+            self.aktualna_szerokosc_ekranu * 0.12,
+            self.aktualna_wysokosc_ekranu * 0.08
         )
 
     def wypisz_nazwe_gracza_tury(self):
