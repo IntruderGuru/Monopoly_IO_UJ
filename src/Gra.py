@@ -16,7 +16,8 @@ from src.KontrolerWiadomosci import KontrolerWiadomosci
 from src.interface.IGra import IGra
 
 
-KWOTA_POCZATKOWA = 10000
+#KWOTA_POCZATKOWA = 10000
+KWOTA_POCZATKOWA = 2000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40

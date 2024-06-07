@@ -1,6 +1,5 @@
 from src.Statystyka import Statystyka
 
-
 class Gracz:
     def __init__(self, id, kwota, pionek):
         self.id = id
@@ -29,7 +28,7 @@ class Gracz:
             if not posiadlosc.czy_zastawiona:
                 # posiadlosc.wyswietl_info(gra)
                 gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"({posiadlosc.nazwa}")
+                    f"{posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -106,11 +105,8 @@ class Gracz:
 
     def wykonaj_oplate(self, gra, cena):
         if cena > self.kwota:
-            gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?"
-            )
             gra.akcja_zastaw_okno.czy_zastaw = True
-            gra.akcja_zastaw_okno.akcja_zastawiania(self)
+            gra.akcja_zastaw_okno.ustaw_gracza(self, cena)
         else:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
