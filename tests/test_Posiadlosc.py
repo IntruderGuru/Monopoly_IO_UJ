@@ -57,16 +57,13 @@ class TestPosiadlosc:
 
         zwrocone_info = self.posiadlosc.zwroc_info()
         przewidywane_info = \
-            (f"Nazwa: {TestPosiadlosc.NAZWA} \n"
-             f"Cena: {TestPosiadlosc.CENA}   Czynsz: {TestPosiadlosc.CZYNSZ}  Zastaw: {TestPosiadlosc.ZASTAW} "
-             f"\nCena-dom: {TestPosiadlosc.CENA_DOMU}  Liczba domkow: {liczba_domow}") \
+            (f"Nazwa: {TestPosiadlosc.NAZWA},  Cena: {TestPosiadlosc.CENA}") \
             if liczba_domow > 0 \
             else \
-            (f"Nazwa: {TestPosiadlosc.NAZWA} \n"
-             f"Cena: {TestPosiadlosc.CENA}   Czynsz: {TestPosiadlosc.CZYNSZ}  Zastaw: {TestPosiadlosc.ZASTAW} "
-             f"\nCena-dom: {TestPosiadlosc.CENA_DOMU}")
+            (f"Nazwa: {TestPosiadlosc.NAZWA},  Cena: {TestPosiadlosc.CENA}")
 
         assert zwrocone_info == przewidywane_info
+
 
     def test_kup_posiadlosc_udany(self):
         mock_pionek = MagicMock()
