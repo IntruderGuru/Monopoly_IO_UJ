@@ -22,8 +22,8 @@ class Posiadlosc(Pole):
 
     def zwroc_info(self):
         if self.liczba_domow:
-            return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}"
-        return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}"
+            return f"Nazwa: {self.nazwa},  Cena: {self.cena}"
+        return f"Nazwa: {self.nazwa},  Cena: {self.cena}"
 
     def pobierz_id_wlasciciela(self):
         return self.wlasciciel
@@ -110,7 +110,7 @@ class Posiadlosc(Pole):
     def kup_dom(self, gra, gracz, ile_domow):
         if gracz.wykonaj_oplate(gra, self.cena_domu * ile_domow):
             self.liczba_domow += ile_domow
-            gracz.statystyka.dodaj_dom(ile_domow)
+            gracz.statystyka.dodaj_domek(ile_domow)
             while self.liczba_domow >= 5:
                 self.liczba_domow -= 5
                 gracz.statystyka.odejmij_dom(5)

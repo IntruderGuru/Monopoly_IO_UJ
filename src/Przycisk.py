@@ -3,14 +3,14 @@ from src.Wizualizator import Wizualizator
 
 
 class Przycisk:
-    def __init__(self, x, y, width, height, color, hover_color, text, text_color):
+    def __init__(self, x, y, width, height, color, hover_color, text, text_color, rozmiar_czcionki = 36):
         self.rect = pygame.Rect(x, y, width, height)
         self.color: pygame.Color = color
         self.hover_color: pygame.Color = hover_color
         self.text = text
         self.text_color = text_color
         self.wizualizator = Wizualizator()
-        self.font = pygame.font.Font(self.wizualizator.czcionka_przycisku, 36)
+        self.font = pygame.font.Font(self.wizualizator.czcionka_przycisku, rozmiar_czcionki)
 
     def pobierz_wymiary(self) -> pygame.Rect:
         return self.rect

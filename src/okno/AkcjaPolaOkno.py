@@ -17,22 +17,12 @@ class AkcjaPolaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "kupuję",
-            self.gra.kolor_tekstu,
-        )
-        self.licytacja = Przycisk(
-            self.W * 0.6,
-            self.H * 0.4,
-            self.W * 0.2,
-            self.H * 0.15,
-            self.gra.kolor_przycisku,
-            self.gra.kolor_gdy_kursor,
-            "licytacja",
+            "kupuje",
             self.gra.kolor_tekstu,
         )
         self.wyjscie = Przycisk(
             self.W * 0.6,
-            self.H * 0.6,
+            self.H * 0.4,
             self.W * 0.2,
             self.H * 0.15,
             self.gra.kolor_przycisku,
@@ -74,10 +64,6 @@ class AkcjaPolaOkno(Okno):
                 self.kup_pole()
                 self.czy_akcja_pola = False
                 self.zamknij()
-            elif self.licytacja.is_clicked(event):
-                self.czy_akcja_pola = False
-                self.zamknij()
-                pass
             elif self.wyjscie.is_clicked(event):
                 self.czy_akcja_pola = False
                 self.zamknij()
@@ -104,15 +90,9 @@ class AkcjaPolaOkno(Okno):
             self.zakup.updateSize(
                 self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
             )
-            self.licytacja.updateSize(
-                self.W * 0.6,
-                self.H * 0.4,
-                self.W * 0.2,
-                self.H * 0.15,
-            )
             self.wyjscie.updateSize(
                 self.W * 0.6,
-                self.H * 0.6,
+                self.H * 0.4,
                 self.W * 0.2,
                 self.H * 0.15,
             )
@@ -129,7 +109,6 @@ class AkcjaPolaOkno(Okno):
             screen.blit(nakladka, (0, 0))
 
             self.zakup.draw(screen)
-            self.licytacja.draw(screen)
             self.wyjscie.draw(screen)
 
             pole_png_wyswietlane = pygame.transform.scale(

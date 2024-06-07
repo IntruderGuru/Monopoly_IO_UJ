@@ -47,7 +47,7 @@ class AkcjaStatystykOkno(Okno):
                 pygame.image.load("graphics/tlo_do_glownej_wiadomosci.png"),
                 (self.W * 0.43, self.H * 0.05)
             )
-            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.H * (self.mnoznik_wysokosci + 0.788)))
+            screen.blit(self.tlo_glowna, (self.W * (self.mnoznik_szerokosci - 0.06), self.gra._kontroler_wiadomosci.koordynaty_ostatniej_wiadomosci))
 
             for gracz in self.gra._gracze:
 

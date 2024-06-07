@@ -21,6 +21,13 @@ class Menu:
             pygame.image.load("graphics/logo.png"), (0.5 * self.W, 0.5 * self.H)
         )
 
+        self.strona1 = pygame.transform.scale(
+            pygame.image.load("graphics/tutorial/strona1.png"), (0.5 * self.W, 0.5 * self.H)
+        )
+        self.strona2 = pygame.transform.scale(
+            pygame.image.load("graphics/tutorial/strona2.png"), (0.5 * self.W, 0.5 * self.H)
+        )
+
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
         self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
@@ -51,6 +58,16 @@ class Menu:
                 if self.liczba_graczy > 1:
                     self.stan = "nazwy_graczy"
                     self.gracze.append("")
+            elif self.stan == "tutorial1":
+                if self.przyciski.graj.is_clicked(event):
+                    self.stan = "stop"
+                elif self.przyciski.nastepny.is_clicked(event):
+                    self.stan = "tutorial2"
+            elif self.stan == "tutorial2":
+                if self.przyciski.graj.is_clicked(event):
+                    self.stan = "stop"
+                elif self.przyciski.poprzedni.is_clicked(event):
+                    self.stan = "tutorial1"
 
         elif event.type == pygame.KEYDOWN:
             
@@ -62,7 +79,7 @@ class Menu:
                     if len(self.gracze) < self.liczba_graczy:
                         self.gracze.append("")
                     else:
-                        self.stan = "stop"
+                        self.stan = "tutorial1"
                 elif event.key == pygame.K_BACKSPACE:
                     self.gracze[-1] = self.gracze[-1][:-1]
                 else:
@@ -84,6 +101,23 @@ class Menu:
             self.przyciski.nowa_gra.draw(screen)
             self.przyciski.wczytaj_gre.draw(screen)
             self.przyciski.wyjscie.draw(screen)
+
+        elif self.stan == "tutorial1":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.graj.draw(screen)
+            self.przyciski.poprzedni_szary.draw(screen)
+            self.przyciski.nastepny.draw(screen)
+            self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
+            screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
+        elif self.stan == "tutorial2":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.graj.draw(screen)
+            self.przyciski.poprzedni.draw(screen)
+            self.przyciski.nastepny_szary.draw(screen)
+            self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
+            screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
+
+            
 
         elif self.stan == "liczba_graczy":
             self.przyciski.two.draw(screen)

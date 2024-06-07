@@ -85,6 +85,61 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
+        self.poprzedni = Przycisk(
+            W * 0.3,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "poprzedni",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+
+        self.nastepny = Przycisk(
+            W * 0.4,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "nastepny",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+
+        self.poprzedni_szary = Przycisk(
+            W * 0.3,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_niedzialajcego_przycisku,
+            self.wizualizator.kolor_niedzialajcego_przycisku,
+            "poprzedni",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+
+        self.nastepny_szary = Przycisk(
+            W * 0.4,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_niedzialajcego_przycisku,
+            self.wizualizator.kolor_niedzialajcego_przycisku,
+            "nastepny",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+
+        self.graj = Przycisk(
+            W * 0.5,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku_graj,
+            self.wizualizator.kolor_gdy_kursor_przycisku_graj,
+            "graj",
+            (40, 40, 40),
+        )
+
     def aktualizuj_rozmiar(self, W, H):
         # skalowanie do jakiejsc czesci, testowo
         MIN_W = 500
@@ -119,4 +174,25 @@ class PrzyciskiMenu:
         self.five.updateSize(W * 0.6,
             H * 0.5,
             H * 0.1,
+            H * 0.1)
+        
+        self.nastepny.updateSize(W * 0.4,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1)
+        self.poprzedni.updateSize(W * 0.15,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1)
+        self.graj.updateSize(W * 0.65,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1)
+        self.nastepny_szary.updateSize(W * 0.4,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1)
+        self.poprzedni_szary.updateSize(W * 0.15,
+            H * 0.8,
+            W * 0.2,
             H * 0.1)
