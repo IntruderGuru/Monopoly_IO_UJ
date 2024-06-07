@@ -77,7 +77,7 @@ class TestPosiadlosc:
         self.posiadlosc.kup_posiadlosc(self._gra, gracz)
 
         kwota_gracza_po_zakupie = gracz.kwota
-        przewidywana_kwota_po_zakupie =  kwota_poczatkowa - TestPosiadlosc.CENA
+        przewidywana_kwota_po_zakupie = kwota_poczatkowa - TestPosiadlosc.CENA
 
         assert przewidywana_kwota_po_zakupie == kwota_gracza_po_zakupie
 
