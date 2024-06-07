@@ -263,7 +263,7 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            self.akcja_kart_okno.przygotuj_karte()
+            self.akcja_kart_okno.przygotuj_karte(gracz)
 
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -317,8 +317,7 @@ class Gra:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
             if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza +
-                             1} opuszcza więzienie"
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} opuszcza więzienie"
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -340,7 +339,7 @@ class Gra:
 
             #
             kostka_druga = 3
-            kostka_pierwsza = 1
+            kostka_pierwsza = 4
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 

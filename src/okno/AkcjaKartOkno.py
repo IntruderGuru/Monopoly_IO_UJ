@@ -31,6 +31,7 @@ class AkcjaKartOkno(Okno):
         )
         self.karta = None
         self.tresc_karty = "empty"
+        self.gracz = None
 
     def aktualizacja(self):
         pass
@@ -40,7 +41,7 @@ class AkcjaKartOkno(Okno):
             if self.wyjscie.is_clicked(event):
                 if self.karta:
                     self.gra._plansza.karty.aktualna_karta.wykonaj_akcje(
-                        self.gra, self.gra._gracze[self.gra._indeks_aktualnego_gracza]
+                        self.gra, self.gracz
                     )
                 self.czy_szansa = False
                 self.zamknij()
@@ -68,9 +69,10 @@ class AkcjaKartOkno(Okno):
                 screen, self.tresc_karty, self.W * 0.5, self.H * 0.3
             )
 
-    def przygotuj_karte(self):
+    def przygotuj_karte(self, gracz):
         self.karta = self.gra._plansza.karty.nastepna_karta()
         self.tresc_karty = self.karta.tresc
+        self.gracz = gracz
 
     def zaktualizuj_rozmiar_czcionki(self):
         self.font = pygame.font.Font(

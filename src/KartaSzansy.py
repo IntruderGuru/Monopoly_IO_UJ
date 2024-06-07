@@ -50,6 +50,7 @@ class KartaSzansy:
                 "Nie masz mozliwości wykupić się rzutami lub kartą"
             )
             gracz.tury_w_wiezieniu = 2
+            gra._kolejny_rzut_kostka = False
             gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
 
