@@ -22,8 +22,8 @@ class Posiadlosc(Pole):
 
     def zwroc_info(self):
         if self.liczba_domow:
-            return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}  Liczba domkow: {self.liczba_domow}"
-        return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}"
+            return f"Nazwa: {self.nazwa},  Cena: {self.cena}"
+        return f"Nazwa: {self.nazwa},  Cena: {self.cena}"
 
     def pobierz_id_wlasciciela(self):
         return self.wlasciciel

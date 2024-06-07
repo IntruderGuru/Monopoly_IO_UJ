@@ -350,7 +350,10 @@ class Gra:
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
+                f"Kostka pierwsza: {kostka_pierwsza}"
+            )
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Kostka druga: {kostka_druga}"
             )
 
             #

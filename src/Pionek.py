@@ -36,7 +36,7 @@ class Pionek:
         self.sciezka_do_grafiki = grafika
         self.szerokosc_ratio = 1
         self.wysokosc_ratio = 1
-        self.W = W
+        self.W = W 
         self.H = H
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
@@ -44,6 +44,7 @@ class Pionek:
         self.zdjecie_pionek = pygame.transform.scale(
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
+        self.aktualizacja_rozmiaru(W, H)
         
     def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
@@ -89,10 +90,8 @@ class Pionek:
 
         self.szerokosc_ratio = szerokosc / szerokosc_ekranu
         self.wysokosc_ratio = wysokosc / wysokosc_ekranu
-
-        print(self.pozycja)
         self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
-        print(self.pozycja)
+
 
     def wyswietl(self, okno: pygame.Surface):
         skalar = 35
