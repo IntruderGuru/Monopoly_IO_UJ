@@ -4,7 +4,7 @@ class Wizualizator:
 
         # przycisk
         self.kolor_przycisku = (70, 70, 70)
-        self.kolor_gdy_kursor = (150, 150, 150)
+        self.kolor_gdy_kursor = (110, 110, 110)
         self.kolor_czcionki_na_przycisku = (200, 200, 200)
         self.kolor_przycisku_graj = (96, 247, 134)
         self.kolor_gdy_kursor_przycisku_graj = (76, 227, 114)
