@@ -1,4 +1,3 @@
-import copy
 import pytest
 import pygame
 from typing import Collection
@@ -28,7 +27,7 @@ class TestPrzycisk:
                                  pygame.color.THECOLORS["green"],
                                  pygame.color.THECOLORS["violet"],
                                  "TestPrzycisk",
-                                 pygame.color.THECOLORS["black"])
+                                 pygame.color.THECOLORS["blue"])
 
     def test_inicjalizacja_typow_zmiennych(self):
         assert type(self.przycisk.rect) is pygame.Rect
@@ -68,8 +67,8 @@ class TestPrzycisk:
 
     # Zmiana w display na HIDDEN sprawia ze ten nie przechodzi, testowany na RESIZABLE
     def test_hover_kolor(self):
-        kursor_pozycja_w_przycisku = (TestPrzycisk.PRZYCISK_POS_X + TestPrzycisk.PRZYCISK_SZEROKOSC // 2,
-                                      TestPrzycisk.PRZYCISK_POS_Y + TestPrzycisk.PRZYCISK_WYSOKOSC // 2)
+        kursor_pozycja_w_przycisku = (TestPrzycisk.PRZYCISK_POS_X + TestPrzycisk.PRZYCISK_SZEROKOSC // 8,
+                                      TestPrzycisk.PRZYCISK_POS_Y + TestPrzycisk.PRZYCISK_WYSOKOSC // 8)
 
         pygame.mouse.set_pos(kursor_pozycja_w_przycisku)
         self.przycisk.draw(self.screen)
@@ -77,6 +76,17 @@ class TestPrzycisk:
         przycisk_tlo_kolor = self.screen.get_at(kursor_pozycja_w_przycisku)
 
         assert (przycisk_tlo_kolor == self.przycisk.hover_color)
+
+    def test_napis_kolor(self):
+        kursor_pozycja_w_przycisku = (TestPrzycisk.PRZYCISK_POS_X + TestPrzycisk.PRZYCISK_SZEROKOSC // 2,
+                                      TestPrzycisk.PRZYCISK_POS_Y + TestPrzycisk.PRZYCISK_WYSOKOSC // 2)
+
+        pygame.mouse.set_pos(kursor_pozycja_w_przycisku)
+        self.przycisk.draw(self.screen)
+
+        przycisk_napis_kolor = self.screen.get_at(kursor_pozycja_w_przycisku)
+
+        assert (przycisk_napis_kolor == self.przycisk.text_color)
 
     @pytest.mark.parametrize("pozycja_kursora", [LEWO_GORA, LEWO_DOL, PRAWO_GORA, PRAWO_DOL])
     def test_kolor_brzegi_przycisku(self, pozycja_kursora: tuple):
