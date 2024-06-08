@@ -52,7 +52,7 @@ class Main:
             self._screen.fill(self.wizualizator.kolor_tla)
             if self.menu.stan != "stop":
                 self.menu.draw(self._screen, self._screen_width, self._screen_height)
-            else:
+            elif self.menu.typ_stopu == "nowa":
                 self._gra = Gra(
                     self._screen,
                     self._kontroler_wiadomosci,
@@ -63,7 +63,18 @@ class Main:
                     self._screen_height,
                 )
                 self._petla_gry()
-
+            else:
+                self._gra = Gra(
+                    self._screen,
+                    self._kontroler_wiadomosci,
+                    0,
+                    [],
+                    self.wizualizator,
+                    self._screen_width,
+                    self._screen_height,
+                )
+                self._gra.wczytaj_gre()
+                self._petla_gry()
             pygame.display.flip()
 
     def _petla_gry(self):

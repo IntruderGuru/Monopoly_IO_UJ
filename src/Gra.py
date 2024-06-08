@@ -1,5 +1,6 @@
 import random
 import pygame
+import pickle
 
 from src.okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
@@ -439,6 +440,10 @@ class Gra:
                 self.input_text = ""
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]
+            elif event.key == pygame.K_s:
+                self.zapisz_gre()
+                self.input_text = ""
+                pygame.quit()
             else:
                 self.input_text += event.unicode
         elif event.type == pygame.VIDEORESIZE:
@@ -565,3 +570,37 @@ class Gra:
                 self.aktualna_wysokosc_ekranu * 0.3,
             ),
         )
+    
+    def zapisz_gre(self):
+        with open('save/gracze.pickle', 'wb') as handle:
+            pickle.dump(self._gracze, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/liczba_graczy.pickle', 'wb') as handle:
+            pickle.dump(self._liczba_graczy, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/indeks_aktualnego_gracza.pickle', 'wb') as handle:
+            pickle.dump(self._indeks_aktualnego_gracza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/messages.pickle', 'wb') as handle:
+            pickle.dump(self.messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/plansza.pickle', 'wb') as handle:
+            pickle.dump(self._plansza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/gracz_poprzedniej_tury.pickle', 'wb') as handle:
+            pickle.dump(self.gracz_poprzedniej_tury, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        
+    def wczytaj_gre(self):
+        with open('save/gracze.pickle', 'rb') as handle:
+            self._gracze = pickle.load(handle)
+        with open('save/liczba_graczy.pickle', 'rb') as handle:
+            self._liczba_graczy = pickle.load(handle)
+        with open('save/indeks_aktualnego_gracza.pickle', 'rb') as handle:
+            self._indeks_aktualnego_gracza = pickle.load(handle)
+        with open('save/messages.pickle', 'rb') as handle:
+            self.messages = pickle.load(handle)
+        with open('save/plansza.pickle', 'rb') as handle:
+            self._plansza = pickle.load(handle)
+        with open('save/gracz_poprzedniej_tury.pickle', 'rb') as handle:
+            self.gracz_poprzedniej_tury = pickle.load(handle)
