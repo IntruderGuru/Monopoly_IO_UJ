@@ -38,8 +38,9 @@ umiejetnosci = [
     "karta_wyjscia_z_wiezienia",
     "sprzedaje_nieruchomosci_za_oryginalna_ceny",
     "dostaje_wiecej_za_przejscie_przez_start",
-    "placi_mniejsze_czynsze"
+    "placi_mniejsze_czynsze",
 ]
+
 
 class Gra:
     def __init__(
@@ -51,6 +52,7 @@ class Gra:
         wizualizator,
         szerokosc_ekranu,
         wysokosc_ekranu,
+        main_ref,
     ):
         random.shuffle(umiejetnosci)
         self._glowne_okno: pygame.Surface = glowne_okno
@@ -64,9 +66,9 @@ class Gra:
                     "graphics/pionek/PionekColor" + str(i + 1) + ".png",
                     szerokosc_ekranu,
                     wysokosc_ekranu,
-                    liczba_graczy
+                    liczba_graczy,
                 ),
-                umiejetnosci[i]
+                umiejetnosci[i],
             )
             for i, name in enumerate(gracze)
         ]
@@ -80,6 +82,7 @@ class Gra:
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
+        self.main = main_ref
 
         # sekcja wizualna
         self.kolor_przycisku = self.wizualizator.kolor_przycisku
@@ -120,7 +123,7 @@ class Gra:
         print("HELLO from Gra")
         self._plansza.plansza[0].ilosc_graczy_na_polu = liczba_graczy
 
-        #nowa tura
+        # nowa tura
         self.nastepna_tura = Przycisk(
             szerokosc_ekranu * 0.3,
             wysokosc_ekranu * 0.7,
@@ -130,7 +133,7 @@ class Gra:
             self.wizualizator.kolor_przycisku_tury_gdy_kursor,
             "tura",
             self.wizualizator.kolor_czcionki,
-            26
+            26,
         )
 
         self.gracz_poprzedniej_tury = -1
@@ -170,8 +173,7 @@ class Gra:
         screen.blit(
             self.dice_images[dice2 - 1],
             (
-                dice_x + (self.aktualna_wysokosc_ekranu /
-                          oddalenie_kostek_od_siebie),
+                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
                 dice_y,
             ),
         )
@@ -258,8 +260,7 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self.wyswietl_kostki(
-                self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
@@ -288,15 +289,13 @@ class Gra:
             self.akcja_kart_okno.przygotuj_karte()
 
         elif pole.typ == "Wiezienie":
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Gracz odwiedza więzienie")
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
 
         elif pole.typ == "Idz do wiezienia":
             self.czy_akcja_zakonczona = False
             self.akcja_wiezienie_okno.czy_wiezienie = True
 
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Gracz idzie do więzienia")
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
                 return
             if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
@@ -319,14 +318,16 @@ class Gra:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
                 elif posiadlosc.wlasciciel == gracz:
-                    self.akcja_nieruchomosci_okno.nieruchomosc = "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
+                    self.akcja_nieruchomosci_okno.nieruchomosc = (
+                        "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
+                    )
                     self.akcja_nieruchomosci_okno.czy_kupno = True
                     self.czy_akcja_zakonczona = False
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
+                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc(
-                        "Gracz płaci czynsz")
+                    self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
                 raise Exception("Błąd. Posiadłość jest innym polem")
@@ -361,22 +362,18 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}"
             )
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Kostka druga: {kostka_druga}"
-            )
+            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
-            #
-            # kostka_druga = 2
-            # kostka_pierwsza = 3
-            # 
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
-            if self._gracze[self._indeks_aktualnego_gracza].umiejetnosc == "porusza_sie_o_1_pole_wiecej":
+            if (
+                self._gracze[self._indeks_aktualnego_gracza].umiejetnosc
+                == "porusza_sie_o_1_pole_wiecej"
+            ):
                 self._suma_oczek += 1
 
             # Wyświetl kostki
-            self.wyswietl_kostki(
-                self._glowne_okno, kostka_pierwsza, kostka_druga)
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
@@ -387,6 +384,8 @@ class Gra:
                 self._indeks_aktualnego_gracza + 1
             ) % self._liczba_graczy
             self._suma_oczek = 0
+
+        self.main.turn_start_time = pygame.time.get_ticks()
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -404,8 +403,7 @@ class Gra:
         #     self._stos_otwartych_okien.usun()
 
     def process_input(self, input_text):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Wprowadzono: {input_text}")
+        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
         if input_text.isdigit():
             liczba_graczy = int(input_text)
             if liczba_graczy >= 2 and liczba_graczy <= 5:
@@ -429,7 +427,11 @@ class Gra:
     # metoda pomocnicza w celu wykonania pojdynczego zdarzenia
     # oddzielona od aktualizacja_zdarzenia, na rzecz architektury i wykorzystania klasy GraProxy(event injection, tracking)
     def wykonaj_zdarzenie(self, event: pygame.event.Event):
-        if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona):
+        if (
+            event.type == pygame.KEYDOWN
+            and event.key == pygame.K_SPACE
+            and self.czy_akcja_zakonczona
+        ):
             self.tura()
         if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
             self.tura()
@@ -467,9 +469,76 @@ class Gra:
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         self.wykonaj_zdarzenie(event)
 
+    def zamknij_wszystkie_okna(self):
+        self.akcja_pola_okno.czy_akcja_pola = False
+        self.akcja_pola_okno.zamknij()
+
+        self.akcja_nieruchomosci_okno.czy_kupno = False
+        self.akcja_nieruchomosci_okno.zamknij()
+
+        if self.akcja_kart_okno.czy_szansa:
+            self._plansza.karty.aktualna_karta.wykonaj_akcje(
+                self, self._gracze[self._indeks_aktualnego_gracza]
+            )
+        self.akcja_kart_okno.czy_szansa = False
+        self.akcja_kart_okno.zamknij()
+
+        self.akcja_zastaw_okno.czy_zastaw = False
+        self.akcja_zastaw_okno.zamknij()
+
+        if self.akcja_zagadek_okno.czy_zagadka:
+            print(self._gracze[self._indeks_aktualnego_gracza].kwota)
+            if 1500 > self._gracze[self._indeks_aktualnego_gracza].kwota:
+                if self.pobierz_info_tak_nie(
+                    "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."
+                ):
+                    self._gracze[self._indeks_aktualnego_gracza].zastaw_nieruchomosci()
+            if 1500 > self._gracze[self._indeks_aktualnego_gracza].kwota:
+                self.messages.append("Bankrutujesz")
+            self._gracze[self._indeks_aktualnego_gracza].kwota -= 1500
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Kara za nie wybranie odpowiedzi, zapłacono: " + str(1500)
+            )
+            self._gracze[
+                self._indeks_aktualnego_gracza
+            ].statystyka.aktualizuj_stan_pieniedzy(
+                self._gracze[self._indeks_aktualnego_gracza].kwota
+            )
+        self.akcja_zagadek_okno.czy_zagadka = False
+        self.akcja_zagadek_okno.zamknij()
+
+        self.akcja_wiezienie_okno.czy_wiezienie = False
+        self.akcja_wiezienie_okno.zamknij()
+
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, (0, 0, 0))
         self._glowne_okno.blit(text_surface, pos)
+
+    def render_game_time(self):
+        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
+        tekst = self.font.render(
+            game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.20,
+            ),
+        )
+
+    def render_turn_time(self):
+        turn_time_text = f"Czas tury: {int(self.main.uplyniety_czas_tury):02}"
+        tekst = self.font.render(
+            turn_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.25,
+            ),
+        )
 
     # override
     def wyswietl(self, okno: pygame.Surface, W, H):
@@ -478,8 +547,7 @@ class Gra:
 
         self.render_text(
             self.input_text,
-            (self.aktualna_szerokosc_ekranu - 400,
-             self.aktualna_wysokosc_ekranu - 50),
+            (self.aktualna_szerokosc_ekranu - 400, self.aktualna_wysokosc_ekranu - 50),
         )
 
         self._plansza.render(self._glowne_okno)
@@ -525,10 +593,13 @@ class Gra:
             self.aktualna_szerokosc_ekranu * 0.218,
             self.aktualna_wysokosc_ekranu * 0.7,
             self.aktualna_szerokosc_ekranu * 0.12,
-            self.aktualna_wysokosc_ekranu * 0.08
+            self.aktualna_wysokosc_ekranu * 0.08,
         )
 
     def wypisz_nazwe_gracza_tury(self):
+        self.render_game_time()  # Wyświetlanie czasu gry
+        self.render_turn_time()  # Wyświetlanie czasu tury
+
         napis = "Tura gracza:"
         sciezka_do_pionka = self._gracze[
             self._indeks_aktualnego_gracza
@@ -536,8 +607,7 @@ class Gra:
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
-            self.czcionka, int(
-                self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
         )
 
         self.zdjecie_pionek = pygame.transform.scale(
@@ -556,8 +626,7 @@ class Gra:
             ),
         )
 
-        tekst = self.font.render(
-            napis, True, self.wizualizator.kolor_napisu_gracz_tury)
+        tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
         self._glowne_okno.blit(
             tekst,
             (

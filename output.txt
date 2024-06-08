@@ -9,6 +9,8 @@ from src.Menu import Menu
 
 class Main:
     _SEC_TO_MS = 1000
+    LIMIT_CZASU_GRY = 3600
+    LIMIT_CZASU_TURY = 30
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
@@ -19,7 +21,7 @@ class Main:
         self.font = pygame.font.Font(None, 20)
 
         pygame.display.set_caption("Monopoly")
-        self._screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
+        self._screen = pygame.display.set_mode((1200, 660), pygame.RESIZABLE)
 
         self._screen_info = pygame.display.Info()
         self._screen_width = self._screen_info.current_w
@@ -33,6 +35,12 @@ class Main:
         self.wizualizator = Wizualizator()
         self.menu = Menu(self.wizualizator)
         self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
+
+        self.uplyniety_czas_gry = 0
+        self.uplyniety_czas_tury = 0
+        self.turn_start_time = (
+            pygame.time.get_ticks()
+        )  # Inicjalizacja czasu startu tury
 
     def __del__(self):
         pygame.quit()
@@ -54,9 +62,6 @@ class Main:
             if self.menu.stan != "stop":
                 self.menu.draw(self._screen, self._screen_width, self._screen_height)
             else:
-                self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    "Wprowadź liczbę graczy między (2-5) :"
-                )
                 self._gra = Gra(
                     self._screen,
                     self._kontroler_wiadomosci,
@@ -65,14 +70,19 @@ class Main:
                     self.wizualizator,
                     self._screen_width,
                     self._screen_height,
+                    self,
                 )
                 self._petla_gry()
 
             pygame.display.flip()
 
     def _petla_gry(self):
+        self.turn_start_time = (
+            pygame.time.get_ticks()
+        )  # Zresetowanie czasu startu tury na początku gry
         while self._running:
             self._aktualizuj_delta_time()
+            self._aktualizuj_czas_gry()  # Wywołanie funkcji aktualizującej czas gry
             self._petla_zdarzen(pygame.event.get())
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
@@ -80,6 +90,23 @@ class Main:
     def _aktualizuj_delta_time(self):
         self._clock.tick(60)
         self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
+
+    def _aktualizuj_czas_gry(self):
+        self.uplyniety_czas_gry += self._delta_time
+        self.uplyniety_czas_tury = (
+            pygame.time.get_ticks() - self.turn_start_time
+        ) / Main._SEC_TO_MS
+
+        if self.uplyniety_czas_gry >= Main.LIMIT_CZASU_GRY:
+            self._running = False
+            self._kontroler_wiadomosci.dodaj_wiadomosc("Czas gry minął! Koniec gry.")
+
+        if self.uplyniety_czas_tury >= Main.LIMIT_CZASU_TURY:
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Czas tury minął! Przechodzimy do następnego gracza."
+            )
+            self._gra.tura()
+            self.turn_start_time = pygame.time.get_ticks()
 
     def _petla_zdarzen(self, events_list):
         for event in events_list:
@@ -93,7 +120,7 @@ class Main:
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
-        _delta_time = delta_time
+        pass  # Aktualizacja gry, jeśli jest taka potrzeba
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
@@ -190,6 +217,7 @@ class Gra:
         wizualizator,
         szerokosc_ekranu,
         wysokosc_ekranu,
+        main_ref,
     ):
         self._glowne_okno: pygame.Surface = glowne_okno
         self._gracze = [
@@ -200,6 +228,9 @@ class Gra:
                     0,
                     PIECE_COLORS[i],
                     "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                    szerokosc_ekranu,
+                    wysokosc_ekranu,
+                    liczba_graczy,
                 ),
             )
             for i, name in enumerate(gracze)
@@ -208,12 +239,13 @@ class Gra:
         self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
         self._kolejny_rzut_kostka = False
-        self._aktualny_gracz = 1
+        self._indeks_aktualnego_gracza = 0
         self.messages = []
         self.aktualna_szerokosc_ekranu = szerokosc_ekranu
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
+        self.main = main_ref
 
         # sekcja wizualna
         self.kolor_przycisku = self.wizualizator.kolor_przycisku
@@ -229,7 +261,9 @@ class Gra:
 
         # sekcja okien
         self._plansza = Plansza()
-        self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+        self._plansza.aktualizacja_rozmiaru(
+            self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+        )
 
         self.akcja_pola_okno = AkcjaPolaOkno(self)
         self.akcja_nieruchomosci_okno = AkcjaNieruchomosciOkno(self)
@@ -250,64 +284,62 @@ class Gra:
         # feature_testingMechanism
         self.input_text = ""
         print("HELLO from Gra")
-
-    def wybierz_kolejnego_gracza(self):
-        self._suma_oczek = 0
-        poczatkowy_gracz = self._aktualny_gracz
-
-        while True:
-            if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
-                self._czy_gracz_ma_ture = True
-                break
-            else:
-                self._gracze[self._aktualny_gracz - 1].odczekajJednaTure()
-                if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc(
-                        f"Gracz {self._aktualny_gracz} opuszcza więzienie po dwóch turach"
-                    )
-                self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
-                self._suma_oczek = 0
-                if self._aktualny_gracz == poczatkowy_gracz:
-                    self._kontroler_wiadomosci.dodaj_wiadomosc(
-                        "Wszyscy gracze są w więzieniu. Przechodzimy do następnej tury."
-                    )
-                    break
+        self._plansza.plansza[0].ilosc_graczy_na_polu = liczba_graczy
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
+        self._kolejny_rzut_kostka = False
+
         if kostka_pierwsza + kostka_druga == 7:
             self._kolejny_rzut_kostka = True
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Siódemka, rzuć jeszcze raz")
-        else:
-            self._kolejny_rzut_kostka = False
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Siódemka, otrzymujesz dodatkową turę"
+            )
 
         if self._suma_oczek == 21:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
             )
-            self._gracze[self._aktualny_gracz - 1].pozycja = 10
-            self.przesun_gracza_bez_raportu(self._gracze[self._aktualny_gracz - 1], 10)
-            self._gracze[self._aktualny_gracz - 1].uwiezienie = True
-            self._gracze[self._aktualny_gracz - 1].tury_w_wiezieniu = 0
+            self.przesun_gracza_bez_raportu(
+                self._gracze[self._indeks_aktualnego_gracza], 10
+            )
+            self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu = 2
+            self.akcja_wiezienie_okno.czy_wiezienie = True
             self._kolejny_rzut_kostka = False
-            self._suma_oczek = 0
+        else:
+            self.przesun_gracza(
+                self._gracze[self._indeks_aktualnego_gracza],
+                kostka_pierwsza + kostka_druga,
+            )
 
     def wyswietl_kostki(self, screen, dice1, dice2):
-        #im wieksze tym mniejszy odstep
+        # im wieksze tym mniejszy odstep
         oddalenie_kostek_od_siebie = 8.1
-        self.aktualizuj_rozmiar_kotstek()
-        dice_x = self.aktualna_szerokosc_ekranu * 0.21
-        dice_y = self.aktualna_wysokosc_ekranu * 0.44
+        self.aktualizuj_rozmiar_kostek()
+        dice_x = self.aktualna_szerokosc_ekranu * 0.213
+        dice_y = self.aktualna_wysokosc_ekranu * 0.38
         screen.blit(self.dice_images[dice1 - 1], (dice_x, dice_y))
-        screen.blit(self.dice_images[dice2 - 1], (dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie), dice_y))
+        screen.blit(
+            self.dice_images[dice2 - 1],
+            (
+                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
+                dice_y,
+            ),
+        )
 
-    def aktualizuj_rozmiar_kotstek(self):
-        #im wiekszy tym mniejsze kostki
+    def aktualizuj_rozmiar_kostek(self):
+        # im wiekszy tym mniejsze kostki
         skalar_kostek = 10
 
         for i in range(1, 7):
             image_path = f"graphics/dice/dice{i}.png"
             image = pygame.image.load(image_path)
-            self.dice_images[i - 1] = pygame.transform.scale(image, (self.aktualna_wysokosc_ekranu / skalar_kostek, self.aktualna_wysokosc_ekranu / skalar_kostek))
+            self.dice_images[i - 1] = pygame.transform.scale(
+                image,
+                (
+                    self.aktualna_wysokosc_ekranu / skalar_kostek,
+                    self.aktualna_wysokosc_ekranu / skalar_kostek,
+                ),
+            )
 
     def symuluj_rzut(self):
         liczba_klatek = 5  # Liczba klatek animacji
@@ -317,7 +349,7 @@ class Gra:
             dice2 = random.randint(1, 6)
             self.wyswietl_kostki(self._glowne_okno, dice1, dice2)
             pygame.display.update()
-            pygame.time.wait(100)  # Czas oczekiwania między klatkami animacji
+            pygame.time.wait(75)  # Czas oczekiwania między klatkami animacji
 
         # Ostateczne wartości kostek
         kostka_1 = random.randint(1, 6)
@@ -327,19 +359,20 @@ class Gra:
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
-        gracz.pionek.przesun(ruch)
+        gracz.pionek.przesun(ruch, self)
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         self._kontroler_wiadomosci.dodaj_wiadomosc(
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
         )
-
+        gracz.pionek.wyswietl(self._glowne_okno, self)
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
-        gracz.pionek.przesun(40 - stara_pozycja + nowa_pozycja) % LICZBA_POL
+        gracz.pionek.przesun((nowa_pozycja - stara_pozycja) % LICZBA_POL, self)
+        gracz.pionek.wyswietl(self._glowne_okno, self)
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         if posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii":
@@ -368,14 +401,17 @@ class Gra:
     def wykup_z_wiezienia_rzutem(self):
         liczba_siodemek = 0
         for x in range(3):
-            kostka_pierwsza = random.randint(1, 6)
-            kostka_druga = random.randint(1, 6)
-            suma += kostka_pierwsza + kostka_druga
+            kostka_pierwsza, kostka_druga = self.symuluj_rzut()
+            suma = kostka_pierwsza + kostka_druga
             if suma == 7:
                 liczba_siodemek += 1
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
+            self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
+            pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
+            pygame.time.wait(1000)
+
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
@@ -398,36 +434,33 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            karta = self._plansza.karty.nastepna_karta()
-            karta.wyswietl_tresc(self)
-            karta.wykonaj_akcje(self, gracz)
+            self.akcja_kart_okno.przygotuj_karte()
 
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
 
-        # TODO: mozliwosc wykupienia sie z wiezienia za pomoca wyrzucenia 2 siodemek na 3 rzuty kostka
-        elif pole.typ == "idz_do_wiezienia":
+        elif pole.typ == "Idz do wiezienia":
+            self.czy_akcja_zakonczona = False
+            self.akcja_wiezienie_okno.czy_wiezienie = True
 
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
                 return
-            if not gracz.liczba_kart_wyjdz_z_wiezienia:
-                self.czy_akcja_zakonczona = False
-                self.akcja_wiezienie_okno.czy_wiezienie = True
-                gracz.uwiezienie = True
-                self.przesun_gracza_bez_raportu(
-                    self._gracze[self._aktualny_gracz - 1], 10
-                )
-            else:
+            if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
                 gracz.liczba_kart_wyjdz_z_wiezienia -= 1
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'"
+                )
+            else:
+                gracz.tury_w_wiezieniu = 2
+                self.przesun_gracza_bez_raportu(
+                    self._gracze[self._indeks_aktualnego_gracza], 10
                 )
 
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-                posiadlosc.wyswietl_info(self)
+                # posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:
                     self.czy_akcja_zakonczona = False
                     self.akcja_pola_okno.czy_akcja_pola = True
@@ -443,43 +476,51 @@ class Gra:
                 raise Exception("Błąd. Posiadłość jest innym polem")
 
     def tura(self):
-        if not self._kolejny_rzut_kostka:
-            self.wybierz_kolejnego_gracza()
+        self._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Teraz tura gracza: {self._indeks_aktualnego_gracza + 1}"
+        )
 
-        if not self._gracze[self._aktualny_gracz - 1].uwiezienie:
+        if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu:
+            self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
+            if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Gracz {self._indeks_aktualnego_gracza +1} opuszcza więzienie"
+                )
+            else:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                )
+
+        else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Ruch gracza: {self._aktualny_gracz}"
+                f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
             )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
-            # kostka_pierwsza = random.randint(1, 6)
-            # kostka_druga = random.randint(1, 6)
-            self._suma_oczek += kostka_pierwsza + kostka_druga
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Kostka pierwsza: {kostka_pierwsza}, Kostka druga: {kostka_druga}"
             )
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Suma: {self._suma_oczek}")
+
+            #
+            # kostka_druga = 3
+            # kostka_pierwsza = 4
+            #
+            self._suma_oczek += kostka_pierwsza + kostka_druga
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
-            pygame.time.wait(2000)
+            pygame.time.wait(1000)
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
-            self.przesun_gracza(
-                self._gracze[self._aktualny_gracz - 1], kostka_pierwsza + kostka_druga
-            )
-        else:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {self._aktualny_gracz} jest w więzieniu."
-            )
-            self.wybierz_kolejnego_gracza()
 
         if not self._kolejny_rzut_kostka:
-            self._aktualny_gracz = (self._aktualny_gracz % self._liczba_graczy) + 1
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Teraz tura gracza: {self._aktualny_gracz}"
-            )
+            self._indeks_aktualnego_gracza = (
+                self._indeks_aktualnego_gracza + 1
+            ) % self._liczba_graczy
+            self._suma_oczek = 0
+
+        self.main.turn_start_time = pygame.time.get_ticks()
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -541,10 +582,14 @@ class Gra:
 
             # Rozmiar nie moze byc mniejszy niz 500 na 500
             # if event.w > 1000 and event.h > 550:
-            self._plansza.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+            self._plansza.aktualizacja_rozmiaru(
+                self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+            )
 
             for gracz in self._gracze:
-                gracz.pionek.aktualizacja_rozmiaru(self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu)
+                gracz.pionek.aktualizacja_rozmiaru(
+                    self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
+                )
 
         self.akcja_pola_okno.aktualizacja_zdarzen(event)
         self.akcja_nieruchomosci_okno.aktualizacja_zdarzen(event)
@@ -561,6 +606,32 @@ class Gra:
         text_surface = self.font.render(text, True, (0, 0, 0))
         self._glowne_okno.blit(text_surface, pos)
 
+    def render_game_time(self):
+        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
+        tekst = self.font.render(
+            game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.20,
+            ),
+        )
+
+    def render_turn_time(self):
+        turn_time_text = f"Czas tury: {int(self.main.uplyniety_czas_tury):02}"
+        tekst = self.font.render(
+            turn_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        )
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.25,
+            ),
+        )
+
     # override
     def wyswietl(self, okno: pygame.Surface, W, H):
 
@@ -574,16 +645,17 @@ class Gra:
         self._plansza.render(self._glowne_okno)
 
         for gracz in self._gracze:
-            gracz.pionek.wyswietl(self._glowne_okno)
+            gracz.pionek.wyswietl(self._glowne_okno, self)
 
+        self.wypisz_nazwe_gracza_tury()
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
         self._kontroler_wiadomosci.wyswietl(okno, W, H)
+        self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
         self.akcja_pola_okno.wyswietl(self._glowne_okno)
         self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
-        self.akcja_wiezienie_okno.wyswietl(self._glowne_okno)
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -608,9 +680,49 @@ class Gra:
             self.aktualna_szerokosc_ekranu, self.aktualna_wysokosc_ekranu
         )
 
+    def wypisz_nazwe_gracza_tury(self):
+        self.render_game_time()  # Wyświetlanie czasu gry
+        self.render_turn_time()  # Wyświetlanie czasu tury
+
+        napis = "Tura gracza:"
+        sciezka_do_pionka = self._gracze[
+            self._indeks_aktualnego_gracza
+        ].pionek.sciezka_do_grafiki
+
+        self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
+        )
+
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(sciezka_do_pionka),
+            (
+                0.03 * self.aktualna_szerokosc_ekranu,
+                0.03 * self.aktualna_szerokosc_ekranu,
+            ),
+        )
+
+        self._glowne_okno.blit(
+            self.zdjecie_pionek,
+            (
+                self.aktualna_szerokosc_ekranu * 0.32,
+                self.aktualna_wysokosc_ekranu * 0.285,
+            ),
+        )
+
+        tekst = self.font.render(napis, True, self.wizualizator.kolor_napisu_gracz_tury)
+        self._glowne_okno.blit(
+            tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.21,
+                self.aktualna_wysokosc_ekranu * 0.3,
+            ),
+        )
+
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Gracz.py
 from src.Statystyka import Statystyka
+
 
 class Gracz:
     def __init__(self, id, kwota, pionek):
@@ -618,20 +730,11 @@ class Gracz:
         self.kwota = kwota
         self.pionek = pionek
         self.pozycja = 0
-        self.uwiezienie = False
         self.tury_w_wiezieniu = 0  # Licznik tur w więzieniu
         self.liczba_kart_wyjdz_z_wiezienia = 0
         self.lista_posiadlosci = []
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
-
-    def odczekajJednaTure(self):
-        if self.uwiezienie:
-            self.tury_w_wiezieniu += 1
-            if self.tury_w_wiezieniu >= 2:
-                self.uwiezienie = False
-                self.tury_w_wiezieniu = 0
-                print(f"Gracz {self.id} opuszcza więzienie po dwóch turach")
 
     # TODO: wczytanie numeru zastawianej posiadlosci
     def zastaw_posiadlosci(self, gra):
@@ -647,7 +750,9 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                # posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -669,7 +774,9 @@ class Gracz:
         )
         for posiadlosc in self.lista_posiadlosci:
             if posiadlosc.czy_zastawiona:
-                posiadlosc.wyswietl_info(gra)
+                # posiadlosc.wyswietl_info(gra)
+                gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"({posiadlosc.nazwa}")
 
         # wczytanie numeru, sprawdzenie czy numer jest dobry
         x = 0
@@ -731,7 +838,7 @@ class Gracz:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
             return 1
-        
+
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
         return 0
 
@@ -743,7 +850,7 @@ class Gracz:
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def czy_przeszedl_przez_start(self, gra, stara_pozycja):
-        if self.pionek.numer_pola < stara_pozycja and self.uwiezienie == False:
+        if self.pionek.numer_pola < stara_pozycja and self.tury_w_wiezieniu == 0:
             self.dodaj_pieniadze(gra, 2000)
 
 
@@ -788,15 +895,19 @@ class KartaSzansy:
 
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
-            ruch = (stara_pozycja - self.wartosc) % 40
-            gra.przesun_gracza(gracz, ruch)
+            gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
+            gracz.czy_przeszedl_przez_start(gra, stara_pozycja)
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
 
         elif self.typ == "cofnij_do_wiezienia":
-            gracz.uwiezienie = True
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Nie masz mozliwości wykupić się rzutami lub kartą"
+            )
+            gracz.tury_w_wiezieniu = 2
+            gra.akcja_wiezienie_okno.czy_wiezienie = True
             gra.przesun_gracza_bez_raportu(gracz, 10)
 
         elif self.typ == "karta_wyjscie_z_wiezienia":
@@ -808,6 +919,7 @@ class Karty:
         self.karty = self.wczytaj_karty("data/karty.txt")
         random.shuffle(self.karty)
         self.current_index = 0
+        self.aktualna_karta = self.karty[self.current_index]
 
     def wczytaj_karty(self, plik: str) -> list[KartaSzansy]:
         karty = []
@@ -829,6 +941,7 @@ class Karty:
 
     def nastepna_karta(self):
         karta = self.karty[self.current_index]
+        self.aktualna_karta = karta
         self.current_index = (self.current_index + 1) % len(self.karty)
         return karta
 
@@ -994,12 +1107,12 @@ class Menu:
         self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
+            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
+            screen.blit(self.logo, (W * 0.25, H * 0.05))
+
             self.przyciski.nowa_gra.draw(screen)
             self.przyciski.wczytaj_gre.draw(screen)
             self.przyciski.wyjscie.draw(screen)
-
-            self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.3 * H))
-            screen.blit(self.logo, (W * 0.25, H * 0.05))
 
         elif self.stan == "liczba_graczy":
             self.przyciski.two.draw(screen)
@@ -1074,28 +1187,31 @@ class Pionek:
     DLUGOSC_SCIANKI_W_POLACH = 10
     LICZBA_POL = 40
 
-    MALE_POLE_WYMIARY: Vector2 = Vector2(37, 65)
+    MALE_POLE_WYMIARY: Vector2 = Vector2(44, 70)
     # warning: najlepiej, gdy DUZE_POLE_WYMIARY ma oba wymiary z MALE_POLE_WYMIARY.y
-    DUZE_POLE_WYMIARY: Vector2 = Vector2(65, 65)
-    OFF_SET: Vector2 = Vector2(35, 100)
+    DUZE_POLE_WYMIARY: Vector2 = Vector2(70, 70)
+    OFF_SET: Vector2 = Vector2(12, 12)
     SPACING: int = 10
     MAKSYMALNA_LICZBA_POL: int = 40
     # dla sciany = ilosc malych pol + jedno duze pole
     DLUGOSC_SCIANY_W_POLACH = 10
 
-    def __init__(self, numer_pola: int, color: pygame.color, grafika: str):
+    def __init__(self, numer_pola: int, color: pygame.color, grafika: str, W, H, il):
         self.numer_pola = numer_pola
         self.color = color
         self.sciezka_do_grafiki = grafika
         self.szerokosc_ratio = 1
         self.wysokosc_ratio = 1
+        self.W = W
+        self.H = H
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
         self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
         self.zdjecie_pionek = pygame.transform.scale(
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
-
+        self.ilosc_graczy_na_polu = il
+        
     def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
         gora = Pionek.OFF_SET.y
@@ -1103,47 +1219,64 @@ class Pionek:
         # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
         match kierunek_sciany:
             case KierunekPol.Gora:
-                lewo += ((Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
-                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING))
+                lewo += ((Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
 
             case KierunekPol.Prawo:
-                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING
-                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING))
-                gora += ((Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
+                lewo += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING
+                gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING))
+                gora += ((Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING) if numer_pola % 10 != 0 else 0)
 
             case KierunekPol.Dol:
-                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)
-                lewo += (Pionek.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
-                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
+                lewo += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING)
+                lewo += (Pionek.DUZE_POLE_WYMIARY.x + Pionek.SPACING)       # Czemu dziala nie mam bladego pojecia
+                gora += 9 * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
 
             case KierunekPol.Lewo:
-                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pionek.SPACING
+                gora += (9 - (numer_pola % 10)) * (Pionek.MALE_POLE_WYMIARY.x + Pionek.SPACING) + Pionek.DUZE_POLE_WYMIARY.y + Pionek.SPACING
 
-        return Vector2(lewo, gora)
+        return Vector2(lewo * self.szerokosc_ratio, gora * self.wysokosc_ratio)
 
-    def przesun(self, liczba_pol: int) -> bool:
-        if Pionek.MIN_LICZBA_OCZEK <= liczba_pol <= Pionek.MAX_LICZBA_OCZEK:
-            self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
-            self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
-            self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+    def przesun(self, liczba_pol: int, gra) -> bool:
+        if liczba_pol <= 0:
+            return False
+        gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu -= 1
+        self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
+        gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu += 1
+        self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
+        self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
-            return True
+        return True
 
-        return False
 
     def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
         szerokosc_ekranu = 1200
-        wysokosc_ekranu = 800
+        wysokosc_ekranu = 660
+        self.W = szerokosc
+        self.H = wysokosc
 
         self.szerokosc_ratio = szerokosc / szerokosc_ekranu
         self.wysokosc_ratio = wysokosc / wysokosc_ekranu
 
+        print(self.pozycja)
         self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
+        print(self.pozycja)
 
-    def wyswietl(self, okno: pygame.Surface):
-        #pygame.draw.rect(okno, self.color, pygame.Rect(self.pozycja.x, self.pozycja.y, self.wymiary.x, self.wymiary.y))
+    def wyswietl(self, okno: pygame.Surface, gra):
+        skalar = 35
+        
+        self.zdjecie_pionek = pygame.transform.scale(
+            pygame.image.load(self.sciezka_do_grafiki), (self.W / skalar, self.W / skalar)
+        )
+        self.ilosc_graczy_na_polu = gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu
+        if self.ilosc_graczy_na_polu > 1:
+            self.maska = pygame.transform.scale(
+                pygame.image.load(f"graphics/pionek{self.ilosc_graczy_na_polu}mask.png"), (self.W / skalar, self.W / skalar)
+            )
+        # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
         okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
-
+        if self.ilosc_graczy_na_polu > 1:
+            okno.blit(self.maska, (self.pozycja.x, self.pozycja.y))
 
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Plansza.py
@@ -1312,6 +1445,7 @@ class PodatekDochodowy(Pole):
     def zaplac_podatek(self, gra, gracz: Gracz, czy_dobra: bool) -> None:
         do_zaplaty = self.podatek
         if czy_dobra:
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
             do_zaplaty /= 2
 
         if do_zaplaty > gracz.kwota:
@@ -1378,31 +1512,6 @@ class Pole:
 
         return Pole.DUZE_POLE_WYMIARY if (numer_pola % dlugosc_sciany_w_polach) == 0 else Pole.MALE_POLE_WYMIARY
 
-    # def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
-    #     lewo = Pole.OFF_SET.x
-    #     gora = Pole.OFF_SET.y
-    #
-    #     # Uwaga na orientacje dlugosci i szerokosci pola, jako x i y, zawsze os pozioma to x, os pionowa to y, niezaleznie od orientacji pola, nieintuicyjne!
-    #     match kierunek_sciany:
-    #         case KierunekPol.Gora:
-    #             lewo += ((Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
-    #             lewo += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING))
-    #
-    #         case KierunekPol.Prawo:
-    #             lewo += 9 * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING
-    #             gora += 0 if (numer_pola % 10 == 0) else (((numer_pola % 10) - 1) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING))
-    #             gora += ((Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING) if numer_pola % 10 != 0 else 0)
-    #
-    #         case KierunekPol.Dol:
-    #             lewo += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)
-    #             lewo += (Pole.DUZE_POLE_WYMIARY.x * self.szerokosc_ratio + Pole.SPACING)       # Czemu dziala nie mam bladego pojecia
-    #             gora += 9 * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
-    #
-    #         case KierunekPol.Lewo:
-    #             gora += (9 - (numer_pola % 10)) * (Pole.MALE_POLE_WYMIARY.x * self.wysokosc_ratio + Pole.SPACING) + Pole.DUZE_POLE_WYMIARY.y * self.wysokosc_ratio + Pole.SPACING
-    #
-    #     return Vector2(lewo, gora)
-
     def inicjalizacja_pozycji(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pole.OFF_SET.x
         gora = Pole.OFF_SET.y
@@ -1433,11 +1542,13 @@ class Pole:
         self.typ = typ
         self.szerokosc_ratio = 1
         self.wysokosc_ratio = 1
+        self.kupione_przez = 0 #jesli 0 to nie kupione
         self.kolor_naglowka = pygame.color.THECOLORS["violet"]
         self.wymiary: Vector2 = self.oblicz_rozmiar_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
+        self.ilosc_graczy_na_polu = 0
 
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
@@ -1486,14 +1597,34 @@ class Pole:
         pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
         pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
+        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
         screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
-        pygame.draw.rect(screen, Pole.KOLOR_TLA, pygame.Rect(self.pozycja.x, self.pozycja.y, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek), width=1)
 
+    def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
+        
+        color = (0, 0, 0)
+        
+
+        if self.kupione_przez == 0:
+            return
+        elif self.kupione_przez == 1:
+            color = (255, 0, 0)
+        elif self.kupione_przez == 2:
+            color = (0, 255, 0)
+        elif self.kupione_przez == 3:
+            color = (0, 0, 255)
+        elif self.kupione_przez == 4:
+            color = (255, 255, 0)
+        elif self.kupione_przez == 5:
+            color = (184, 3, 255)
+
+        pygame.draw.rect(screen, color, pygame.Rect(self.pozycja.x- 2.5, self.pozycja.y - 2.5, szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5), width = 100)
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Posiadlosc.py
 from src.Pole import Pole
 from src.Gracz import Gracz
+import math
 
 KOSZT_SPRZEDAZY = 0.8
 
@@ -1519,7 +1650,7 @@ class Posiadlosc(Pole):
         return f"Nazwa: {self.nazwa} \nCena: {self.cena}   Czynsz: {self.czynsz}  Zastaw: {self.zastaw_kwota} \nCena-dom: {self.cena_domu}"
 
     def pobierz_id_wlasciciela(self):
-        return self.IDwlasciciela
+        return self.wlasciciel
 
     def wyswietl_info(self, gra):
         czynsz = self.czynsz
@@ -1575,16 +1706,26 @@ class Posiadlosc(Pole):
             cena += self.czynsz * 125 * self.liczba_hoteli
             return cena
 
+    def aktualizuj_czynsz(self):
+        if self.wlasciciel:
+            liczba_posiadlosci = len(self.wlasciciel.lista_posiadlosci)
+            self.czynsz *= 1 + 0.05 * liczba_posiadlosci
+            self.czynsz = math.ceil(self.czynsz)
+
     def kup_posiadlosc(self, gra, gracz):
         x = gracz.wykonaj_oplate(gra, self.cena)
         if x == 1:
             gracz.lista_posiadlosci.append(self)
             self.wlasciciel = gracz
+            self.kupione_przez = int(gracz.pionek.sciezka_do_grafiki[27])
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Gratulacje, dokonałeś zakupu {self.nazwa}!"
             )
             gracz.statystyka.dodaj_posiadlosc()
             gra.akcja_pola_okno.czy_akcja_pola = False
+
+            for posiadlosc in gracz.lista_posiadlosci:
+                posiadlosc.aktualizuj_czynsz()
         elif not gra.akcja_zastaw_okno.czy_zastaw:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
             gra.akcja_pola_okno.czy_akcja_pola = False
@@ -1763,15 +1904,15 @@ class PrzyciskiMenu:
         H = max(H, MIN_H)
 
         self.nowa_gra.updateSize(W * 0.35,
-            H * 0.4,
-            W * 0.3,
-            H * 0.1)
-        self.wyjscie.updateSize(W * 0.35,
-            H * 0.64,
+            H * 0.5,
             W * 0.3,
             H * 0.1)
         self.wczytaj_gre.updateSize(W * 0.35,
-            H * 0.52,
+            H * 0.62,
+            W * 0.3,
+            H * 0.1)
+        self.wyjscie.updateSize(W * 0.35,
+            H * 0.74,
             W * 0.3,
             H * 0.1)
         self.two.updateSize(W * 0.3,
@@ -1935,6 +2076,7 @@ class Wizualizator:
         # inne kolory
         self.kolor_akceptacji_nazwy_gracza = (96, 247, 134)
         self.kolor_tla = (119, 119, 175)
+        self.kolor_napisu_gracz_tury = (255, 255, 255)
         self.kolor_czcionki = (255, 255, 255)
         self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)
@@ -1980,6 +2122,7 @@ class AkcjaKartOkno(Okno):
         self.H = 660
         self.W = 1200
         self.gra = gra
+        self.czy_szansa = False
         self.szansa_png = pygame.transform.scale(
             pygame.image.load("graphics/karta_szansy.png"), (0.6 * self.W, 0.5 * self.H)
         )
@@ -1994,40 +2137,89 @@ class AkcjaKartOkno(Okno):
             "wyjście",
             self.gra.kolor_tekstu,
         )
-        self.czy_szansa = False
+
+        self.skalar_czcionki = 28  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
+        self.karta = None
+        self.tresc_karty = "empty"
 
     def aktualizacja(self):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.wyjscie.is_clicked(event):
-            self.czy_szansa = False
-            self.zamknij()
+        if self.czy_szansa:
+            if self.wyjscie.is_clicked(event):
+                if self.karta:
+                    self.gra._plansza.karty.aktualna_karta.wykonaj_akcje(
+                        self.gra, self.gra._gracze[self.gra._indeks_aktualnego_gracza]
+                    )
+                self.czy_szansa = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
+        self.zaktualizuj_rozmiar_czcionki()
 
-        self.wyjscie.updateSize(
-                self.W * 0.42,
-                self.H * 0.7,
-                self.W * 0.2,
-                self.H * 0.1
-            )
+        self.wyjscie.updateSize(self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1)
 
         if self.czy_szansa:
-
             nakladka = pygame.Surface(screen.get_size())
-            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.set_alpha(
+                self.gra.przezroczystosc_nakladki
+            )  # Ustaw przezroczystość (0-255)
             nakladka.fill(self.gra.kolor_nakladki)
             screen.blit(nakladka, (0, 0))
 
-            szansa_png_tmp = pygame.transform.scale(
+            self.wyjscie.draw(screen)
+
+            szansa_png_wyswietlane = pygame.transform.scale(
                 self.szansa_png, (0.64 * self.W, 0.5 * self.H)
             )
-            screen.blit(szansa_png_tmp, (self.W * 0.2, self.H * 0.15))
-            self.wyjscie.updateSize(
-                self.W * 0.42, self.H * 0.7, self.W * 0.2, self.H * 0.1
+            screen.blit(szansa_png_wyswietlane, (self.W * 0.2, self.H * 0.15))
+            self.wyswietl_lamana_tresc_karty(
+                screen, self.tresc_karty, self.W * 0.5, self.H * 0.3
             )
-            self.wyjscie.draw(screen)
+
+    def przygotuj_karte(self):
+        self.karta = self.gra._plansza.karty.nastepna_karta()
+        self.tresc_karty = self.karta.tresc
+
+    def zaktualizuj_rozmiar_czcionki(self):
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki) - 15
+        )
+        self.karta = self.font.render(self.tresc_karty, True, self.gra.kolor_czcionki)
+
+    def wyswietl_lamana_tresc_karty(
+        self, screen, tekst: str, start_x, start_y
+    ) -> float:
+        """
+        :param screen: ekran na ktory jest rysowany tekst
+        :param tekst: tekst poddany lamaniu i wyswietleniu juz polamanym
+        :param start_x: offset x do wyswietlania tekstu
+        :param start_y: offset y do wyswietlania tekstu
+        :return: procentowa ilosc zajetego ekranu przez linijki tekstu w porownaniu do calego ekranu
+        """
+        wyrazy = [wyraz.split(" ") for wyraz in tekst.splitlines()]
+        szerokosc_spacji = self.font.size(" ")[0]
+
+        maksymalna_szerokosc = int(self.gra.aktualna_szerokosc_ekranu * 0.8)
+        x, y = start_x, start_y
+        # ze stacka xD
+        for line in wyrazy:
+            for word in line:
+                word_surface = self.font.render(word, 0, self.gra.kolor_czcionki)
+                word_width, word_height = word_surface.get_size()
+                if x + word_width >= maksymalna_szerokosc:
+                    x = start_x  # Reset the x.
+                    y += word_height  # Start on new row.
+                screen.blit(word_surface, (x, y))
+                x += word_width + szerokosc_spacji
+            x = start_x  # Reset the x.
+            y += word_height  # Start on new row.
+
+        return (y - start_y) / self.gra.aktualna_wysokosc_ekranu
 
     def aktualizuj_rozmiar_okna(self, width, height):
         self.W = width
@@ -2101,17 +2293,18 @@ class AkcjaNieruchomosciOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
-            self.kup_domek()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
-            self.kup_hotel()
-            self.czy_kupno = False
-            self.zamknij()
-        elif self.wyjscie.is_clicked(event):
-            self.czy_kupno = False
-            self.zamknij()
+        if self.czy_kupno:
+            if self.przycisk.is_clicked(event) and self.nieruchomosc == "domek":
+                self.kup_domek()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.przycisk.is_clicked(event) and self.nieruchomosc == "hotel":
+                self.kup_hotel()
+                self.czy_kupno = False
+                self.zamknij()
+            elif self.wyjscie.is_clicked(event):
+                self.czy_kupno = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
 
@@ -2211,7 +2404,7 @@ class AkcjaPolaOkno(Okno):
             self.gra.kolor_tekstu,
         )
 
-        self.pole_png= None
+        self.pole_png = None
         self.najechano_na_pole = False
 
         self.czy_akcja_pola = False
@@ -2219,39 +2412,42 @@ class AkcjaPolaOkno(Okno):
         self.posiadlosc_do_zakupu = None
 
         self.skalar_czcionki = 60  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
 
     def aktualizacja(self):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.zakup.is_clicked(event):
-            self.kup_pole()
-            self.czy_akcja_pola = False
-            self.zamknij()
-        elif self.licytacja.is_clicked(event):
-            self.czy_akcja_pola = False
-            self.zamknij()
-            pass
-        elif self.wyjscie.is_clicked(event):
-            self.czy_akcja_pola = False
-            self.zamknij()
 
         if self.czy_akcja_pola:
-            if self.karta.czy_najechano():
-                self.pole_png = pygame.transform.scale(
-                pygame.image.load("graphics/pola/pole_tyl_karty.png"),
-                (0.24 * self.W, 0.64 * self.H),
-                )
-                self.najechano_na_pole = True
-            else:
-                self.pole_png = pygame.transform.scale(
-                pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
-                (0.24 * self.W, 0.64 * self.H),
-                )
-                self.najechano_na_pole = False
 
+            if self.zakup.is_clicked(event):
+                self.kup_pole()
+                self.czy_akcja_pola = False
+                self.zamknij()
+            elif self.licytacja.is_clicked(event):
+                self.czy_akcja_pola = False
+                self.zamknij()
+                pass
+            elif self.wyjscie.is_clicked(event):
+                self.czy_akcja_pola = False
+                self.zamknij()
 
+            if self.czy_akcja_pola:
+                if self.karta.czy_najechano():
+                    self.pole_png = pygame.transform.scale(
+                        pygame.image.load("graphics/pola/pole_tyl_karty.png"),
+                        (0.24 * self.W, 0.64 * self.H),
+                    )
+                    self.najechano_na_pole = True
+                else:
+                    self.pole_png = pygame.transform.scale(
+                        pygame.image.load(self.posiadlosc_do_zakupu.sciezka_do_grafiki),
+                        (0.24 * self.W, 0.64 * self.H),
+                    )
+                    self.najechano_na_pole = False
 
     def wyswietl(self, screen: pygame.Surface):
 
@@ -2259,10 +2455,7 @@ class AkcjaPolaOkno(Okno):
 
         if self.czy_akcja_pola:
             self.zakup.updateSize(
-                self.W * 0.6,
-                self.H * 0.2,
-                self.W * 0.2,
-                self.H * 0.15
+                self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
             )
             self.licytacja.updateSize(
                 self.W * 0.6,
@@ -2278,17 +2471,15 @@ class AkcjaPolaOkno(Okno):
             )
 
             self.karta.updateSize(
-                self.W * 0.2,
-                self.H * 0.15,
-                0.24 * self.W, 
-                0.64 * self.H
+                self.W * 0.2, self.H * 0.15, 0.24 * self.W, 0.64 * self.H
             )
 
             nakladka = pygame.Surface(screen.get_size())
-            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
+            nakladka.set_alpha(
+                self.gra.przezroczystosc_nakladki
+            )  # Ustaw przezroczystość (0-255)
             nakladka.fill(self.gra.kolor_nakladki)
             screen.blit(nakladka, (0, 0))
-
 
             self.zakup.draw(screen)
             self.licytacja.draw(screen)
@@ -2302,10 +2493,27 @@ class AkcjaPolaOkno(Okno):
             self.odleglosc_pionowa = 0.03
             self.wysokosc_napisow = 0.42
             if self.najechano_na_pole:
-                screen.blit(self.czynsz_bez_nieruchomosci, (self.W * 0.23, self.H * (self.wysokosc_napisow + (0 * self.odleglosc_pionowa))))
-                screen.blit(self.wzrost_czynszu_dom, (self.W * 0.23, self.H * (self.wysokosc_napisow + (1 * self.odleglosc_pionowa))))
-                screen.blit(self.wzrost_czynszu_hotel, (self.W * 0.23, self.H * (self.wysokosc_napisow + (2 * self.odleglosc_pionowa))))
-
+                screen.blit(
+                    self.czynsz_bez_nieruchomosci,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (0 * self.odleglosc_pionowa)),
+                    ),
+                )
+                screen.blit(
+                    self.wzrost_czynszu_dom,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (1 * self.odleglosc_pionowa)),
+                    ),
+                )
+                screen.blit(
+                    self.wzrost_czynszu_hotel,
+                    (
+                        self.W * 0.23,
+                        self.H * (self.wysokosc_napisow + (2 * self.odleglosc_pionowa)),
+                    ),
+                )
 
     def akcja_kupowania(self, posiadlosc, gracz):
         self.posiadlosc_do_zakupu = posiadlosc
@@ -2328,17 +2536,33 @@ class AkcjaPolaOkno(Okno):
         self.gra.czy_akcja_zakonczona = True
 
     def zaktualizuj_tekst_i_rozmiar(self):
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-
-        self.czynsz_bez_nieruchomosci = self.font.render(
-            "Czynsz bez nieruchomości: " + str(100), True, self.gra.kolor_czcionki_tyl_karty
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
         )
+
+        if self.posiadlosc_do_zakupu is None:
+            self.czynsz_bez_nieruchomosci = self.font.render(
+                "Czynsz bez nieruchomości: " + str(100),
+                True,
+                self.gra.kolor_czcionki_tyl_karty,
+            )
+        else:
+            self.czynsz_bez_nieruchomosci = self.font.render(
+                "Czynsz bez nieruchomości: " + str(self.posiadlosc_do_zakupu.czynsz),
+                True,
+                self.gra.kolor_czcionki_tyl_karty,
+            )
         self.wzrost_czynszu_dom = self.font.render(
-            "Wzrost czynszu (domek +): " + str(70), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (domek +): " + str(70),
+            True,
+            self.gra.kolor_czcionki_tyl_karty,
         )
         self.wzrost_czynszu_hotel = self.font.render(
-            "Wzrost czynszu (hotel +): " + str(100), True, self.gra.kolor_czcionki_tyl_karty
+            "Wzrost czynszu (hotel +): " + str(100),
+            True,
+            self.gra.kolor_czcionki_tyl_karty,
         )
+
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\okno\AkcjaStatystykOkno.py
 from src.okno.Okno import Okno
@@ -2481,9 +2705,10 @@ class AkcjaWiezieniaOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.wyjscie.is_clicked(event):
-            self.czy_wiezienie = False
-            self.zamknij()
+        if self.czy_wiezienie:
+            if self.wyjscie.is_clicked(event):
+                self.zamknij()
+                self.czy_wiezienie = False
 
     def wyswietl(self, screen: pygame.Surface):
         H = self.H
@@ -2512,7 +2737,7 @@ class AkcjaWiezieniaOkno(Okno):
 
     def zaktualizuj_rozmiar_czcionki(self):
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-        self.tekst = self.font.render(self.informacja_o_wiezeniu, True, (0, 0, 0))
+        self.tekst = self.font.render(self.informacja_o_wiezeniu, True, self.gra.kolor_czcionki)
 
     def wyswietl_teksty(self, screen):
         screen.blit(self.tekst, (self.W * 0.18, self.H * 0.7))
@@ -2573,7 +2798,8 @@ class AkcjaZagadekOkno(Okno):
         self.odpowiedz_C = "empty"
 
         self.skalar_czcionki = 28  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + "x"
         self.informacja_o_zagadce = (
@@ -2586,24 +2812,27 @@ class AkcjaZagadekOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
 
-        if self.A.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_A)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
-        elif self.B.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_B)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
-        elif self.C.is_clicked(event):
-            self.pole.zaplac_podatek(
-                self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C)
-            )
-            self.czy_zagadka = False
-            self.zamknij()
+        if self.czy_zagadka:
+            if self.A.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                        Odpowiedz.Odpowiedz_A)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
+            elif self.B.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz ==
+                                        Odpowiedz.Odpowiedz_B)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
+            elif self.C.is_clicked(event):
+                self.pole.zaplac_podatek(
+                    self.gra, self.gracz, (self.poprawna_odpowiedz == Odpowiedz.Odpowiedz_C)
+                )
+                self.czy_zagadka = False
+                self.zamknij()
 
     def wyswietl(self, screen: pygame.Surface):
         self.zaktualizuj_rozmiar_czcionki()
@@ -2612,13 +2841,17 @@ class AkcjaZagadekOkno(Okno):
             screen.fill(self.gra.kolor_tla)
             screen.blit(self.podatek, (self.W * 0.18, self.H * 0.2))
             screen.blit(self.info, (self.W * 0.19, self.H * 0.27))
-            offset_height_percent = self.wyswietl_lamana_tresc_zagadki(screen, self.tekst_zagadki, self.W * 0.2, self.H * 0.4)
+            offset_height_percent = self.wyswietl_lamana_tresc_zagadki(
+                screen, self.tekst_zagadki, self.W * 0.2, self.H * 0.4)
 
             # odpowiedzi
             offset_height_percent -= 0.05
-            screen.blit(self.oA, (self.W * 0.3, self.H * (0.54 + offset_height_percent)))
-            screen.blit(self.oB, (self.W * 0.3, self.H * (0.66 + offset_height_percent)))
-            screen.blit(self.oC, (self.W * 0.3, self.H * (0.78 + offset_height_percent)))
+            screen.blit(self.oA, (self.W * 0.3, self.H *
+                        (0.54 + offset_height_percent)))
+            screen.blit(self.oB, (self.W * 0.3, self.H *
+                        (0.66 + offset_height_percent)))
+            screen.blit(self.oC, (self.W * 0.3, self.H *
+                        (0.78 + offset_height_percent)))
 
             self.wyswietl_przyciski(screen, offset_height_percent)
 
@@ -2640,18 +2873,25 @@ class AkcjaZagadekOkno(Okno):
         self.pole = pole
 
     def zaktualizuj_rozmiar_czcionki(self):
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.podatek = self.font.render(
             self.informacja_o_podatku_z_cena, True, self.gra.kolor_czcionki
         )
-        self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki) - 15)
-        self.info = self.font.render(self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
-        self.zagadka = self.font.render(self.tekst_zagadki, True, self.gra.kolor_czcionki)
+        self.font = pygame.font.Font(self.gra.czcionka, int(
+            self.W / self.skalar_czcionki) - 15)
+        self.info = self.font.render(
+            self.informacja_o_zagadce, True, self.gra.kolor_czcionki)
+        self.zagadka = self.font.render(
+            self.tekst_zagadki, True, self.gra.kolor_czcionki)
 
         # odpowiedzi
-        self.oA = self.font.render(self.odpowiedz_A, True, self.gra.kolor_czcionki)
-        self.oB = self.font.render(self.odpowiedz_B, True, self.gra.kolor_czcionki)
-        self.oC = self.font.render(self.odpowiedz_C, True, self.gra.kolor_czcionki)
+        self.oA = self.font.render(
+            self.odpowiedz_A, True, self.gra.kolor_czcionki)
+        self.oB = self.font.render(
+            self.odpowiedz_B, True, self.gra.kolor_czcionki)
+        self.oC = self.font.render(
+            self.odpowiedz_C, True, self.gra.kolor_czcionki)
 
     def wyswietl_lamana_tresc_zagadki(self, screen, tekst: str, start_x, start_y) -> float:
         """
@@ -2669,7 +2909,8 @@ class AkcjaZagadekOkno(Okno):
         # ze stacka xD
         for line in wyrazy:
             for word in line:
-                word_surface = self.font.render(word, 0, self.gra.kolor_czcionki)
+                word_surface = self.font.render(
+                    word, 0, self.gra.kolor_czcionki)
                 word_width, word_height = word_surface.get_size()
                 if x + word_width >= maksymalna_szerokosc:
                     x = start_x         # Reset the x.
@@ -2682,11 +2923,14 @@ class AkcjaZagadekOkno(Okno):
         return (y - start_y) / self.gra.aktualna_wysokosc_ekranu
 
     def wyswietl_przyciski(self, screen, offset_height_percent):
-        self.A.updateSize(self.W * 0.2, self.H * (0.5 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.A.updateSize(self.W * 0.2, self.H * (0.5 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.A.draw(screen)
-        self.B.updateSize(self.W * 0.2, self.H * (0.62 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.B.updateSize(self.W * 0.2, self.H * (0.62 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.B.draw(screen)
-        self.C.updateSize(self.W * 0.2, self.H * (0.74 + offset_height_percent), self.H * 0.1, self.H * 0.1)
+        self.C.updateSize(self.W * 0.2, self.H * (0.74 +
+                          offset_height_percent), self.H * 0.1, self.H * 0.1)
         self.C.draw(screen)
 
     def aktualizuj_rozmiar_okna(self, width, height):
