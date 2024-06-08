@@ -73,17 +73,3 @@ class PodatekDochodowy(Pole):
             )
         else:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Bankrutujesz")
-
-        """
-        if do_zaplaty > gracz.kwota:
-            if gra.pobierz_info_tak_nie(
-                "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."
-            ):
-                gracz.zastaw_nieruchomosci()
-        if do_zaplaty > gracz.kwota:
-            gra.messages.append("Bankrutujesz")
-        gracz.kwota -= do_zaplaty
-        gra._kontroler_wiadomosci.dodaj_wiadomosc(
-            "Podatek został zapłacony, zapłacono: " + str(do_zaplaty)
-        )
-        """
