@@ -302,6 +302,8 @@ class Gra:
                     self.akcja_nieruchomosci_okno.akcja_kupowania(
                         posiadlosc, gracz)
                 else:
+                    if posiadlosc.czy_zastawiona:
+                        return
                     self._kontroler_wiadomosci.dodaj_wiadomosc(
                         "Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
