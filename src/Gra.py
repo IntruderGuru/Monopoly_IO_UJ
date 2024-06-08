@@ -338,8 +338,8 @@ class Gra:
             )
 
             #
-            # kostka_druga = 3
-            # kostka_pierwsza = 4
+            kostka_druga = 3
+            kostka_pierwsza = 1
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 

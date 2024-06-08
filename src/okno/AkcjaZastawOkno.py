@@ -50,16 +50,13 @@ class AkcjaZastawOkno(Okno):
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
         if self.czy_zastaw:
-            if self.stan == "wyjscie":
-                self.zamknij()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.stan == "czy_chcesz_zastawic":
                     self.wczytana_posiadlosc = ""
                     if self.przycisk_zastaw.is_clicked(event):
                         self.stan = "wybierz_numer"
-                    elif self.przycisk_wyjscie.is_clicked(event):
-                        self.stan = "wyjscie"
-                        self.zamknij()
+                if self.przycisk_wyjscie.is_clicked(event) or self.stan == "wyjscie":
+                    self.zamknij()
 
             elif event.type == pygame.KEYDOWN:
 
@@ -71,14 +68,6 @@ class AkcjaZastawOkno(Okno):
                         self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
                         if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
                             self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
-                            #"""
-                            if self.gracz.liczba_zastawionych < len(self.gracz.lista_posiadlosci):
-                                self.gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                                    "Siemsonnn, mozesz jeszcze zastawic")
-                                self.stan == "czy_chcesz_zastawic"
-                            else:
-                                self.stan = "wyjscie"
-                            #"""
                         else:
                             self.stan = "blad"
                             self.wczytana_posiadlosc = ""
@@ -94,18 +83,24 @@ class AkcjaZastawOkno(Okno):
             screen.fill(self.gra.kolor_tla)
 
             if self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci):
-                self.gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                    "Nie masz już posiadłości, które mógłbyś zastawić"
+                self.przycisk_wyjscie.updateSize(
+                    self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15
                 )
+                self.przycisk_wyjscie.draw(screen)
+
                 text = self.font.render(
                     "Nie masz już posiadłości, które mógłbyś zastawić",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
                 self.stan = "wyjscie"
+                self.wyswietl_do_zastawu(screen)
+            else:
+                self.stan = "czy_chcesz_zastawic"
+                
 
-            elif self.stan == "czy_chcesz_zastawic":
+            if self.stan == "czy_chcesz_zastawic":
                 self.przycisk_zastaw.updateSize(
                     self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
                 )
@@ -120,7 +115,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
             elif self.stan == "wybierz_numer":
                 text = self.font.render(
@@ -160,7 +155,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * odstep))
+                screen.blit(text, (self.W * 0.1, self.H * odstep))
                 odstep += 0.05
                 x += 1
         self.ile_do_zastawienia = x
@@ -175,4 +170,5 @@ class AkcjaZastawOkno(Okno):
         self.H = height
 
     def zamknij(self):
+        self.wczytana_posiadlosc = ""
         self.czy_zastaw = False

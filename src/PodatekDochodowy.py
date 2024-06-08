@@ -61,9 +61,6 @@ class PodatekDochodowy(Pole):
         super().__init__(numer, "Podatek dochodowy")
         self.podatek = podatek
 
-    def wyswietl_info(self) -> str:
-        return f"Stanąłeś na polu podatek dochodowy. Musisz zapłacić podatek w wysokości {self.podatek}"
-
     def zaplac_podatek(self, gra, gracz: Gracz, czy_dobra: bool) -> None:
         do_zaplaty = self.podatek
         if czy_dobra:

@@ -53,9 +53,7 @@ class AkcjaZagadekOkno(Okno):
             self.gra.czcionka, int(self.W / self.skalar_czcionki))
         self.informacja_o_podatku = "Zapłać podatek dochodowy o wartości "
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + "x"
-        self.informacja_o_zagadce = (
-            "odpowiedz poprawnie na pytanie aby zmniejszyć opłatę"
-        )
+        self.informacja_o_zagadce = ""
         self.tekst_zagadki = "empty"
 
     def aktualizacja(self):
@@ -116,6 +114,9 @@ class AkcjaZagadekOkno(Okno):
 
         self.informacja_o_podatku_z_cena = self.informacja_o_podatku + str(
             self.pole.podatek
+        )
+        self.informacja_o_zagadce = "Odpowiedz poprawnie na pytanie aby zmniejszyć opłatę i zapłacić tylko " + str(
+            (self.pole.podatek // 2)
         )
 
     def akcja_podatkowa(self, gracz, pole):
