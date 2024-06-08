@@ -68,8 +68,8 @@ class AkcjaZastawOkno(Okno):
                         self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
                         
                         if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
-                            self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
-                            self.stan == "zastawiono"
+                            self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc - 1)
+                            self.stan = "zastawiono"
                         else:
                             self.stan = "blad"
                             self.wczytana_posiadlosc = ""
@@ -95,11 +95,13 @@ class AkcjaZastawOkno(Okno):
 
             if self.stan == "czy_chcesz_zastawic" and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci):
                 self.przycisk_wyjscie.updateSize(self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15)
-                self.przycisk_wyjscie.draw(screen)
 
                 text = self.font.render("Nie masz już posiadłości, które mógłbyś zastawić", True, self.wizualizator.kolor_czcionki)
                 screen.blit(text, (self.W * 0.1, self.H * 0.1))
-                self.stan = "wyjscie"              
+                self.stan = "wyjscie" 
+                pygame.display.update()
+                pygame.time.wait(2000)
+                self.zamknij()            
 
             elif self.stan == "czy_chcesz_zastawic":
                 self.przycisk_zastaw.updateSize(self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15)
@@ -133,8 +135,7 @@ class AkcjaZastawOkno(Okno):
         for posiadlosc in self.gracz.lista_posiadlosci:
             if not posiadlosc.czy_zastawiona:
                 text = self.font.render(
-                    f"{x}: {posiadlosc.nazwa}, kwota zastawu: {
-                        posiadlosc.zastaw_kwota}",
+                    f"{x}: {posiadlosc.nazwa}, kwota zastawu: {posiadlosc.zastaw_kwota}",
                     True,
                     self.wizualizator.kolor_czcionki,
                 )

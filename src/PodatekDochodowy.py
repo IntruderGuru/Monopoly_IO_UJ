@@ -39,8 +39,7 @@ class Zagadki:
             while i < len(lines):
                 if i + 4 >= len(lines):
                     raise ValueError(
-                        f"Problem w linii {
-                            i}. Każda zagadka powinna mieć 5 linii danych."
+                        f"Problem w linii {i}. Każda zagadka powinna mieć 5 linii danych."
                     )
                 tresc = lines[i].strip()
                 odpowiedz_a = lines[i + 1].strip()
