@@ -10,7 +10,8 @@ from src.Gra import Gra
 from src.KontrolerWiadomosci import KontrolerWiadomosci
 
 
-#TODO: Zmiana typu z kolor: str na pygame.Color
+# TODO: Zmiana typu z kolor: str na pygame.Color
+
 
 class TestPosiadlosc:
     NUMER = 0
@@ -34,11 +35,26 @@ class TestPosiadlosc:
         nazwy_graczy = ["test1", "test2"]
         szerokosc_ekranu = 1200
         wysokosc_ekranu = 660
-        self._gra = Gra(self.screen, self._kontroler_wiadomosci, liczba_graczy, nazwy_graczy, self.wizualizator, szerokosc_ekranu, wysokosc_ekranu)
+        self._gra = Gra(
+            self.screen,
+            self._kontroler_wiadomosci,
+            liczba_graczy,
+            nazwy_graczy,
+            self.wizualizator,
+            szerokosc_ekranu,
+            wysokosc_ekranu,
+            self,
+        )
 
-        self.posiadlosc = Posiadlosc(TestPosiadlosc.NUMER, TestPosiadlosc.NAZWA, TestPosiadlosc.KOLOR,
-                                     TestPosiadlosc.CENA, TestPosiadlosc.CZYNSZ, TestPosiadlosc.ZASTAW,
-                                     TestPosiadlosc.CENA_DOMU)
+        self.posiadlosc = Posiadlosc(
+            TestPosiadlosc.NUMER,
+            TestPosiadlosc.NAZWA,
+            TestPosiadlosc.KOLOR,
+            TestPosiadlosc.CENA,
+            TestPosiadlosc.CZYNSZ,
+            TestPosiadlosc.ZASTAW,
+            TestPosiadlosc.CENA_DOMU,
+        )
 
     def test_inicjalizacja_typow(self):
         assert isinstance(self.posiadlosc.nazwa, str)
@@ -56,14 +72,13 @@ class TestPosiadlosc:
         self.posiadlosc.liczba_domow = liczba_domow
 
         zwrocone_info = self.posiadlosc.zwroc_info()
-        przewidywane_info = \
-            (f"Nazwa: {TestPosiadlosc.NAZWA},  Cena: {TestPosiadlosc.CENA}") \
-            if liczba_domow > 0 \
-            else \
+        przewidywane_info = (
             (f"Nazwa: {TestPosiadlosc.NAZWA},  Cena: {TestPosiadlosc.CENA}")
+            if liczba_domow > 0
+            else (f"Nazwa: {TestPosiadlosc.NAZWA},  Cena: {TestPosiadlosc.CENA}")
+        )
 
         assert zwrocone_info == przewidywane_info
-
 
     def test_kup_posiadlosc_udany(self):
         mock_pionek = MagicMock()
@@ -77,4 +92,3 @@ class TestPosiadlosc:
         przewidywana_kwota_po_zakupie = kwota_poczatkowa - TestPosiadlosc.CENA
 
         assert przewidywana_kwota_po_zakupie == kwota_gracza_po_zakupie
-

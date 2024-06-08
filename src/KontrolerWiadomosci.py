@@ -62,7 +62,6 @@ class KontrolerWiadomosci:
         i = 0
         ostatnia_wiadomosc = False
         while wiadomosc_number < self.ilosc_wiadomosci:
-
             if wiadomosc_number == self.ilosc_wiadomosci - 1:
                 ostatnia_wiadomosc = True
 

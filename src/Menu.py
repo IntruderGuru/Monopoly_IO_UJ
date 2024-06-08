@@ -7,6 +7,7 @@ from src.Wizualizator import Wizualizator
 class Menu:
     def __init__(self, wizualizator):
         self.stan = "witaj"
+        self.typ_stopu = "nowa"
         self.liczba_graczy = 0
         self.gracze = []
         self.wizualizator: Wizualizator = wizualizator
@@ -47,6 +48,9 @@ class Menu:
                     self.stan = "liczba_graczy"
                 elif self.przyciski.wyjscie.is_clicked(event):
                     pygame.quit()
+                elif self.przyciski.wczytaj_gre.is_clicked(event):
+                    self.stan = "stop"
+                    self.typ_stopu = "wczytana"
 
             elif self.stan == "liczba_graczy":
                 if self.przyciski.two.is_clicked(event):

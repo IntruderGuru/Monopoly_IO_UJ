@@ -41,9 +41,7 @@ class Pionek:
         self.kierunek: KierunekPol = KierunekPol.Gora
         self.wymiary: Vector2 = Vector2(20, 20)
         self.pozycja: Vector2 = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
-        self.zdjecie_pionek = pygame.transform.scale(
-            pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
-        )
+        
         self.aktualizacja_rozmiaru(W, H)
         self.ilosc_graczy_na_polu = il
 
@@ -99,15 +97,15 @@ class Pionek:
     def wyswietl(self, okno: pygame.Surface, gra):
         skalar = 35
         
-        self.zdjecie_pionek = pygame.transform.scale(
+        zdjecie_pionek = pygame.transform.scale(
             pygame.image.load(self.sciezka_do_grafiki), (self.W / skalar, self.W / skalar)
         )
         self.ilosc_graczy_na_polu = gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu
         if self.ilosc_graczy_na_polu > 1:
-            self.maska = pygame.transform.scale(
+            maska = pygame.transform.scale(
                 pygame.image.load(f"graphics/pionek/pionek{self.ilosc_graczy_na_polu}mask.png"), (self.W / skalar, self.W / skalar)
             )
         # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
-        okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
+        okno.blit(zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
         if self.ilosc_graczy_na_polu > 1:
-            okno.blit(self.maska, (self.pozycja.x, self.pozycja.y))
+            okno.blit(maska, (self.pozycja.x, self.pozycja.y))

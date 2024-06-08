@@ -1,5 +1,6 @@
 import random
 import pygame
+import pickle
 
 from src.okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
@@ -134,6 +135,17 @@ class Gra:
             "tura",
             self.wizualizator.kolor_czcionki,
             26,
+        )
+        self.zapisz_wyjdz = Przycisk(
+            szerokosc_ekranu * 0.3,
+            wysokosc_ekranu * 0.75,
+            szerokosc_ekranu * 0.2,
+            wysokosc_ekranu * 0.15,
+            self.wizualizator.kolor_przycisku_tury,
+            self.wizualizator.kolor_przycisku_tury_gdy_kursor,
+            "Zapisz i wyjdz",
+            self.wizualizator.kolor_czcionki,
+            8
         )
 
         self.gracz_poprzedniej_tury = -1
@@ -437,12 +449,20 @@ class Gra:
             self.tura()
         if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
             self.tura()
+        if self.zapisz_wyjdz.is_clicked(event) and self.czy_akcja_zakonczona:
+            self.input_text = ""
+            self.zapisz_gre()
+            pygame.quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 # self.process_input(self.input_text)
                 self.input_text = ""
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]
+            elif event.key == pygame.K_s:
+                self.input_text = ""
+                self.zapisz_gre()
+                pygame.quit()
             else:
                 self.input_text += event.unicode
         elif event.type == pygame.VIDEORESIZE:
@@ -554,6 +574,7 @@ class Gra:
 
         self._plansza.render(self._glowne_okno)
         self.nastepna_tura.draw(self._glowne_okno)
+        self.zapisz_wyjdz.draw(self._glowne_okno)
 
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno, self)
@@ -593,9 +614,16 @@ class Gra:
 
         self.nastepna_tura.updateSize(
             self.aktualna_szerokosc_ekranu * 0.218,
-            self.aktualna_wysokosc_ekranu * 0.7,
+            self.aktualna_wysokosc_ekranu * 0.64,
             self.aktualna_szerokosc_ekranu * 0.12,
             self.aktualna_wysokosc_ekranu * 0.08,
+        )
+
+        self.zapisz_wyjdz.updateSize(
+            self.aktualna_szerokosc_ekranu * 0.245,
+            self.aktualna_wysokosc_ekranu * 0.74,
+            self.aktualna_szerokosc_ekranu * 0.06,
+            self.aktualna_wysokosc_ekranu * 0.05
         )
 
     def wypisz_nazwe_gracza_tury(self):
@@ -636,3 +664,37 @@ class Gra:
                 self.aktualna_wysokosc_ekranu * 0.3,
             ),
         )
+    
+    def zapisz_gre(self):
+        with open('save/gracze.pickle', 'wb') as handle:
+            pickle.dump(self._gracze, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/liczba_graczy.pickle', 'wb') as handle:
+            pickle.dump(self._liczba_graczy, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/indeks_aktualnego_gracza.pickle', 'wb') as handle:
+            pickle.dump(self._indeks_aktualnego_gracza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/messages.pickle', 'wb') as handle:
+            pickle.dump(self.messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/plansza.pickle', 'wb') as handle:
+            pickle.dump(self._plansza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        with open('save/gracz_poprzedniej_tury.pickle', 'wb') as handle:
+            pickle.dump(self.gracz_poprzedniej_tury, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        
+    def wczytaj_gre(self):
+        with open('save/gracze.pickle', 'rb') as handle:
+            self._gracze = pickle.load(handle)
+        with open('save/liczba_graczy.pickle', 'rb') as handle:
+            self._liczba_graczy = pickle.load(handle)
+        with open('save/indeks_aktualnego_gracza.pickle', 'rb') as handle:
+            self._indeks_aktualnego_gracza = pickle.load(handle)
+        with open('save/messages.pickle', 'rb') as handle:
+            self.messages = pickle.load(handle)
+        with open('save/plansza.pickle', 'rb') as handle:
+            self._plansza = pickle.load(handle)
+        with open('save/gracz_poprzedniej_tury.pickle', 'rb') as handle:
+            self.gracz_poprzedniej_tury = pickle.load(handle)
