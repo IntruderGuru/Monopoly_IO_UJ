@@ -85,6 +85,7 @@ class Pole:
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
         self.ilosc_graczy_na_polu = 0
+        self.czy_zastawiona = False
 
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
@@ -133,9 +134,12 @@ class Pole:
         pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
         pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
-        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
-        screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
-        #self.renderuj_zastaw(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+        if self.czy_zastawiona:
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
+            self.renderuj_zastaw(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+        else:
+            self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
 
     def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
