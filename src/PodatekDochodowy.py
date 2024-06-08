@@ -1,7 +1,6 @@
 from src.Pole import Pole
 from src.Gracz import Gracz
 from numpy import random
-from src.Odpowiedz import Odpowiedz
 
 
 class Zagadka:
@@ -11,7 +10,7 @@ class Zagadka:
         odpowiedz_a: str,
         odpowiedz_b: str,
         odpowiedz_c: str,
-        poprawna: Odpowiedz,
+        poprawna: str,
     ) -> None:
         self.tresc_zagadki = tresc_zagadki
         self.odpowiedz_a = odpowiedz_a
@@ -61,23 +60,16 @@ class PodatekDochodowy(Pole):
         super().__init__(numer, "Podatek dochodowy")
         self.podatek = podatek
 
-    def wyswietl_info(self) -> str:
-        return f"Stanąłeś na polu podatek dochodowy. Musisz zapłacić podatek w wysokości {self.podatek}"
-
     def zaplac_podatek(self, gra, gracz: Gracz, czy_dobra: bool) -> None:
         do_zaplaty = self.podatek
         if czy_dobra:
-            gra._kontroler_wiadomosci.dodaj_wiadomosc(f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
-            do_zaplaty /= 2
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
+            do_zaplaty //= 2
 
-        if do_zaplaty > gracz.kwota:
-            if gra.pobierz_info_tak_nie(
-                "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."
-            ):
-                gracz.zastaw_nieruchomosci()
-        if do_zaplaty > gracz.kwota:
-            gra.messages.append("Bankrutujesz")
-        gracz.kwota -= do_zaplaty
-        gra._kontroler_wiadomosci.dodaj_wiadomosc(
-            "Podatek został zapłacony, zapłacono: " + str(do_zaplaty)
-        )
+        if gracz.wykonaj_oplate(gra, do_zaplaty):
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Podatek został zapłacony, zapłacono: " + str(do_zaplaty)
+            )
+        else:
+            gra._kontroler_wiadomosci.dodaj_wiadomosc("Bankrutujesz")

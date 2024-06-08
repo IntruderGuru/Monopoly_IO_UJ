@@ -25,29 +25,14 @@ class Gracz:
 
         
 
-    # TODO: wczytanie numeru zastawianej posiadlosci
-    def zastaw_posiadlosci(self, gra):
-        if self.liczba_zastawionych >= len(self.lista_posiadlosci):
-            gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Nie masz już posiadłości, które mógłbyś zastawić"
-            )
-            gra.akcja_zastaw_okno.czy_zastaw = False
-            return
-
-        gra._kontroler_wiadomosci.dodaj_wiadomosc(
-            "To wszystkie Twoje posiadłości, które możesz zastawić:"
-        )
-        for posiadlosc in self.lista_posiadlosci:
-            if not posiadlosc.czy_zastawiona:
-                # posiadlosc.wyswietl_info(gra)
-                gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"({posiadlosc.nazwa}")
-
-        # wczytanie numeru, sprawdzenie czy numer jest dobry
-        x = 0
-        self.lista_posiadlosci[x].czy_zastawiona = True
+    def zastaw_posiadlosci(self, gra, nr_posiadlosci):      
+        
+        self.lista_posiadlosci[nr_posiadlosci].czy_zastawiona = True
         self.liczba_zastawionych += 1
-        self.kwota += self.lista_posiadlosci[x].zastaw_kwota
+        self.kwota += self.lista_posiadlosci[nr_posiadlosci].zastaw_kwota
+        gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Zastawiłeś posiadłość {self.lista_posiadlosci[nr_posiadlosci].nazwa}"
+        )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
 
     def zdejmij_zastaw_posiadlosci(self, gra):
@@ -121,17 +106,13 @@ class Gracz:
 
     def wykonaj_oplate(self, gra, cena):
         if cena > self.kwota:
-            gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Brakuje Ci {cena - self.kwota} pieniędzy. Czy chcesz zastawić którąś z posiadłości?"
-            )
             gra.akcja_zastaw_okno.czy_zastaw = True
-            gra.akcja_zastaw_okno.akcja_zastawiania(self)
+            gra.czy_akcja_zakonczona = False
+            gra.akcja_zastaw_okno.ustaw_gracza(self, cena)
         else:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
             return 1
-
-        self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
         return 0
 
     def dodaj_pieniadze(self, gra, cena):

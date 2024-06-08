@@ -18,7 +18,8 @@ class Menu:
         self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
 
         self.logo = pygame.transform.scale(
-            pygame.image.load("graphics/logo.png"), (0.5 * self.W, 0.5 * self.H)
+            pygame.image.load("graphics/logo.png"), (0.5 *
+                                                     self.W, 0.5 * self.H)
         )
 
         self.strona1 = pygame.transform.scale(
@@ -29,8 +30,10 @@ class Menu:
         )
 
         self.skalar_czcionki = 22  # im wiekszy tym mniejsza czcionka
-        self.font = pygame.font.Font(self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
     def handle_event(self, event, W, H):
 
@@ -70,7 +73,7 @@ class Menu:
                     self.stan = "tutorial1"
 
         elif event.type == pygame.KEYDOWN:
-            
+
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
 
@@ -91,8 +94,10 @@ class Menu:
 
     def draw(self, screen, W, H):
 
-        self.font = pygame.font.Font(self.wizualizator.czcionka, int(W / self.skalar_czcionki))
-        self.font_gracze = pygame.font.Font(self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
+        self.font = pygame.font.Font(
+            self.wizualizator.czcionka, int(W / self.skalar_czcionki))
+        self.font_gracze = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5)))
 
         if self.stan == "witaj":
             self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
@@ -140,7 +145,7 @@ class Menu:
                 self.wizualizator.kolor_czcionki
             )
             screen.blit(text, (W * 0.3, H * 0.35))
-            
+
             odstep = 0.05
             ile_wpisanych = len(self.gracze)
 
@@ -157,4 +162,3 @@ class Menu:
                     kolor_czcionki
                 )
                 screen.blit(gracz, (W * 0.45, H * (0.45 + (i * odstep))))
-            

@@ -17,7 +17,7 @@ class AkcjaPolaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "kupuje",
+            "kupuję",
             self.gra.kolor_tekstu,
         )
         self.wyjscie = Przycisk(
@@ -62,11 +62,10 @@ class AkcjaPolaOkno(Okno):
 
             if self.zakup.is_clicked(event):
                 self.kup_pole()
-                self.czy_akcja_pola = False
-                self.zamknij()
+                # self.zamknij()
             elif self.wyjscie.is_clicked(event):
-                self.czy_akcja_pola = False
                 self.zamknij()
+                pass
 
             if self.czy_akcja_pola:
                 if self.karta.czy_najechano():
@@ -88,11 +87,12 @@ class AkcjaPolaOkno(Okno):
 
         if self.czy_akcja_pola:
             self.zakup.updateSize(
-                self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
+                self.W * 0.6, self.H * 0.3, self.W * 0.2, self.H * 0.15
             )
+
             self.wyjscie.updateSize(
                 self.W * 0.6,
-                self.H * 0.4,
+                self.H * 0.5,
                 self.W * 0.2,
                 self.H * 0.15,
             )
@@ -159,6 +159,7 @@ class AkcjaPolaOkno(Okno):
         self.H = height
 
     def zamknij(self):
+        self.czy_akcja_pola = False
         self.gra.czy_akcja_zakonczona = True
 
     def zaktualizuj_tekst_i_rozmiar(self):

@@ -99,12 +99,14 @@ class Posiadlosc(Pole):
             )
             gracz.statystyka.dodaj_posiadlosc()
             gra.akcja_pola_okno.czy_akcja_pola = False
+            gra.czy_akcja_zakonczona = True
 
             for posiadlosc in gracz.lista_posiadlosci:
                 posiadlosc.aktualizuj_czynsz()
-        elif not gra.akcja_zastaw_okno.czy_zastaw:
+        elif not gra.akcja_zastaw_okno.czy_zastaw and gracz.kwota < self.cena:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
             gra.akcja_pola_okno.czy_akcja_pola = False
+            gra.czy_akcja_zakonczona = True
         return
 
     def kup_dom(self, gra, gracz, ile_domow):

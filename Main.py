@@ -34,7 +34,8 @@ class Main:
         self.input_text = ""
         self.wizualizator = Wizualizator()
         self.menu = Menu(self.wizualizator)
-        self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
+        self._kontroler_wiadomosci = KontrolerWiadomosci(
+            self.font, self.wizualizator)
 
         self.uplyniety_czas_gry = 0
         self.uplyniety_czas_tury = 0
@@ -56,11 +57,13 @@ class Main:
                 elif event.type == pygame.VIDEORESIZE:
                     self._screen_width = event.w
                     self._screen_height = event.h
-                self.menu.handle_event(event, self._screen_width, self._screen_height)
+                self.menu.handle_event(
+                    event, self._screen_width, self._screen_height)
 
             self._screen.fill(self.wizualizator.kolor_tla)
             if self.menu.stan != "stop":
-                self.menu.draw(self._screen, self._screen_width, self._screen_height)
+                self.menu.draw(self._screen, self._screen_width,
+                               self._screen_height)
             else:
                 self._gra = Gra(
                     self._screen,
@@ -128,12 +131,14 @@ class Main:
         pass  # Aktualizacja gry, jeśli jest taka potrzeba
 
     def render_text(self, text, pos):
-        text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
+        text_surface = self.font.render(
+            text, True, self.wizualizator.kolor_czcionki)
         self._screen.blit(text_surface, pos)
 
     def _wyswietlaj(self):
         self._screen.fill(self.wizualizator.kolor_tla)
-        self._gra.wyswietl(self._screen, self._screen_width, self._screen_height)
+        self._gra.wyswietl(self._screen, self._screen_width,
+                           self._screen_height)
         pygame.display.update()
 
 

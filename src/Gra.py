@@ -286,17 +286,15 @@ class Gra:
         elif pole.typ == "Szansa":
             self.czy_akcja_zakonczona = False
             self.akcja_kart_okno.czy_szansa = True
-            self.akcja_kart_okno.przygotuj_karte()
+            self.akcja_kart_okno.przygotuj_karte(gracz)
 
         elif pole.typ == "Wiezienie":
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz odwiedza więzienie")
 
         elif pole.typ == "Idz do wiezienia":
-            self.czy_akcja_zakonczona = False
-            self.akcja_wiezienie_okno.czy_wiezienie = True
-
             self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
+                self.czy_akcja_zakonczona = True
                 return
             if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
                 gracz.liczba_kart_wyjdz_z_wiezienia -= 1
@@ -304,6 +302,8 @@ class Gra:
                     "Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'"
                 )
             else:
+                self.akcja_wiezienie_okno.czy_wiezienie = True
+                self.czy_akcja_zakonczona = False
                 gracz.tury_w_wiezieniu = 2
                 self.przesun_gracza_bez_raportu(
                     self._gracze[self._indeks_aktualnego_gracza], 10
@@ -327,6 +327,8 @@ class Gra:
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
+                    if posiadlosc.czy_zastawiona:
+                        return
                     self._kontroler_wiadomosci.dodaj_wiadomosc("Gracz płaci czynsz")
                     gracz.zaplac_czynsz(self, posiadlosc)
             else:
@@ -346,7 +348,7 @@ class Gra:
             self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu -= 1
             if self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu == 0:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza +1} opuszcza więzienie"
+                    f"Gracz {self._indeks_aktualnego_gracza + 1} opuszcza więzienie"
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -364,6 +366,10 @@ class Gra:
             )
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
+            #
+            # kostka_druga = 5
+            # kostka_pierwsza = 5
+            #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
             if (
@@ -415,10 +421,6 @@ class Gra:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Naciśnij spację, aby rzucić kostką"
                 )
-            else:
-                self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    "Nieprawidłowa liczba graczy."
-                )
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Nieznana komenda: {input_text}"
@@ -437,7 +439,7 @@ class Gra:
             self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
-                self.process_input(self.input_text)
+                # self.process_input(self.input_text)
                 self.input_text = ""
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]
@@ -505,7 +507,7 @@ class Gra:
                 self._gracze[self._indeks_aktualnego_gracza].kwota
             )
         self.akcja_zagadek_okno.czy_zagadka = False
-        self.akcja_zagadek_okno.zamknij()
+        self.akcja_zagadek_okno.zamknij_bez_wiadomosci()
 
         self.akcja_wiezienie_okno.czy_wiezienie = False
         self.akcja_wiezienie_okno.zamknij()
