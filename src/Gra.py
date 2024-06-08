@@ -327,8 +327,8 @@ class Gra:
             )
 
             #
-            # kostka_druga = 3
-            # kostka_pierwsza = 4
+            # kostka_druga = 2
+            # kostka_pierwsza = 2
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
@@ -430,20 +430,43 @@ class Gra:
     def zamknij_wszystkie_okna(self):
         self.akcja_pola_okno.czy_akcja_pola = False
         self.akcja_pola_okno.zamknij()
-        self.akcja_pola_okno.wyswietl(self._glowne_okno)
+
         self.akcja_nieruchomosci_okno.czy_kupno = False
         self.akcja_nieruchomosci_okno.zamknij()
-        self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
+
+        if self.akcja_kart_okno.czy_szansa:
+            self._plansza.karty.aktualna_karta.wykonaj_akcje(
+                self, self._gracze[self._indeks_aktualnego_gracza]
+            )
         self.akcja_kart_okno.czy_szansa = False
         self.akcja_kart_okno.zamknij()
-        self.akcja_kart_okno.wyswietl(self._glowne_okno)
+
         self.akcja_zastaw_okno.czy_zastaw = False
         self.akcja_zastaw_okno.zamknij()
-        self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
+
+        if self.akcja_zagadek_okno.czy_zagadka:
+            print(self._gracze[self._indeks_aktualnego_gracza].kwota)
+            if 1500 > self._gracze[self._indeks_aktualnego_gracza].kwota:
+                if self.pobierz_info_tak_nie(
+                    "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."
+                ):
+                    self._gracze[self._indeks_aktualnego_gracza].zastaw_nieruchomosci()
+            if 1500 > self._gracze[self._indeks_aktualnego_gracza].kwota:
+                self.messages.append("Bankrutujesz")
+            self._gracze[self._indeks_aktualnego_gracza].kwota -= 1500
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                "Kara za nie wybranie odpowiedzi, zapłacono: " + str(1500)
+            )
+            self._gracze[
+                self._indeks_aktualnego_gracza
+            ].statystyka.aktualizuj_stan_pieniedzy(
+                self._gracze[self._indeks_aktualnego_gracza].kwota
+            )
         self.akcja_zagadek_okno.czy_zagadka = False
         self.akcja_zagadek_okno.zamknij()
-        self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+
         self.akcja_wiezienie_okno.czy_wiezienie = False
+        self.akcja_wiezienie_okno.zamknij()
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, (0, 0, 0))

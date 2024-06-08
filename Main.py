@@ -29,6 +29,7 @@ class Main:
         self._gra = None
         self._clock = pygame.time.Clock()
         self._running = True
+        self._waiting_for_space = True
         self._delta_time = 0
         self.input_text = ""
         self.wizualizator = Wizualizator()
@@ -76,12 +77,11 @@ class Main:
             pygame.display.flip()
 
     def _petla_gry(self):
-        self.turn_start_time = (
-            pygame.time.get_ticks()
-        )  # Zresetowanie czasu startu tury na początku gry
         while self._running:
             self._aktualizuj_delta_time()
-            self._aktualizuj_czas_gry()  # Wywołanie funkcji aktualizującej czas gry
+            self.uplyniety_czas_gry += self._delta_time
+            if not self._waiting_for_space:
+                self._aktualizuj_czas_gry()
             self._petla_zdarzen(pygame.event.get())
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
@@ -91,7 +91,6 @@ class Main:
         self._delta_time = self._clock.get_time() / Main._SEC_TO_MS
 
     def _aktualizuj_czas_gry(self):
-        self.uplyniety_czas_gry += self._delta_time
         self.uplyniety_czas_tury = (
             pygame.time.get_ticks() - self.turn_start_time
         ) / Main._SEC_TO_MS
@@ -105,8 +104,8 @@ class Main:
                 "Czas tury minął! Przechodzimy do następnego gracza."
             )
             self._gra.zamknij_wszystkie_okna()
-            pygame.time.wait(2000)
-            self._gra.tura()
+            self._wyswietlaj()
+            self._waiting_for_space = True
             self.turn_start_time = pygame.time.get_ticks()
 
     def _petla_zdarzen(self, events_list):
@@ -114,10 +113,15 @@ class Main:
             if event.type == pygame.QUIT:
                 self._running = False
                 break
+            elif (
+                event.type == pygame.KEYDOWN
+                and event.key == pygame.K_SPACE
+                and self._waiting_for_space
+            ):
+                self._waiting_for_space = False  # Wyłączenie oczekiwania na spacje
             elif event.type == pygame.VIDEORESIZE:
                 self._screen_width = event.w
                 self._screen_height = event.h
-
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):

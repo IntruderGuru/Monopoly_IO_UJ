@@ -39,7 +39,7 @@ class AkcjaKartOkno(Okno):
         if self.czy_szansa:
             if self.wyjscie.is_clicked(event):
                 if self.karta:
-                    self.gra._plansza.karty.aktualna_karta.wykonaj_akcje(
+                    self._plansza.karty.aktualna_karta.wykonaj_akcje(
                         self.gra, self.gra._gracze[self.gra._indeks_aktualnego_gracza]
                     )
                 self.czy_szansa = False
