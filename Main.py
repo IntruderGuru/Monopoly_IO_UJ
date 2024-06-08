@@ -9,7 +9,7 @@ from src.Menu import Menu
 class Main:
     _SEC_TO_MS = 1000
     LIMIT_CZASU_GRY = 3600
-    LIMIT_CZASU_TURY = 30
+    LIMIT_CZASU_TURY = 5
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
@@ -104,6 +104,8 @@ class Main:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Czas tury minął! Przechodzimy do następnego gracza."
             )
+            self._gra.zamknij_wszystkie_okna()
+            pygame.time.wait(2000)
             self._gra.tura()
             self.turn_start_time = pygame.time.get_ticks()
 

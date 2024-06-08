@@ -427,6 +427,24 @@ class Gra:
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         self.wykonaj_zdarzenie(event)
 
+    def zamknij_wszystkie_okna(self):
+        self.akcja_pola_okno.czy_akcja_pola = False
+        self.akcja_pola_okno.zamknij()
+        self.akcja_pola_okno.wyswietl(self._glowne_okno)
+        self.akcja_nieruchomosci_okno.czy_kupno = False
+        self.akcja_nieruchomosci_okno.zamknij()
+        self.akcja_nieruchomosci_okno.wyswietl(self._glowne_okno)
+        self.akcja_kart_okno.czy_szansa = False
+        self.akcja_kart_okno.zamknij()
+        self.akcja_kart_okno.wyswietl(self._glowne_okno)
+        self.akcja_zastaw_okno.czy_zastaw = False
+        self.akcja_zastaw_okno.zamknij()
+        self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
+        self.akcja_zagadek_okno.czy_zagadka = False
+        self.akcja_zagadek_okno.zamknij()
+        self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+        self.akcja_wiezienie_okno.czy_wiezienie = False
+
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, (0, 0, 0))
         self._glowne_okno.blit(text_surface, pos)
