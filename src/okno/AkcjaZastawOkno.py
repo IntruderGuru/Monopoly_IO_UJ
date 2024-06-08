@@ -49,7 +49,7 @@ class AkcjaZastawOkno(Okno):
         pass
 
     def aktualizacja_zdarzen(self, event: pygame.event.Event):
-        if self.czy_zastaw:
+        if self.czy_zastaw:            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.stan == "czy_chcesz_zastawic":
                     self.wczytana_posiadlosc = ""
@@ -68,6 +68,7 @@ class AkcjaZastawOkno(Okno):
                         self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
                         if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
                             self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
+                            self.stan == "zastawiono"
                         else:
                             self.stan = "blad"
                             self.wczytana_posiadlosc = ""
@@ -76,13 +77,18 @@ class AkcjaZastawOkno(Okno):
                             self.wczytana_posiadlosc = self.wczytana_posiadlosc[:-1]
                     elif event.unicode.isdigit():
                             self.wczytana_posiadlosc += event.unicode
+                elif self.stan == "zastawiono":
+                    self.stan = "czy_chcesz_zastawic"
+                elif self.stan == "blad":
+                    self.stan = "wybierz_numer"
+                
 
     def wyswietl(self, screen: pygame.Surface):
 
         if self.czy_zastaw:
             screen.fill(self.gra.kolor_tla)
 
-            if self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci):
+            if self.stan == "czy_chcesz_zastawic" and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci):
                 self.przycisk_wyjscie.updateSize(
                     self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15
                 )
@@ -94,13 +100,9 @@ class AkcjaZastawOkno(Okno):
                     self.wizualizator.kolor_czcionki,
                 )
                 screen.blit(text, (self.W * 0.1, self.H * 0.1))
-                self.stan = "wyjscie"
-                self.wyswietl_do_zastawu(screen)
-            else:
-                self.stan = "czy_chcesz_zastawic"
-                
+                self.stan = "wyjscie"              
 
-            if self.stan == "czy_chcesz_zastawic":
+            elif self.stan == "czy_chcesz_zastawic":
                 self.przycisk_zastaw.updateSize(
                     self.W * 0.6, self.H * 0.2, self.W * 0.2, self.H * 0.15
                 )
@@ -117,6 +119,7 @@ class AkcjaZastawOkno(Okno):
                 )
                 screen.blit(text, (self.W * 0.1, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
+                
             elif self.stan == "wybierz_numer":
                 text = self.font.render(
                     f"Wpisz numer posiadłości",
@@ -125,15 +128,12 @@ class AkcjaZastawOkno(Okno):
                 )
                 screen.blit(text, (self.W * 0.2, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
-                odstep = 0.05
-                kolor_czcionki = self.wizualizator.kolor_czcionki
-
                 text = self.font.render(
                     str(self.wczytana_posiadlosc),
                     True,
-                    kolor_czcionki
+                    self.wizualizator.kolor_czcionki
                 )
-                screen.blit(text, (self.W * 0.45, self.H * (0.45 + odstep)))
+                screen.blit(text, (self.W * 0.45, self.H * (0.5)))
                 
             elif self.stan == "blad":
                 text = self.font.render(
@@ -142,7 +142,13 @@ class AkcjaZastawOkno(Okno):
                     self.wizualizator.kolor_czcionki,
                 )
                 screen.blit(text, (self.W * 0.2, self.H * 0.1))
-                self.stan = "wybierz_numer"
+            elif self.stan == "zastawiono":
+                text = self.font.render(
+                    f"Zastawiono posiadłość {self.gracz.lista_posiadlosci[self.wczytana_posiadlosc-1].nazwa}",
+                    True,
+                    self.wizualizator.kolor_czcionki,
+                )
+                screen.blit(text, (self.W * 0.2, self.H * 0.1))
 
     def wyswietl_do_zastawu(self, screen):
         odstep = 0.25
@@ -157,11 +163,12 @@ class AkcjaZastawOkno(Okno):
                 )
                 screen.blit(text, (self.W * 0.1, self.H * odstep))
                 odstep += 0.05
-                x += 1
+            x += 1
         self.ile_do_zastawienia = x
 
     def ustaw_gracza(self, gracz, cena):
         self.stan = "czy_chcesz_zastawic"
+        self.wczytana_posiadlosc = ""
         self.gracz = gracz
         self.cena = cena
 

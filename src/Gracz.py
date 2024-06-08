@@ -13,7 +13,8 @@ class Gracz:
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
 
-    def zastaw_posiadlosci(self, gra, nr_posiadlosci):
+    def zastaw_posiadlosci(self, gra, nr_posiadlosci):      
+        
         self.lista_posiadlosci[nr_posiadlosci].czy_zastawiona = True
         self.liczba_zastawionych += 1
         self.kwota += self.lista_posiadlosci[nr_posiadlosci].zastaw_kwota

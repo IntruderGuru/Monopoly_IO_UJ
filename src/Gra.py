@@ -132,7 +132,7 @@ class Gra:
                 self._gracze[self._indeks_aktualnego_gracza],
                 kostka_pierwsza + kostka_druga,
             )
-
+            
     def wyswietl_kostki(self, screen, dice1, dice2):
         # im wieksze tym mniejszy odstep
         oddalenie_kostek_od_siebie = 8.1
@@ -269,13 +269,11 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Gracz odwiedza więzienie")
 
-        elif pole.typ == "Idz do wiezienia":
-            self.czy_akcja_zakonczona = False
-            self.akcja_wiezienie_okno.czy_wiezienie = True
-
+        elif pole.typ == "Idz do wiezienia":            
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 "Gracz idzie do więzienia")
             if self.wykup_z_wiezienia_rzutem():
+                self.czy_akcja_zakonczona = True
                 return
             if gracz.liczba_kart_wyjdz_z_wiezienia > 0:
                 gracz.liczba_kart_wyjdz_z_wiezienia -= 1
@@ -283,6 +281,8 @@ class Gra:
                     "Wykorzystano kartę 'wyjdź bezpłatnie z więzienia'"
                 )
             else:
+                self.akcja_wiezienie_okno.czy_wiezienie = True
+                self.czy_akcja_zakonczona = False
                 gracz.tury_w_wiezieniu = 2
                 self.przesun_gracza_bez_raportu(
                     self._gracze[self._indeks_aktualnego_gracza], 10
@@ -338,8 +338,8 @@ class Gra:
             )
 
             #
-            kostka_druga = 3
-            kostka_pierwsza = 1
+            # kostka_druga = 5
+            # kostka_pierwsza = 5
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
