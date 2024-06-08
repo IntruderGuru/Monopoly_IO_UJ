@@ -44,7 +44,6 @@ class AkcjaZastawOkno(Okno):
             "Wyjscie",
             self.wizualizator.kolor_czcionki_na_przycisku,
         )
-        self.przyciski_posiadlosci = []
 
     def aktualizacja(self):
         pass
@@ -72,12 +71,14 @@ class AkcjaZastawOkno(Okno):
                         self.wczytana_posiadlosc = int(self.wczytana_posiadlosc)
                         if self.wczytana_posiadlosc > 0 and self.wczytana_posiadlosc <= self.ile_do_zastawienia:
                             self.gracz.zastaw_posiadlosci(self.gra, self.wczytana_posiadlosc-1)
-                            """
-                            if self.gracz.liczba_zastawionych <= len(self.gracz.lista_posiadlosci):
+                            #"""
+                            if self.gracz.liczba_zastawionych < len(self.gracz.lista_posiadlosci):
+                                self.gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                                    "Siemsonnn, mozesz jeszcze zastawic")
                                 self.stan == "czy_chcesz_zastawic"
                             else:
-                                self.zamknij()
-                            """
+                                self.stan = "wyjscie"
+                            #"""
                         else:
                             self.stan = "blad"
                             self.wczytana_posiadlosc = ""
@@ -138,6 +139,7 @@ class AkcjaZastawOkno(Okno):
                     kolor_czcionki
                 )
                 screen.blit(text, (self.W * 0.45, self.H * (0.45 + odstep)))
+                
             elif self.stan == "blad":
                 text = self.font.render(
                     f"Wpisano zły numer",

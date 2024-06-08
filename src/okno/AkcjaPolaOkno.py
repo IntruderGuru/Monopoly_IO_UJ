@@ -62,9 +62,10 @@ class AkcjaPolaOkno(Okno):
 
             if self.zakup.is_clicked(event):
                 self.kup_pole()
-                self.zamknij()
+                #self.zamknij()
             elif self.wyjscie.is_clicked(event):
                 self.zamknij()
+                pass
 
             if self.czy_akcja_pola:
                 if self.karta.czy_najechano():

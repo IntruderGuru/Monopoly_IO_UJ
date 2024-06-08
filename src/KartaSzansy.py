@@ -39,7 +39,7 @@ class KartaSzansy:
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
-            gracz.czy_przeszedl_przez_start(self, stara_pozycja)
+            gracz.czy_przeszedl_przez_start(gra, stara_pozycja)
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
