@@ -131,6 +131,8 @@ class Gra:
             26
         )
 
+        self.gracz_poprzedniej_tury = -1
+
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         self._kolejny_rzut_kostka = False
 
@@ -328,6 +330,11 @@ class Gra:
                 raise Exception("Błąd. Posiadłość jest innym polem")
 
     def tura(self):
+
+        if self.gracz_poprzedniej_tury != self._indeks_aktualnego_gracza:
+            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
+        self.gracz_poprzedniej_tury = self._indeks_aktualnego_gracza
+
         self._kontroler_wiadomosci.dodaj_wiadomosc(
             f"Teraz tura gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
         )
@@ -344,9 +351,9 @@ class Gra:
                 )
 
         else:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
-            )
+            # self._kontroler_wiadomosci.dodaj_wiadomosc(
+            #     f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
+            # )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -421,10 +428,8 @@ class Gra:
     # oddzielona od aktualizacja_zdarzenia, na rzecz architektury i wykorzystania klasy GraProxy(event injection, tracking)
     def wykonaj_zdarzenie(self, event: pygame.event.Event):
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and self.czy_akcja_zakonczona):
-            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
             self.tura()
         if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
-            self._kontroler_wiadomosci.usun_wszystkie_wiadomosci()
             self.tura()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
