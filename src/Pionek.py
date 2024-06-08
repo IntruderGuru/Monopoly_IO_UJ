@@ -30,7 +30,7 @@ class Pionek:
     # dla sciany = ilosc malych pol + jedno duze pole
     DLUGOSC_SCIANY_W_POLACH = 10
 
-    def __init__(self, numer_pola: int, color: pygame.color, grafika: str, W, H):
+    def __init__(self, numer_pola: int, color: pygame.color, grafika: str, W, H, il):
         self.numer_pola = numer_pola
         self.color = color
         self.sciezka_do_grafiki = grafika
@@ -45,6 +45,8 @@ class Pionek:
             pygame.image.load(self.sciezka_do_grafiki), (self.wymiary.x, self.wymiary.y)
         )
         self.aktualizacja_rozmiaru(W, H)
+        self.ilosc_graczy_na_polu = il
+
         
     def oblicz_nowa_pozycje(self, numer_pola, kierunek_sciany) -> Vector2:
         lewo = Pionek.OFF_SET.x
@@ -71,11 +73,12 @@ class Pionek:
 
         return Vector2(lewo * self.szerokosc_ratio, gora * self.wysokosc_ratio)
 
-    def przesun(self, liczba_pol: int) -> bool:
+    def przesun(self, liczba_pol: int, gra) -> bool:
         if liczba_pol <= 0:
             return False
-
+        gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu -= 1
         self.numer_pola = (self.numer_pola + liczba_pol) % Pionek.LICZBA_POL
+        gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu += 1
         self.kierunek = KierunekPol(self.numer_pola // Pionek.DLUGOSC_SCIANKI_W_POLACH)
         self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
@@ -93,10 +96,18 @@ class Pionek:
         self.pozycja = self.oblicz_nowa_pozycje(self.numer_pola, self.kierunek)
 
 
-    def wyswietl(self, okno: pygame.Surface):
+    def wyswietl(self, okno: pygame.Surface, gra):
         skalar = 35
+        
         self.zdjecie_pionek = pygame.transform.scale(
             pygame.image.load(self.sciezka_do_grafiki), (self.W / skalar, self.W / skalar)
         )
+        self.ilosc_graczy_na_polu = gra._plansza.plansza[self.numer_pola].ilosc_graczy_na_polu
+        if self.ilosc_graczy_na_polu > 1:
+            self.maska = pygame.transform.scale(
+                pygame.image.load(f"graphics/pionek/pionek{self.ilosc_graczy_na_polu}mask.png"), (self.W / skalar, self.W / skalar)
+            )
         # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
         okno.blit(self.zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
+        if self.ilosc_graczy_na_polu > 1:
+            okno.blit(self.maska, (self.pozycja.x, self.pozycja.y))

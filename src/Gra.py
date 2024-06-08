@@ -63,7 +63,8 @@ class Gra:
                     PIECE_COLORS[i],
                     "graphics/pionek/PionekColor" + str(i + 1) + ".png",
                     szerokosc_ekranu,
-                    wysokosc_ekranu
+                    wysokosc_ekranu,
+                    liczba_graczy
                 ),
                 umiejetnosci[i]
             )
@@ -117,6 +118,7 @@ class Gra:
         # feature_testingMechanism
         self.input_text = ""
         print("HELLO from Gra")
+        self._plansza.plansza[0].ilosc_graczy_na_polu = liczba_graczy
 
         #nowa tura
         self.nastepna_tura = Przycisk(
@@ -207,20 +209,20 @@ class Gra:
     def przesun_gracza(self, gracz, ruch):
         stara_pozycja = gracz.pionek.numer_pola
         nowa_pozycja = (stara_pozycja + ruch) % LICZBA_POL
-        gracz.pionek.przesun(ruch)
+        gracz.pionek.przesun(ruch, self)
         gracz.czy_przeszedl_przez_start(self, stara_pozycja)
 
         self._kontroler_wiadomosci.dodaj_wiadomosc(
             f"Gracz {gracz.id} przesunął się z pozycji {stara_pozycja} na {nowa_pozycja}"
         )
-        gracz.pionek.wyswietl(self._glowne_okno)
+        gracz.pionek.wyswietl(self._glowne_okno, self)
         pole = self._plansza.pobierz_pole(nowa_pozycja)
         self.wykonaj_akcje_na_polu(gracz, pole)
 
     def przesun_gracza_bez_raportu(self, gracz, nowa_pozycja):
         stara_pozycja = gracz.pionek.numer_pola
-        gracz.pionek.przesun((nowa_pozycja - stara_pozycja) % LICZBA_POL)
-        gracz.pionek.wyswietl(self._glowne_okno)
+        gracz.pionek.przesun((nowa_pozycja - stara_pozycja) % LICZBA_POL, self)
+        gracz.pionek.wyswietl(self._glowne_okno, self)
 
     def akcja_kupienia_nieruchomosci(self, gracz, posiadlosc, nr_pola=1):
         if posiadlosc.kolor == "kolo" or posiadlosc.kolor == "pozaWmii":
@@ -484,7 +486,7 @@ class Gra:
         self.nastepna_tura.draw(self._glowne_okno)
 
         for gracz in self._gracze:
-            gracz.pionek.wyswietl(self._glowne_okno)
+            gracz.pionek.wyswietl(self._glowne_okno, self)
 
         self.wypisz_nazwe_gracza_tury()
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)

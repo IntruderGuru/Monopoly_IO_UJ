@@ -84,6 +84,7 @@ class Pole:
         self.kierunek_sciany = self.oblicz_zwrot_naglowka_pola(self.numer, Pole.DLUGOSC_SCIANY_W_POLACH, Pole.MAKSYMALNA_LICZBA_POL)
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
+        self.ilosc_graczy_na_polu = 0
 
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
