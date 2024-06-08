@@ -133,6 +133,17 @@ class Gra:
             self.wizualizator.kolor_czcionki,
             26
         )
+        self.zapisz_wyjdz = Przycisk(
+            szerokosc_ekranu * 0.3,
+            wysokosc_ekranu * 0.75,
+            szerokosc_ekranu * 0.2,
+            wysokosc_ekranu * 0.15,
+            self.wizualizator.kolor_przycisku_tury,
+            self.wizualizator.kolor_przycisku_tury_gdy_kursor,
+            "Zapisz i wyjdz",
+            self.wizualizator.kolor_czcionki,
+            8
+        )
 
         self.gracz_poprzedniej_tury = -1
 
@@ -434,6 +445,10 @@ class Gra:
             self.tura()
         if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
             self.tura()
+        if self.zapisz_wyjdz.is_clicked(event) and self.czy_akcja_zakonczona:
+            self.input_text = ""
+            self.zapisz_gre()
+            pygame.quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.process_input(self.input_text)
@@ -441,8 +456,8 @@ class Gra:
             elif event.key == pygame.K_BACKSPACE:
                 self.input_text = self.input_text[:-1]
             elif event.key == pygame.K_s:
-                self.zapisz_gre()
                 self.input_text = ""
+                self.zapisz_gre()
                 pygame.quit()
             else:
                 self.input_text += event.unicode
@@ -489,6 +504,7 @@ class Gra:
 
         self._plansza.render(self._glowne_okno)
         self.nastepna_tura.draw(self._glowne_okno)
+        self.zapisz_wyjdz.draw(self._glowne_okno)
 
         for gracz in self._gracze:
             gracz.pionek.wyswietl(self._glowne_okno, self)
@@ -528,9 +544,16 @@ class Gra:
 
         self.nastepna_tura.updateSize(
             self.aktualna_szerokosc_ekranu * 0.218,
-            self.aktualna_wysokosc_ekranu * 0.7,
+            self.aktualna_wysokosc_ekranu * 0.64,
             self.aktualna_szerokosc_ekranu * 0.12,
             self.aktualna_wysokosc_ekranu * 0.08
+        )
+
+        self.zapisz_wyjdz.updateSize(
+            self.aktualna_szerokosc_ekranu * 0.245,
+            self.aktualna_wysokosc_ekranu * 0.74,
+            self.aktualna_szerokosc_ekranu * 0.06,
+            self.aktualna_wysokosc_ekranu * 0.05
         )
 
     def wypisz_nazwe_gracza_tury(self):
