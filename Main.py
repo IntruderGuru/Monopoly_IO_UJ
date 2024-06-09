@@ -9,8 +9,8 @@ from src.Menu import Menu
 
 class Main:
     _SEC_TO_MS = 1000
-    LIMIT_CZASU_GRY = 3600
-    LIMIT_CZASU_TURY = 5
+    LIMIT_CZASU_GRY = 0
+    LIMIT_CZASU_TURY = 0
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
@@ -30,11 +30,11 @@ class Main:
         self._gra = None
         self._clock = pygame.time.Clock()
         self._running = True
-        self._waiting_for_space = True
+        self.wait_flag = 0
         self._delta_time = 0
         self.input_text = ""
         self.wizualizator = Wizualizator()
-        self.menu = Menu(self.wizualizator)
+        self.menu = Menu(self.wizualizator, self)
         self._kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
 
         self.uplyniety_czas_gry = 0
@@ -93,9 +93,10 @@ class Main:
         while self._running:
             self._aktualizuj_delta_time()
             self.uplyniety_czas_gry += self._delta_time
-            if not self._waiting_for_space:
-                self._aktualizuj_czas_gry()
             self._petla_zdarzen(pygame.event.get())
+            if self.wait_flag == 1:
+                self._aktualizuj_czas_gry()
+            # self._petla_zdarzen(pygame.event.get())
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
 
@@ -108,18 +109,22 @@ class Main:
             pygame.time.get_ticks() - self.turn_start_time
         ) / Main._SEC_TO_MS
 
-        if self.uplyniety_czas_gry >= Main.LIMIT_CZASU_GRY:
-            self._running = False
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Czas gry minął! Koniec gry.")
+        if self.LIMIT_CZASU_GRY != 999:
+            if self.uplyniety_czas_gry >= self.LIMIT_CZASU_GRY:
+                self._running = False
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Czas gry minął! Koniec gry."
+                )
 
-        if self.uplyniety_czas_tury >= Main.LIMIT_CZASU_TURY:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Czas tury minął! Przechodzimy do następnego gracza."
-            )
-            self._gra.zamknij_wszystkie_okna()
-            self._wyswietlaj()
-            self._waiting_for_space = True
-            self.turn_start_time = pygame.time.get_ticks()
+        if self.LIMIT_CZASU_TURY != 999:
+            if self.uplyniety_czas_tury >= self.LIMIT_CZASU_TURY:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Czas tury minął! Przechodzimy do następnego gracza."
+                )
+                self._gra.zamknij_wszystkie_okna()
+                self._wyswietlaj()
+                self.wait_flag = 0
+                self.turn_start_time = pygame.time.get_ticks()
 
     def _petla_zdarzen(self, events_list):
         for event in events_list:
@@ -129,9 +134,15 @@ class Main:
             elif (
                 event.type == pygame.KEYDOWN
                 and event.key == pygame.K_SPACE
-                and self._waiting_for_space
+                and self.wait_flag == 0
             ):
-                self._waiting_for_space = False  # Wyłączenie oczekiwania na spacje
+                self._waiting_for_space = False
+                self.wait_flag = 1
+            elif event.type == pygame.MOUSEBUTTONDOWN and self.wait_flag == 0:
+                self.wait_flag = 1
+            elif event.type == pygame.MOUSEBUTTONDOWN and self.wait_flag == 1:
+                self.wait_flag = 0
+
             elif event.type == pygame.VIDEORESIZE:
                 self._screen_width = event.w
                 self._screen_height = event.h

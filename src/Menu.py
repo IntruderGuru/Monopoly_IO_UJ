@@ -7,8 +7,9 @@ from src.Wizualizator import Wizualizator
 
 
 class Menu:
-    def __init__(self, wizualizator):
-        self.stan = "witaj"
+    def __init__(self, wizualizator, main_ref):
+        # self.stan = "witaj"
+        self.stan = "czas_gry"
         self.typ_stopu = "nowa"
         self.liczba_graczy = 0
         self.gracze = []
@@ -16,6 +17,8 @@ class Menu:
         self.font = pygame.font.Font(self.wizualizator.czcionka, 32)
         self.H = 660
         self.W = 1200
+
+        self.main = main_ref
 
         self.przyciski = PrzyciskiMenu(self.H, self.W, self.wizualizator)
 
@@ -70,19 +73,19 @@ class Menu:
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
 
-    def reset_pionki(self):
-        pionek_default_dir = "graphics/pionek_default"
-        pionek_dir = "graphics/pionek"
+    # def reset_pionki(self):
+    #     pionek_default_dir = "graphics/pionek_default"
+    #     pionek_dir = "graphics/pionek"
 
-        for filename in os.listdir(pionek_dir):
-            file_path = os.path.join(pionek_dir, filename)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
+    #     for filename in os.listdir(pionek_dir):
+    #         file_path = os.path.join(pionek_dir, filename)
+    #         if os.path.isfile(file_path):
+    #             os.remove(file_path)
 
-        for filename in os.listdir(pionek_default_dir):
-            src_path = os.path.join(pionek_default_dir, filename)
-            dst_path = os.path.join(pionek_dir, filename)
-            shutil.copy(src_path, dst_path)
+    #     for filename in os.listdir(pionek_default_dir):
+    #         src_path = os.path.join(pionek_default_dir, filename)
+    #         dst_path = os.path.join(pionek_dir, filename)
+    #         shutil.copy(src_path, dst_path)
 
     def handle_event(self, event, W, H):
 
@@ -93,13 +96,39 @@ class Menu:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.stan == "witaj":
                 if self.przyciski.nowa_gra.is_clicked(event):
-                    self.stan = "liczba_graczy"
-                    self.reset_pionki()
+                    self.stan = "czas_gry"
+                    # self.reset_pionki()
                 elif self.przyciski.wyjscie.is_clicked(event):
                     pygame.quit()
                 elif self.przyciski.wczytaj_gre.is_clicked(event):
                     self.stan = "stop"
                     self.typ_stopu = "wczytana"
+
+            elif self.stan == "czas_gry":
+                if self.przyciski.trzydziesci_minut.is_clicked(event):
+                    self.main.LIMIT_CZASU_GRY = 1800
+                elif self.przyciski.szescdziesiat_minut.is_clicked(event):
+                    self.main.LIMIT_CZASU_GRY = 3600
+                elif self.przyciski.dziewiecdziesiat_minut.is_clicked(event):
+                    self.main.LIMIT_CZASU_GRY = 5400
+                elif self.przyciski.bez_ograniczen.is_clicked(event):
+                    self.main.LIMIT_CZASU_GRY = 9999
+
+                if self.main.LIMIT_CZASU_GRY != 0:
+                    self.stan = "czas_tury"
+
+            elif self.stan == "czas_tury":
+                if self.przyciski.jedna_minuta.is_clicked(event):
+                    self.main.LIMIT_CZASU_TURY = 60
+                elif self.przyciski.dwie_minuty.is_clicked(event):
+                    self.main.LIMIT_CZASU_TURY = 120
+                elif self.przyciski.trzy_minuty.is_clicked(event):
+                    self.main.LIMIT_CZASU_TURY = 180
+                elif self.przyciski.bez_ograniczen.is_clicked(event):
+                    self.main.LIMIT_CZASU_TURY = 999
+
+                if self.main.LIMIT_CZASU_TURY != 0:
+                    self.stan = "liczba_graczy"
 
             elif self.stan == "liczba_graczy":
                 if self.przyciski.two.is_clicked(event):
@@ -265,6 +294,30 @@ class Menu:
             self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
             screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
 
+        elif self.stan == "czas_gry":
+            self.przyciski.trzydziesci_minut.draw(screen)
+            self.przyciski.szescdziesiat_minut.draw(screen)
+            self.przyciski.dziewiecdziesiat_minut.draw(screen)
+            self.przyciski.bez_ograniczen.draw(screen)
+
+            text = self.font.render(
+                "Wybierz czas gry w minutach", True, self.wizualizator.kolor_czcionki
+            )
+
+            screen.blit(text, (W * 0.255, H * 0.3))
+
+        elif self.stan == "czas_tury":
+            self.przyciski.jedna_minuta.draw(screen)
+            self.przyciski.dwie_minuty.draw(screen)
+            self.przyciski.trzy_minuty.draw(screen)
+            self.przyciski.bez_ograniczen.draw(screen)
+
+            text = self.font.render(
+                "Wybierz czas tury w sekundach", True, self.wizualizator.kolor_czcionki
+            )
+
+            screen.blit(text, (W * 0.255, H * 0.3))
+
         elif self.stan == "liczba_graczy":
             self.przyciski.two.draw(screen)
             self.przyciski.three.draw(screen)
@@ -336,7 +389,6 @@ class Menu:
             )
             self.wyswietl_napis_pionek(screen, self.pionek1, text)
 
-
         elif self.stan == "gracz_2":
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny.draw(screen)
@@ -345,7 +397,6 @@ class Menu:
                 f"Gracz: {self.gracze[1]}", True, self.wizualizator.kolor_czcionki
             )
             self.wyswietl_napis_pionek(screen, self.pionek2, text)
-
 
         elif self.stan == "gracz_3":
             self.przyciski.poprzedni.draw(screen)
@@ -358,7 +409,6 @@ class Menu:
             )
             self.wyswietl_napis_pionek(screen, self.pionek3, text)
 
-
         elif self.stan == "gracz_4":
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny.draw(screen)
@@ -370,7 +420,6 @@ class Menu:
             )
             self.wyswietl_napis_pionek(screen, self.pionek4, text)
 
-
         elif self.stan == "gracz_5":
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny.draw(screen)
@@ -381,7 +430,6 @@ class Menu:
                 self.wizualizator.kolor_czcionki,
             )
             self.wyswietl_napis_pionek(screen, self.pionek5, text)
-
 
     def wyswietl_napis_pionek(self, screen, pionek, tekst):
         screen.blit(tekst, (self.W * 0.1, self.H * 0.12))

@@ -96,6 +96,7 @@ class Gra:
         self.kolor_nakladki = self.wizualizator.kolor_nakladki
         self.przezroczystosc_nakladki = self.wizualizator.przezroczystosc_nakladki
         self.font = pygame.font.Font(self.czcionka, 20)
+        self.end_game_flag = 1
 
         # sekcja okien
         self._plansza = Plansza()
@@ -542,10 +543,21 @@ class Gra:
             self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
         )
 
-        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
-        tekst = self.font1.render(
-            game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        pozostaly_czas_gry = self.main.LIMIT_CZASU_GRY - int(
+            self.main.uplyniety_czas_gry
         )
+        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
+        if pozostaly_czas_gry <= 300:
+            text_color = pygame.Color("red")
+            if self.end_game_flag == 1:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Zostało mniej niż 5 minut do końca gry"
+                )
+                self.end_game_flag = 0
+        else:
+            text_color = self.wizualizator.kolor_napisu_gracz_tury
+
+        tekst = self.font1.render(game_time_text, True, text_color)
         self._glowne_okno.blit(
             tekst,
             (
@@ -555,22 +567,28 @@ class Gra:
         )
 
     def render_turn_time(self):
+        if self.main.LIMIT_CZASU_TURY != 999:
+            self.font1 = pygame.font.Font(
+                self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
+            )
 
-        self.font1 = pygame.font.Font(
-            self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
-        )
+            pozostaly_czas_tury = self.main.LIMIT_CZASU_TURY - int(
+                self.main.uplyniety_czas_tury
+            )
+            turn_time_text = f"Czas tury: {pozostaly_czas_tury:02}"
+            if pozostaly_czas_tury <= 10:
+                text_color = pygame.Color("red")
+            else:
+                text_color = self.wizualizator.kolor_napisu_gracz_tury
 
-        turn_time_text = f"Czas tury: {int(self.main.uplyniety_czas_tury):02}"
-        tekst = self.font1.render(
-            turn_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
-        )
-        self._glowne_okno.blit(
-            tekst,
-            (
-                self.aktualna_szerokosc_ekranu * 0.418,
-                self.aktualna_wysokosc_ekranu * 0.85,
-            ),
-        )
+            tekst = self.font1.render(turn_time_text, True, text_color)
+            self._glowne_okno.blit(
+                tekst,
+                (
+                    self.aktualna_szerokosc_ekranu * 0.418,
+                    self.aktualna_wysokosc_ekranu * 0.85,
+                ),
+            )
 
     # override
     def wyswietl(self, okno: pygame.Surface, W, H):

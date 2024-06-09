@@ -85,7 +85,7 @@ class Posiadlosc(Pole):
     def aktualizuj_czynsz(self):
         if self.wlasciciel:
             liczba_posiadlosci = len(self.wlasciciel.lista_posiadlosci)
-            self.czynsz *= 1 + 0.05 * liczba_posiadlosci
+            self.czynsz *= 1 + 0.05  # * liczba_posiadlosci
             self.czynsz = math.ceil(self.czynsz)
 
     def kup_posiadlosc(self, gra, gracz):
@@ -139,8 +139,11 @@ class Posiadlosc(Pole):
         if self.liczba_hoteli > 0:
 
             if gracz.umiejetnosc == "sprzedaje_nieruchomosci_za_oryginalna_ceny":
-                gracz.kwota = (gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu))
+                gracz.kwota = gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu)
             else:
-                gracz.kwota = (gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu) * KOSZT_SPRZEDAZY)
+                gracz.kwota = (
+                    gracz.kwota
+                    + (self.liczba_hoteli * 5 * self.cena_domu) * KOSZT_SPRZEDAZY
+                )
             self.liczba_hoteli -= 1
             gracz.statystyka.odejmij_hotel(1)
