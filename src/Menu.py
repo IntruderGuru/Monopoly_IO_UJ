@@ -253,7 +253,7 @@ class Menu:
         elif self.stan == "tutorial1":
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.graj.draw(screen)
-            self.przyciski.poprzedni_szary.draw(screen)
+            self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny.draw(screen)
             self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
             screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
@@ -277,7 +277,7 @@ class Menu:
                 self.wizualizator.kolor_czcionki,
             )
 
-            screen.blit(text, (W * 0.22, H * 0.25))
+            screen.blit(text, (W * 0.305, H * 0.3))
 
         elif self.stan == "nazwy_graczy":
             text = self.font.render(
@@ -285,7 +285,7 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (W * 0.2, H * 0.25))
+            screen.blit(text, (W * 0.28, H * 0.25))
 
             odstep = 0.05
             ile_wpisanych = len(self.gracze)
@@ -323,7 +323,6 @@ class Menu:
                 self.pionek5,
             ]
             for i, pionek in enumerate(pionki):
-
                 pionek_wyswietlany = pygame.transform.scale(
                     pionek, (0.12 * self.W, 0.12 * self.W)
                 )
@@ -335,12 +334,8 @@ class Menu:
             text = self.font.render(
                 f"Gracz: {self.gracze[0]}", True, self.wizualizator.kolor_czcionki
             )
-            text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
+            self.wyswietl_napis_pionek(screen, self.pionek1, text)
 
-            screen.blit(text, text_rect)
-
-            pionek1_rect = self.pionek1.get_rect(center=(self.W * 0.5, self.H * 0.5))
-            screen.blit(self.pionek1, pionek1_rect)
 
         elif self.stan == "gracz_2":
             self.przyciski.poprzedni.draw(screen)
@@ -349,12 +344,8 @@ class Menu:
             text = self.font.render(
                 f"Gracz: {self.gracze[1]}", True, self.wizualizator.kolor_czcionki
             )
-            text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
+            self.wyswietl_napis_pionek(screen, self.pionek2, text)
 
-            screen.blit(text, text_rect)
-
-            pionek2_rect = self.pionek2.get_rect(center=(self.W * 0.5, self.H * 0.5))
-            screen.blit(self.pionek2, pionek2_rect)
 
         elif self.stan == "gracz_3":
             self.przyciski.poprzedni.draw(screen)
@@ -365,11 +356,8 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
+            self.wyswietl_napis_pionek(screen, self.pionek3, text)
 
-            screen.blit(text, (W * 0.1, H * 0.1))
-
-            pionek3_rect = self.pionek3.get_rect(center=(self.W * 0.5, self.H * 0.5))
-            screen.blit(self.pionek3, pionek3_rect)
 
         elif self.stan == "gracz_4":
             self.przyciski.poprzedni.draw(screen)
@@ -380,12 +368,8 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
+            self.wyswietl_napis_pionek(screen, self.pionek4, text)
 
-            screen.blit(text, text_rect)
-
-            pionek4_rect = self.pionek4.get_rect(center=(self.W * 0.5, self.H * 0.5))
-            screen.blit(self.pionek4, pionek4_rect)
 
         elif self.stan == "gracz_5":
             self.przyciski.poprzedni.draw(screen)
@@ -396,9 +380,13 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
+            self.wyswietl_napis_pionek(screen, self.pionek5, text)
 
-            screen.blit(text, text_rect)
 
-            pionek5_rect = self.pionek5.get_rect(center=(self.W * 0.5, self.H * 0.5))
-            screen.blit(self.pionek5, pionek5_rect)
+    def wyswietl_napis_pionek(self, screen, pionek, tekst):
+        screen.blit(tekst, (self.W * 0.1, self.H * 0.12))
+
+        pionek_wyswietlany = pygame.transform.scale(
+            pionek, (0.12 * self.W, 0.12 * self.W)
+        )
+        screen.blit(pionek_wyswietlany, (self.W * 0.44, self.H * 0.35))
