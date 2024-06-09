@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 10000
+KWOTA_POCZATKOWA = 2000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -149,6 +149,8 @@ class Gra:
         )
 
         self.gracz_poprzedniej_tury = -1
+        self.zwyciezca = -1
+        self.waiter = 4
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         self._kolejny_rzut_kostka = False
@@ -397,13 +399,30 @@ class Gra:
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
 
-        if not self._kolejny_rzut_kostka:
-            self._indeks_aktualnego_gracza = (
-                self._indeks_aktualnego_gracza + 1
-            ) % self._liczba_graczy
-            self._suma_oczek = 0
+        self._gracze[self._indeks_aktualnego_gracza].kwota -= 1000
+        self._gracze[self._indeks_aktualnego_gracza].statystyka.aktualizuj_stan_pieniedzy(self._gracze[self._indeks_aktualnego_gracza].kwota)
+        self.kto_zbankrutowal()
+
+        if self._gracze[self._indeks_aktualnego_gracza].czy_aktywny == False:
+            self.zamknij_wszystkie_okna()
+
+        if self.czy_zwyciezca():
+            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Zwycięża: {self._gracze[self._indeks_aktualnego_gracza].id}")
+            
+        if (not self._kolejny_rzut_kostka) and self.zwyciezca == -1:
+
+            while True:
+                self._indeks_aktualnego_gracza = (
+                    self._indeks_aktualnego_gracza + 1
+                ) % self._liczba_graczy
+                self._suma_oczek = 0
+
+                if self._gracze[self._indeks_aktualnego_gracza].czy_aktywny == True:
+                    break
+                #zapetla sie gdy bedzie 1 gracz i zbankrutuje (wtedy powinno sie pokazac info o wygranej)
 
         self.main.turn_start_time = pygame.time.get_ticks()
+
 
     def get_messages(self):
         messages = self.messages.copy()
@@ -577,6 +596,10 @@ class Gra:
 
         self.aktualizuj_rozmiar_okien()
 
+        if self.zwyciezca != -1 and self.waiter < 0:
+            self.wyswietl_zwyciezce()
+            return
+
         self.render_text(
             self.input_text,
             (self.aktualna_szerokosc_ekranu - 400, self.aktualna_wysokosc_ekranu - 50),
@@ -587,7 +610,8 @@ class Gra:
         self.zapisz_wyjdz.draw(self._glowne_okno)
 
         for gracz in self._gracze:
-            gracz.pionek.wyswietl(self._glowne_okno, self)
+            if gracz.czy_aktywny:
+                gracz.pionek.wyswietl(self._glowne_okno, self)
 
         self.wypisz_nazwe_gracza_tury()
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
@@ -598,6 +622,7 @@ class Gra:
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
+
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -711,3 +736,46 @@ class Gra:
             self._plansza = pickle.load(handle)
         with open("save/gracz_poprzedniej_tury.pickle", "rb") as handle:
             self.gracz_poprzedniej_tury = pickle.load(handle)
+
+    def kto_zbankrutowal(self):
+        for gracz in self._gracze:
+            if gracz.kwota > 0:
+                continue
+            else:
+                if (len(gracz.lista_posiadlosci) == 0 or len(gracz.lista_posiadlosci) == gracz.liczba_zastawionych) and gracz.czy_aktywny == True:
+                    gracz.czy_aktywny = False
+                    self._kontroler_wiadomosci.dodaj_wiadomosc(f"Gracz {gracz.id} bankrutuje")
+            
+    def czy_zwyciezca(self):
+        licznik = 0
+        licznik_indeksu = 0
+        zwyciezca = -1
+        for gracz in self._gracze:
+            if gracz.czy_aktywny:
+                licznik += 1
+                zwyciezca = licznik_indeksu
+            licznik_indeksu += 1
+
+        if licznik == 1:
+            self.zwyciezca = zwyciezca
+            return True
+        else:
+            return False
+        
+
+    def wyswietl_zwyciezce(self):
+        
+        self.skalar_czcionki = 40 # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki))
+        zwyciezca_tekst = self.font.render(
+            f"Zwycięża: {self._gracze[self.zwyciezca].id}! ", 
+            True, 
+            self.kolor_czcionki
+        )
+        self._glowne_okno.fill(self.wizualizator.kolor_tla)
+        self._glowne_okno.blit(zwyciezca_tekst, (self.aktualna_szerokosc_ekranu * 0.3, self.aktualna_wysokosc_ekranu * 0.4))
+
+
+    def aktualizuj(self, czas):
+        if self.zwyciezca != -1:
+            self.waiter -= czas

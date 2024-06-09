@@ -10,7 +10,7 @@ from src.Menu import Menu
 class Main:
     _SEC_TO_MS = 1000
     LIMIT_CZASU_GRY = 3600
-    LIMIT_CZASU_TURY = 5
+    LIMIT_CZASU_TURY = 60
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
@@ -138,7 +138,7 @@ class Main:
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
-        pass  # Aktualizacja gry, jeśli jest taka potrzeba
+        self._gra.aktualizuj(delta_time)
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)

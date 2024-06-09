@@ -14,6 +14,7 @@ class Gracz:
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
         self.umiejetnosc = umiejetnosc
+        self.czy_aktywny = True
         print(umiejetnosc)
 
         if umiejetnosc == "wiecej_pieniedzy_na_start":

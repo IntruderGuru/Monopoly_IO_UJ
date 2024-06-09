@@ -30,6 +30,11 @@ class AkcjaStatystykOkno(Okno):
 
         if self.czy_akcja_statystyk:
             
+            self.bankrut = pygame.transform.scale(
+                pygame.image.load("graphics/bankrut.png"),
+                (0.02 * self.W, 0.02 * self.W)
+            )
+
             i = 0
             self.ramka = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_statystyk.png"),
@@ -64,13 +69,21 @@ class AkcjaStatystykOkno(Okno):
                 )
 
                 screen.blit(self.umiejetnosc, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
-                screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+                if gracz.czy_aktywny:
+                    screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+                else:
+                    screen.blit(self.bankrut, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
 
                 screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                if gracz.czy_aktywny:
+                    screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                else:
+                    screen.blit(self.bankrut_tekst, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+
+                
                 i += 1
 
 
@@ -91,6 +104,9 @@ class AkcjaStatystykOkno(Okno):
     def zaktualizuj_tekst_i_rozmiar(self, gracz, nazwa_gracza):
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
+        self.bankrut_tekst = self.font.render(
+            "BANKRUT", True, (255, 77, 77)
+        )
         self.nazwa = self.font.render(
             str(nazwa_gracza), True, self.gra.kolor_czcionki
         )
