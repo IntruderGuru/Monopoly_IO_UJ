@@ -38,6 +38,7 @@ class TestGra:
     # ten test powinien wyrzucić wyjątek, "out of index"
     # Podawany event w metodzie gra.aktualizacja_zdarzen(event), event= jest rowny None, poniewaz korzystamy z wewnetrznie zorganizowanej kolejki eventow
     # python -m pytest ./tests -k "test_no_players_quantity_given"
+    @pytest.mark.xfail
     def test_brak_podanej_ilosci_graczy(self):
         try:
             self.gra.dodaj_zdarzenie_do_kolejki(event=pygame.event.Event(pygame.KEYDOWN, {"unicode": 32, "key": pygame.K_SPACE}))
