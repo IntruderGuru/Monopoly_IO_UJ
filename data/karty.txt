@@ -86,6 +86,10 @@ przejdz_na_pole
 Idziesz ustalać szczegóły projektu ze swoją grupą. Pójdź do 'Ślimaka'
 16
 
+przejdz_na_pole
+Powtarzasz rok. Przejdź na pole 'start'
+0
+
 cofnij_na_pole
 Poprawka kolokwium. Cofnij się do sali 0004
 37
@@ -95,11 +99,7 @@ Zapomniałeś/zapomniałaś kurtki z szatni. Musisz się po nią wrócić
 9
 
 cofnij_na_pole
-Powtarzasz rok. Przejdź na pole 'start'
-0
-
-cofnij_na_pole
-Awaria autobusu, spóźniasz się na zajęcia. Przejdź na pole 'start'
+Awaria autobusu, spóźniasz się na zajęcia. Przejdź na pole 'start'. Nie pobierasz 2000
 0
 
 cofnij_do_wiezienia
