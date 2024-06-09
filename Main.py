@@ -149,7 +149,7 @@ class Main:
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
-        pass  # Aktualizacja gry, jeśli jest taka potrzeba
+        self._gra.aktualizuj(delta_time)
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)

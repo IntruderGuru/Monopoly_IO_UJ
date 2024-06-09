@@ -20,6 +20,7 @@ class Wizualizator:
         self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)
         self.przezroczystosc_nakladki = 100
+        self.kolor_zlotego_napisu = (255, 198, 26)
 
         #kolory wypisywania komunikatow
         self.kolor_wiadomosci = (255, 255, 255)
