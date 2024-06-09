@@ -9,7 +9,7 @@ from src.Menu import Menu
 class Main:
     _SEC_TO_MS = 1000
     LIMIT_CZASU_GRY = 3600
-    LIMIT_CZASU_TURY = 5
+    LIMIT_CZASU_TURY = 60
 
     def __init__(self):
         pygame.init()  # Inicjalizacja pygame
