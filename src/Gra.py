@@ -379,7 +379,7 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
             #
-            # kostka_druga = 4
+            # kostka_druga = 6
             # kostka_pierwsza = 6
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
