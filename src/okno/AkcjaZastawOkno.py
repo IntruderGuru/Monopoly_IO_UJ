@@ -44,6 +44,11 @@ class AkcjaZastawOkno(Okno):
             self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
+        self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
+
     def aktualizacja(self):
         pass
 
@@ -95,6 +100,10 @@ class AkcjaZastawOkno(Okno):
 
     def wyswietl(self, screen: pygame.Surface):
 
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
+
         if self.czy_zastaw:
             screen.fill(self.gra.kolor_tla)
 
@@ -127,8 +136,13 @@ class AkcjaZastawOkno(Okno):
                 self.przycisk_zastaw.draw(screen)
                 self.przycisk_wyjscie.draw(screen)
 
+                if self.cena - self.gracz.kwota <= 0:
+                    tekst = "Masz już wystarczającą ilość pieniędzy. Czy chcesz zastawić posiadłość? Masz poniższe do wyboru"
+                else:
+                    tekst = f"Brakuje Ci {self.cena - self.gracz.kwota}. Czy chcesz zastawić jakąś posiadłość? Masz poniższe do wyboru"
+
                 text = self.font.render(
-                    f"Brakuje Ci {self.cena - self.gracz.kwota}. Czy chcesz zastawić jakąś posiadłość? Masz poniższe do wyboru",
+                    tekst,
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
@@ -141,14 +155,14 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
                 text = self.font.render(
                     str(self.wczytana_posiadlosc),
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+                screen.blit(text, (self.W * 0.1, self.H * 0.8))
 
             elif self.stan == "blad":
                 text = self.font.render(
@@ -156,7 +170,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
 
             elif self.stan == "zastawiono":
                 text = self.font.render(
@@ -164,7 +178,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
 
     def wyswietl_do_zastawu(self, screen):
         odstep = 0.25

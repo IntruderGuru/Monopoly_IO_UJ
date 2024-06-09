@@ -16,7 +16,6 @@ class Posiadlosc(Pole):
         self.zastaw_kwota = zastaw
         self.cena_domu = cena_domu
         self.wlasciciel = None
-        self.czy_zastawiona = False
         self.liczba_domow = 0
         self.liczba_hoteli = 0
 

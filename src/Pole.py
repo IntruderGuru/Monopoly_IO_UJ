@@ -85,6 +85,7 @@ class Pole:
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
         self.ilosc_graczy_na_polu = 0
+        self.czy_zastawiona = False
 
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
@@ -133,14 +134,15 @@ class Pole:
         pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
         pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
-        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
-        screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
+        if self.czy_zastawiona:
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
+            self.renderuj_zastaw(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+        else:
+            self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
 
     def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
-        
-        color = (0, 0, 0)
-        
 
         if self.kupione_przez == 0:
             return
@@ -156,3 +158,25 @@ class Pole:
             color = (184, 3, 255)
 
         pygame.draw.rect(screen, color, pygame.Rect(self.pozycja.x- 2.5, self.pozycja.y - 2.5, szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5), width = 100)
+
+
+    def renderuj_zastaw(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
+        
+        nakladka = pygame.Surface((szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5))
+        nakladka.set_alpha(100)  
+
+        if self.kupione_przez == 0:
+            return
+        elif self.kupione_przez == 1:
+            color = (183, 132, 132 )
+        elif self.kupione_przez == 2:
+            color = (140, 183, 132 )
+        elif self.kupione_przez == 3:
+            color = (132, 151, 183 )
+        elif self.kupione_przez == 4:
+            color = (180, 183, 132 )
+        elif self.kupione_przez == 5:
+            color = (178, 132, 183 )
+
+        nakladka.fill(color)
+        screen.blit(nakladka, (self.pozycja.x- 2.5, self.pozycja.y - 2.5))
