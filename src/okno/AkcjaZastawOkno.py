@@ -43,7 +43,7 @@ class AkcjaZastawOkno(Okno):
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
-            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+            self.wizualizator.czcionka, int(self.W / self.skalar_czcionki)
         )
 
     def aktualizacja(self):
