@@ -1,5 +1,6 @@
 import os
 import pygame
+import shutil
 from src.Gra import Gra
 from src.KontrolerWiadomosci import KontrolerWiadomosci
 from src.Wizualizator import Wizualizator
