@@ -171,7 +171,9 @@ class Menu:
                     self.stan = "tutorial1"
 
             elif self.stan == "tutorial1":
-                if self.przyciski.graj.is_clicked(event):
+                if self.przyciski.poprzedni.is_clicked(event):
+                    self.stan = "gracz_" + str(self.liczba_graczy)
+                elif self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "tutorial2"
@@ -328,7 +330,7 @@ class Menu:
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
-                f"Gracz 1: {self.gracze[0]}", True, self.wizualizator.kolor_czcionki
+                f"Gracz: {self.gracze[0]}", True, self.wizualizator.kolor_czcionki
             )
             text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
 
@@ -342,7 +344,7 @@ class Menu:
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
-                f"Gracz 2: {self.gracze[0]}", True, self.wizualizator.kolor_czcionki
+                f"Gracz: {self.gracze[1]}", True, self.wizualizator.kolor_czcionki
             )
             text_rect = text.get_rect(center=(self.W * 0.15, self.H * 0.15))
 
@@ -356,7 +358,7 @@ class Menu:
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
-                "Gracz 3: " + str(self.gracze[2]),
+                "Gracz: " + str(self.gracze[2]),
                 True,
                 self.wizualizator.kolor_czcionki,
             )
@@ -371,7 +373,7 @@ class Menu:
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
-                "Gracz 4: " + str(self.gracze[3]),
+                "Gracz: " + str(self.gracze[3]),
                 True,
                 self.wizualizator.kolor_czcionki,
             )
@@ -387,7 +389,7 @@ class Menu:
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
-                "Gracz 5: " + str(self.gracze[4]),
+                "Gracz: " + str(self.gracze[4]),
                 True,
                 self.wizualizator.kolor_czcionki,
             )
