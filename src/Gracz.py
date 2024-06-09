@@ -35,6 +35,7 @@ class Gracz:
                 f"Zastawiłeś posiadłość {self.lista_posiadlosci[nr_posiadlosci].nazwa}"
         )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+        gra.kto_zbankrutowal()
 
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
@@ -65,14 +66,16 @@ class Gracz:
                 "Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości"
             )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+        gra.kto_zbankrutowal()
 
     def zaplac_czynsz(self, gra, posiadlosc):
         if self.umiejetnosc == "placi_mniejsze_czynsze":
-            czynsz = (posiadlosc.oblicz_czynsz(gra) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O)
+            czynsz = (posiadlosc.oblicz_czynsz(gra) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O + 2000)
         else:
-            czynsz = posiadlosc.oblicz_czynsz(gra)
+            czynsz = posiadlosc.oblicz_czynsz(gra) + 2000
         self.wykonaj_oplate(gra, czynsz)
         posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
+        gra.kto_zbankrutowal()
 
     def ile_w_kolorze(self, kolor):
         liczba_w_kolorze = 0
@@ -113,7 +116,9 @@ class Gracz:
         else:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+            gra.kto_zbankrutowal()
             return 1
+        gra.kto_zbankrutowal()
         return 0
 
     def dodaj_pieniadze(self, gra, cena):

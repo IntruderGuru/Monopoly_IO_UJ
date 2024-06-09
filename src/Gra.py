@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 2000
+KWOTA_POCZATKOWA = 5000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -370,9 +370,6 @@ class Gra:
                 )
 
         else:
-            # self._kontroler_wiadomosci.dodaj_wiadomosc(
-            #     f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
-            # )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -381,8 +378,8 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
             #
-            # kostka_druga = 5
-            # kostka_pierwsza = 5
+            # kostka_druga = 3
+            # kostka_pierwsza = 3
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 
@@ -399,8 +396,8 @@ class Gra:
 
             self.analizuj_rzut(kostka_pierwsza, kostka_druga)
 
-        self._gracze[self._indeks_aktualnego_gracza].kwota -= 1000
-        self._gracze[self._indeks_aktualnego_gracza].statystyka.aktualizuj_stan_pieniedzy(self._gracze[self._indeks_aktualnego_gracza].kwota)
+        # self._gracze[self._indeks_aktualnego_gracza].kwota -= 1000
+        # self._gracze[self._indeks_aktualnego_gracza].statystyka.aktualizuj_stan_pieniedzy(self._gracze[self._indeks_aktualnego_gracza].kwota)
         self.kto_zbankrutowal()
 
         if self._gracze[self._indeks_aktualnego_gracza].czy_aktywny == False:
