@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 20000
+KWOTA_POCZATKOWA = 3000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
