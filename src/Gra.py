@@ -751,6 +751,16 @@ class Gra:
             pickle.dump(
                 self.gracz_poprzedniej_tury, handle, protocol=pickle.HIGHEST_PROTOCOL
             )
+        with open("save/zwyciezca.pickle", "wb") as handle:
+            pickle.dump(self.zwyciezca, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/waiter.pickle", "wb") as handle:
+            pickle.dump(self.waiter, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/czas_gry.pickle", "wb") as handle:
+            pickle.dump(self.main.uplyniety_czas_gry, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/limit_gra.pickle", "wb") as handle:
+            pickle.dump(self.main.LIMIT_CZASU_GRY, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/limit_tura.pickle", "wb") as handle:
+            pickle.dump(self.main.LIMIT_CZASU_TURY, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def wczytaj_gre(self):
         with open("save/gracze.pickle", "rb") as handle:
@@ -765,6 +775,16 @@ class Gra:
             self._plansza = pickle.load(handle)
         with open("save/gracz_poprzedniej_tury.pickle", "rb") as handle:
             self.gracz_poprzedniej_tury = pickle.load(handle)
+        with open("save/zwyciezca.pickle", "rb") as handle:
+            self.zwyciezca = pickle.load(handle)
+        with open("save/waiter.pickle", "rb") as handle:
+            self.waiter = pickle.load(handle)
+        with open("save/czas_gry.pickle", "rb") as handle:
+            self.main.uplyniety_czas_gry = pickle.load(handle)
+        with open("save/limit_gra.pickle", "rb") as handle:
+            self.main.LIMIT_CZASU_GRY = pickle.load(handle)
+        with open("save/limit_tura.pickle", "rb") as handle:
+            self.main.LIMIT_CZASU_TURY = pickle.load(handle)
 
     def kto_zbankrutowal(self):
         for gracz in self._gracze:
