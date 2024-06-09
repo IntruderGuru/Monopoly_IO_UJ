@@ -42,7 +42,6 @@ umiejetnosci = [
     "placi_mniejsze_czynsze",
 ]
 
-
 class Gra:
     def __init__(
         self,
@@ -124,7 +123,7 @@ class Gra:
         print("HELLO from Gra")
         self._plansza.plansza[0].ilosc_graczy_na_polu = liczba_graczy
 
-        # nowa tura
+        #nowa tura
         self.nastepna_tura = Przycisk(
             szerokosc_ekranu * 0.3,
             wysokosc_ekranu * 0.7,
@@ -185,7 +184,8 @@ class Gra:
         screen.blit(
             self.dice_images[dice2 - 1],
             (
-                dice_x + (self.aktualna_wysokosc_ekranu / oddalenie_kostek_od_siebie),
+                dice_x + (self.aktualna_wysokosc_ekranu /
+                          oddalenie_kostek_od_siebie),
                 dice_y,
             ),
         )
@@ -330,9 +330,7 @@ class Gra:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
                 elif posiadlosc.wlasciciel == gracz:
-                    self.akcja_nieruchomosci_okno.nieruchomosc = (
-                        "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
-                    )
+                    self.akcja_nieruchomosci_okno.nieruchomosc = "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
                     self.akcja_nieruchomosci_okno.czy_kupno = True
                     self.czy_akcja_zakonczona = False
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
@@ -421,7 +419,8 @@ class Gra:
         #     self._stos_otwartych_okien.usun()
 
     def process_input(self, input_text):
-        self._kontroler_wiadomosci.dodaj_wiadomosc(f"Wprowadzono: {input_text}")
+        self._kontroler_wiadomosci.dodaj_wiadomosc(
+            f"Wprowadzono: {input_text}")
         if input_text.isdigit():
             liczba_graczy = int(input_text)
             if liczba_graczy >= 2 and liczba_graczy <= 5:
@@ -432,6 +431,10 @@ class Gra:
                 self.przygotuj_graczy()
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Naciśnij spację, aby rzucić kostką"
+                )
+            else:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Nieprawidłowa liczba graczy."
                 )
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -664,27 +667,27 @@ class Gra:
                 self.aktualna_wysokosc_ekranu * 0.3,
             ),
         )
-    
+
     def zapisz_gre(self):
         with open('save/gracze.pickle', 'wb') as handle:
             pickle.dump(self._gracze, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         with open('save/liczba_graczy.pickle', 'wb') as handle:
             pickle.dump(self._liczba_graczy, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         with open('save/indeks_aktualnego_gracza.pickle', 'wb') as handle:
             pickle.dump(self._indeks_aktualnego_gracza, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         with open('save/messages.pickle', 'wb') as handle:
             pickle.dump(self.messages, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         with open('save/plansza.pickle', 'wb') as handle:
             pickle.dump(self._plansza, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+
         with open('save/gracz_poprzedniej_tury.pickle', 'wb') as handle:
             pickle.dump(self.gracz_poprzedniej_tury, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
-        
+
+
     def wczytaj_gre(self):
         with open('save/gracze.pickle', 'rb') as handle:
             self._gracze = pickle.load(handle)

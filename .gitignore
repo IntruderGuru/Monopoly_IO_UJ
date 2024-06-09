@@ -3,12 +3,14 @@
 /workspace.xml
 /.idea
 **/__pycache__
+
+# pytest
 **/.pytest_cache
 
+# mutmut
 **/.mutmut-cache
-*bak
-forwarder.py
-mutmut_result*
-html/
+mut*
+/html
+*.bak
 
-save/
+forwarder.py
