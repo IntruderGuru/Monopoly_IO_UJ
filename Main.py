@@ -150,6 +150,22 @@ class Main:
         pygame.display.update()
 
 
+def reset_pionki():
+    pionek_default_dir = "graphics/pionek_default"
+    pionek_dir = "graphics/pionek"
+
+    for filename in os.listdir(pionek_dir):
+        file_path = os.path.join(pionek_dir, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    for filename in os.listdir(pionek_default_dir):
+        src_path = os.path.join(pionek_default_dir, filename)
+        dst_path = os.path.join(pionek_dir, filename)
+        shutil.copy(src_path, dst_path)
+
+
 if __name__ == "__main__":
+    reset_pionki()
     game_runner = Main()
     game_runner.start()
