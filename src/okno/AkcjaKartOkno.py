@@ -21,7 +21,7 @@ class AkcjaKartOkno(Okno):
             self.H * 0.1,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
 

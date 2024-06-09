@@ -19,7 +19,7 @@ class AkcjaNieruchomosciOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
         self.przycisk_kup_hotel = Przycisk(

@@ -32,7 +32,7 @@ class AkcjaStatystykOkno(Okno):
             
             self.bankrut = pygame.transform.scale(
                 pygame.image.load("graphics/bankrut.png"),
-                (0.02 * self.W, 0.02 * self.W)
+                (0.02 * self.W, 0.022 * self.W)
             )
 
             i = 0
@@ -72,7 +72,7 @@ class AkcjaStatystykOkno(Okno):
                 if gracz.czy_aktywny:
                     screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
                 else:
-                    screen.blit(self.bankrut, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+                    screen.blit(self.bankrut, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.002))))
 
                 screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
                 if gracz.czy_aktywny:

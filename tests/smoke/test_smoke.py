@@ -29,8 +29,9 @@ class TestSmoke:
         self.kontroler_wiadomosci = KontrolerWiadomosci(None, self.wizualizator)
         self.liczba_graczy = 2
         self.gracze = ["test_1", "test_2"]
+        self.mock_main = MockMain()
 
-        self.gra = Gra(self._screen, self.kontroler_wiadomosci, self.liczba_graczy, self.gracze, self.wizualizator, self._screen_width, self._screen_height, MockMain())
+        self.gra = Gra(self._screen, self.kontroler_wiadomosci, self.liczba_graczy, self.gracze, self.wizualizator, self._screen_width, self._screen_height, self.mock_main)
 
     def test_inicjalizacji(self):
         assert isinstance(self.gra._glowne_okno, (pygame.Surface, pygame.SurfaceType))

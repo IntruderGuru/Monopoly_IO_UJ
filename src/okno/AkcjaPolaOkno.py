@@ -17,7 +17,7 @@ class AkcjaPolaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "kupuję",
+            "kupuje",
             self.gra.kolor_tekstu,
         )
         self.wyjscie = Przycisk(

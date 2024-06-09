@@ -25,6 +25,9 @@ class KartaSzansy:
 
         elif self.typ == "oplata":
             gracz.wykonaj_oplate(gra, self.wartosc)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} zapłacił {self.wartosc}"
+            )
 
         elif self.typ == "oplata_za_domki":
             liczba_domkow = 0
@@ -35,15 +38,24 @@ class KartaSzansy:
             cena = liczba_domkow * self.wartosc
             cena += liczba_hoteli * self.wartosc * 3
             gracz.wykonaj_oplate(gra, cena)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} zapłacił {self.cena} za wszystkie domki i hotele"
+            )
 
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
             gracz.czy_przeszedl_przez_start(gra, stara_pozycja)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} został przesunięty na inne pole"
+            )
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} został cofnięty na inne pole"
+            )
 
         elif self.typ == "cofnij_do_wiezienia":
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -56,6 +68,9 @@ class KartaSzansy:
 
         elif self.typ == "karta_wyjscie_z_wiezienia":
             gracz.liczba_kart_wyjdz_z_wiezienia += 1
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} otrzymał kartę wyjście z więzienia"
+            )
 
 
 class Karty:

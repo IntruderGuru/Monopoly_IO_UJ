@@ -21,14 +21,14 @@ class AkcjaWiezieniaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
         self.czy_wiezienie = False
 
         self.skalar_czcionki = 24  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-        self.informacja_o_wiezeniu = "idziesz do więzienia, stoisz 2 tury"
+        self.informacja_o_wiezeniu = "Idziesz do więzienia, stoisz 2 tury."
 
     def aktualizacja(self):
         pass
@@ -44,19 +44,15 @@ class AkcjaWiezieniaOkno(Okno):
         W = self.W
 
         if self.czy_wiezienie:
-            
-            nakladka = pygame.Surface(screen.get_size())
-            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
-            nakladka.fill(self.gra.kolor_nakladki)
-            screen.blit(nakladka, (0, 0))
+            screen.fill(self.gra.kolor_tla)
 
             self.zaktualizuj_rozmiar_czcionki()
             self.wyswietl_teksty(screen)
 
             self.zdjecie = pygame.transform.scale(
-                self.zdjecie, (0.45 * self.H, 0.45 * self.H)
+                self.zdjecie, (0.6 * self.H, 0.6 * self.H)
             )
-            screen.blit(self.zdjecie, (W * 0.2, H * 0.15))
+            screen.blit(self.zdjecie, (W * 0.15, H * 0.08))
             self.wyjscie.updateSize(W * 0.6, H * 0.3, W * 0.2, H * 0.15)
             self.wyjscie.draw(screen)
 

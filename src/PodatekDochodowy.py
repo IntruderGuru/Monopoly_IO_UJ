@@ -64,7 +64,7 @@ class PodatekDochodowy(Pole):
         do_zaplaty = self.podatek
         if czy_dobra:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
+                f"Udzieliłeś/aś poprawnej odpowiedzi, koszt zostaje pomniejszony")
             do_zaplaty //= 2
 
         if gracz.wykonaj_oplate(gra, do_zaplaty):

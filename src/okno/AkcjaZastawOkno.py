@@ -16,9 +16,6 @@ class AkcjaZastawOkno(Okno):
         self.gra = gra
         self.gracz = None
         self.cena = 0
-        self.zastaw_png = pygame.transform.scale(
-            pygame.image.load("graphics/zastaw.jpg"), (0.28 * self.W, 0.64 * self.H)
-        )
         self.czy_zastaw = False
         self.wczytana_posiadlosc = ""
         self.ile_do_zastawienia = 0
@@ -46,7 +43,7 @@ class AkcjaZastawOkno(Okno):
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
-            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+            self.wizualizator.czcionka, int(self.W / self.skalar_czcionki)
         )
 
     def aktualizacja(self):

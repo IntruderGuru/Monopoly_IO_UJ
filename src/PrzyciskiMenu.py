@@ -83,6 +83,7 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "60",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.dwie_minuty = Przycisk(
@@ -94,6 +95,7 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "120",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.trzy_minuty = Przycisk(
@@ -105,6 +107,7 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "180",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.bez_ograniczen = Przycisk(
@@ -226,7 +229,7 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
             "Dodaj karte",
-            (40, 40, 40),
+            self.wizualizator.kolor_czcionki_na_przycisku,
             20,
         )
 
@@ -306,19 +309,19 @@ class PrzyciskiMenu:
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "powrót",
+            "powrot",
             self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
         self.zaakceptuj = Przycisk(
-            W * 0.3,
+            W * 0.8,
             H * 0.8,
             W * 0.2,
             H * 0.1,
-            self.wizualizator.kolor_przycisku_graj,
+            self.wizualizator.kolor_akceptacji_nazwy_gracza,
             self.wizualizator.kolor_gdy_kursor_przycisku_graj,
             "zaakceptuj",
-            self.wizualizator.kolor_czcionki_na_przycisku,
+            (40, 40, 40)
         )
 
     def aktualizuj_rozmiar(self, W, H):
@@ -371,12 +374,14 @@ class PrzyciskiMenu:
         self.nastepny_szary.updateSize(W * 0.28, H * 0.8, W * 0.2, H * 0.1)
         self.poprzedni_szary.updateSize(W * 0.05, H * 0.8, W * 0.2, H * 0.1)
 
-        self.pobierz.updateSize(W * 0.15, H * 0.3, W * 0.25, H * 0.1)
-        self.pobierz_od_graczy.updateSize(W * 0.15, H * 0.5, W * 0.25, H * 0.1)
-        self.oplata.updateSize(W * 0.15, H * 0.7, W * 0.25, H * 0.1)
-        self.oplata_za_domki.updateSize(W * 0.5, H * 0.3, W * 0.25, H * 0.1)
-        self.przejdz_na_pole.updateSize(W * 0.5, H * 0.5, W * 0.25, H * 0.1)
-        self.cofnij_do_wiezienia.updateSize(W * 0.5, H * 0.7, W * 0.25, H * 0.1)
+        #karty szansy
+        self.pobierz.updateSize(W * 0.2, H * 0.3, W * 0.25, H * 0.1)
+        self.pobierz_od_graczy.updateSize(W * 0.2, H * 0.45, W * 0.25, H * 0.1)
+        self.oplata.updateSize(W * 0.2, H * 0.6, W * 0.25, H * 0.1)
 
-        self.powrot.updateSize(W * 0.8, H * 0.8, W * 0.2, H * 0.1)
-        self.zaakceptuj.updateSize(W * 0.3, H * 0.8, W * 0.2, H * 0.1)
+        self.oplata_za_domki.updateSize(W * 0.55, H * 0.3, W * 0.25, H * 0.1)
+        self.przejdz_na_pole.updateSize(W * 0.55, H * 0.45, W * 0.25, H * 0.1)
+        self.cofnij_do_wiezienia.updateSize(W * 0.55, H * 0.6, W * 0.25, H * 0.1)
+
+        self.powrot.updateSize(W * 0.4, H * 0.77, W * 0.2, H * 0.1)
+        self.zaakceptuj.updateSize(W * 0.378, H * 0.4, W * 0.25, H * 0.15)
