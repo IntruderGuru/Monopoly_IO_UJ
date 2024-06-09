@@ -1,6 +1,5 @@
 import pytest
 
-import Gracz
 from src.Gracz import Gracz, UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O
 from unittest.mock import MagicMock, patch
 
