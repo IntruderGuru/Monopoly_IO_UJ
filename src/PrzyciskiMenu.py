@@ -86,7 +86,7 @@ class PrzyciskiMenu:
         )
 
         self.poprzedni = Przycisk(
-            W * 0.3,
+            W * 0.2,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -97,7 +97,7 @@ class PrzyciskiMenu:
         )
 
         self.nastepny = Przycisk(
-            W * 0.4,
+            W * 0.3,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -108,7 +108,7 @@ class PrzyciskiMenu:
         )
 
         self.poprzedni_szary = Przycisk(
-            W * 0.3,
+            W * 0.2,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -119,7 +119,7 @@ class PrzyciskiMenu:
         )
 
         self.nastepny_szary = Przycisk(
-            W * 0.4,
+            W * 0.3,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -130,7 +130,7 @@ class PrzyciskiMenu:
         )
 
         self.graj = Przycisk(
-            W * 0.5,
+            W * 0.4,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -138,6 +138,110 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor_przycisku_graj,
             "graj",
             (40, 40, 40),
+        )
+        
+        self.personalizacja = Przycisk(
+            W * 0.5,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "Dodaj karte",
+            (40, 40, 40),
+            20,
+        )
+
+
+        # cofnij na pole. karta wyjście z więznienia
+
+        self.pobierz = Przycisk(
+            W * 0.15,
+            H * 0.3,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "pobierz",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.pobierz_od_graczy = Przycisk(
+            W * 0.15,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "pobierz_od_graczy",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.oplata = Przycisk(
+            W * 0.15,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "oplata",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.oplata_za_domki = Przycisk(
+            W * 0.5,
+            H * 0.3,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "oplata_za_domki",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.przejdz_na_pole = Przycisk(
+            W * 0.5,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "przejdz_na_pole",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.cofnij_do_wiezienia = Przycisk(
+            W * 0.5,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "cofnij_do_wiezienia",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+
+        self.powrot = Przycisk(
+            W * 0.8,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "powrót",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+        
+        self.zaakceptuj = Przycisk(
+            W * 0.3,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku_graj,
+            self.wizualizator.kolor_gdy_kursor_przycisku_graj,
+            "zaakceptuj",
+            self.wizualizator.kolor_czcionki_na_przycisku,
         )
 
     def aktualizuj_rozmiar(self, W, H):
@@ -176,23 +280,77 @@ class PrzyciskiMenu:
             H * 0.1,
             H * 0.1)
         
-        self.nastepny.updateSize(W * 0.4,
+        self.nastepny.updateSize(W * 0.28,
             H * 0.8,
             W * 0.2,
             H * 0.1)
-        self.poprzedni.updateSize(W * 0.15,
+        self.poprzedni.updateSize(W * 0.05,
             H * 0.8,
             W * 0.2,
             H * 0.1)
-        self.graj.updateSize(W * 0.65,
+        self.graj.updateSize(W * 0.51,
             H * 0.8,
             W * 0.2,
             H * 0.1)
-        self.nastepny_szary.updateSize(W * 0.4,
+        self.personalizacja.updateSize( W * 0.75,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,)
+        self.nastepny_szary.updateSize(W * 0.28,
             H * 0.8,
             W * 0.2,
             H * 0.1)
-        self.poprzedni_szary.updateSize(W * 0.15,
+        self.poprzedni_szary.updateSize(W * 0.05,
             H * 0.8,
             W * 0.2,
             H * 0.1)
+        
+        self.pobierz.updateSize(
+            W * 0.15,
+            H * 0.3,
+            W * 0.25,
+            H * 0.1
+        )
+        self.pobierz_od_graczy.updateSize(
+            W * 0.15,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1
+        )
+        self.oplata.updateSize(
+            W * 0.15,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1
+        )
+        self.oplata_za_domki.updateSize(
+            W * 0.5,
+            H * 0.3,
+            W * 0.25,
+            H * 0.1
+        )
+        self.przejdz_na_pole.updateSize(
+            W * 0.5,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1
+        )
+        self.cofnij_do_wiezienia.updateSize(
+            W * 0.5,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1
+        )
+
+        self.powrot.updateSize(
+            W * 0.8,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1
+        )
+        self.zaakceptuj.updateSize(
+            W * 0.3,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1
+        )
