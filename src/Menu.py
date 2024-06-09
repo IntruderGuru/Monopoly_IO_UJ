@@ -1,15 +1,12 @@
-import os
 import shutil
 import pygame
-from src.Przycisk import Przycisk
 from src.PrzyciskiMenu import PrzyciskiMenu
 from src.Wizualizator import Wizualizator
 
 
 class Menu:
     def __init__(self, wizualizator, main_ref):
-        # self.stan = "witaj"
-        self.stan = "czas_gry"
+        self.stan = "witaj"
         self.typ_stopu = "nowa"
         self.liczba_graczy = 0
         self.gracze = []
@@ -72,20 +69,6 @@ class Menu:
         self.font_gracze = pygame.font.Font(
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
-
-    # def reset_pionki(self):
-    #     pionek_default_dir = "graphics/pionek_default"
-    #     pionek_dir = "graphics/pionek"
-
-    #     for filename in os.listdir(pionek_dir):
-    #         file_path = os.path.join(pionek_dir, filename)
-    #         if os.path.isfile(file_path):
-    #             os.remove(file_path)
-
-    #     for filename in os.listdir(pionek_default_dir):
-    #         src_path = os.path.join(pionek_default_dir, filename)
-    #         dst_path = os.path.join(pionek_dir, filename)
-    #         shutil.copy(src_path, dst_path)
 
     def handle_event(self, event, W, H):
 
