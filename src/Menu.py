@@ -303,7 +303,7 @@ class Menu:
                 screen.blit(gracz, (W * 0.45, H * (0.45 + (i * odstep))))
 
         elif self.stan == "wybor_pionkow":
-            self.przyciski.poprzedni.draw(screen)
+            self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.graj.draw(screen)
             self.przyciski.nastepny.draw(screen)
 
@@ -312,7 +312,7 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (W * 0.1, H * 0.1))
+            screen.blit(text, (W * 0.17, H * 0.13))
 
             # Wyświetlanie pionków w linii z odpowiednim odstępem
             pionki = [
@@ -323,8 +323,11 @@ class Menu:
                 self.pionek5,
             ]
             for i, pionek in enumerate(pionki):
-                pionek_rect = pionek.get_rect(center=(W * (0.2 + 0.15 * i), H * 0.5))
-                screen.blit(pionek, pionek_rect)
+
+                pionek_wyswietlany = pygame.transform.scale(
+                    pionek, (0.12 * self.W, 0.12 * self.W)
+                )
+                screen.blit(pionek_wyswietlany, (W * (0.2 + 0.12 * i), H * 0.4))
 
         elif self.stan == "gracz_1":
             self.przyciski.nastepny.draw(screen)
