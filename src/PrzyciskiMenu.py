@@ -173,7 +173,7 @@ class PrzyciskiMenu:
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "pobierz_od_graczy",
+            "pobierz od graczy",
             self.wizualizator.kolor_czcionki_na_przycisku,
             20,
         )
@@ -195,7 +195,7 @@ class PrzyciskiMenu:
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "oplata_za_domki",
+            "oplata za domki",
             self.wizualizator.kolor_czcionki_na_przycisku,
             20,
         )
@@ -206,7 +206,7 @@ class PrzyciskiMenu:
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "przejdz_na_pole",
+            "przejdz na pole",
             self.wizualizator.kolor_czcionki_na_przycisku,
             20,
         )
@@ -217,7 +217,7 @@ class PrzyciskiMenu:
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "cofnij_do_wiezienia",
+            "cofnij do wiezienia",
             self.wizualizator.kolor_czcionki_na_przycisku,
             20,
         )

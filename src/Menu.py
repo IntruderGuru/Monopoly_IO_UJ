@@ -480,7 +480,6 @@ class Menu:
             screen.blit(self.pionek5, pionek5_rect)
 
         elif self.stan == "personalizacja":
-            print("simra")
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.pobierz.draw(screen)
             self.przyciski.pobierz_od_graczy.draw(screen)
@@ -495,8 +494,7 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-
-            screen.blit(text, (W * 0.22, H * 0.25))
+            screen.blit(text, (self.W * 0.1, self.H * 0.1))
         
         elif self.stan == "wczytaj_tresc_karty":
             self.przyciski.powrot.draw(screen)
