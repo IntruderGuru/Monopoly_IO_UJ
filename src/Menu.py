@@ -70,6 +70,10 @@ class Menu:
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
 
+        self.typ_karty = ""
+        self.tresc_karty = ""
+        self.wartosc_karty = ""
+
     def handle_event(self, event, W, H):
 
         self.W = W
@@ -130,6 +134,8 @@ class Menu:
             elif self.stan == "wybor_pionkow":
                 if self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "gracz_1"
 
@@ -187,13 +193,65 @@ class Menu:
                     self.stan = "gracz_" + str(self.liczba_graczy)
                 elif self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "tutorial2"
             elif self.stan == "tutorial2":
                 if self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.poprzedni.is_clicked(event):
                     self.stan = "tutorial1"
+
+            elif self.stan == "personalizacja":
+                if self.przyciski.pobierz.is_clicked(event):
+                    self.typ_karty = "pobierz"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.pobierz_od_graczy.is_clicked(event):
+                    self.typ_karty = "pobierz_od_graczy"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.oplata.is_clicked(event):
+                    self.typ_karty = "oplata"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.oplata_za_domki.is_clicked(event):
+                    self.typ_karty = "oplata_za_domki"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.przejdz_na_pole.is_clicked(event):
+                    self.typ_karty = "przejdz_na_pole"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.cofnij_do_wiezienia.is_clicked(event):
+                    self.typ_karty = "cofnij_do_wiezienia"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+
+            elif self.stan == "zaakceptuj":
+                if self.przyciski.zaakceptuj.is_clicked(event):
+                    self.zapisz_karte_do_pliku()
+                    self.stan = "tutorial2"
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+
+            elif self.stan == "wczytaj_tresc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+            elif self.stan == "wczytaj_wartosc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
 
         elif event.type == pygame.KEYDOWN:
 
@@ -214,6 +272,34 @@ class Menu:
                             self.gracze[-1] += event.unicode
                     else:
                         self.gracze[-1] += event.unicode
+            elif self.stan == "wczytaj_tresc_karty":
+                if event.key == pygame.K_RETURN:
+                    self.stan = "wczytaj_wartosc_karty"
+                elif event.key == pygame.K_BACKSPACE:
+                    self.tresc_karty = self.tresc_karty[:-1]
+                else:
+                    if event.key == pygame.K_SPACE:
+                        if len(self.tresc_karty) != 0 and self.tresc_karty[-1] != " ":
+                            self.tresc_karty += event.unicode
+                    else:
+                        self.tresc_karty += event.unicode
+            elif self.stan == "wczytaj_wartosc_karty":
+                if event.key == pygame.K_RETURN:
+                    if self.wartosc_karty == "":
+                        self.stan = "blad"
+                    else:
+                        self.stan = "zaakceptuj"
+                elif event.key == pygame.K_BACKSPACE:
+                    if len(self.wartosc_karty) > 0:
+                        self.wartosc_karty = self.wartosc_karty[:-1]
+                elif event.unicode.isdigit():
+                    self.wartosc_karty += event.unicode
+
+            elif self.stan == "blad":
+                self.stan = "wczytaj_wartosc_karty"
+                self.typ_karty = ""
+                self.tresc_karty = ""
+                self.wartosc_karty = ""
 
         elif event.type == pygame.DROPFILE:
             self.handle_drop_file(event.file)
@@ -265,17 +351,24 @@ class Menu:
         elif self.stan == "tutorial1":
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.graj.draw(screen)
-            self.przyciski.poprzedni.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
+            self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.nastepny.draw(screen)
             self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
             screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
         elif self.stan == "tutorial2":
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.graj.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny_szary.draw(screen)
             self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
             screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
+
+        elif self.stan == "zaakceptuj":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.zaakceptuj.draw(screen)
+            self.przyciski.powrot.draw(screen)
 
         elif self.stan == "czas_gry":
             self.przyciski.trzydziesci_minut.draw(screen)
@@ -341,6 +434,7 @@ class Menu:
         elif self.stan == "wybor_pionkow":
             self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.graj.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
@@ -414,9 +508,73 @@ class Menu:
             )
             self.wyswietl_napis_pionek(screen, self.pionek5, text)
 
+        elif self.stan == "personalizacja":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.pobierz.draw(screen)
+            self.przyciski.pobierz_od_graczy.draw(screen)
+            self.przyciski.oplata.draw(screen)
+            self.przyciski.oplata_za_domki.draw(screen)
+            self.przyciski.przejdz_na_pole.draw(screen)
+            self.przyciski.cofnij_do_wiezienia.draw(screen)
+            self.przyciski.powrot.draw(screen)
+
+            text = self.font.render(
+                "Wybierz typ Karty Szansy którą chcesz dodać",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.1, self.H * 0.1))
+
+        elif self.stan == "wczytaj_tresc_karty":
+            self.przyciski.powrot.draw(screen)
+            text = self.font.render(
+                f"Wpisz treść karty",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.2, self.H * 0.1))
+            text = self.font.render(
+                str(self.tresc_karty),
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+
+        elif self.stan == "wczytaj_wartosc_karty":
+            self.przyciski.powrot.draw(screen)
+            text = self.font.render(
+                f"Wpisz wartość karty",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.2, self.H * 0.1))
+            text = self.font.render(
+                str(self.wartosc_karty),
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+
+        elif self.stan == "blad":
+            text = self.font.render(
+                f"Wpisano złą wartość karty. Musisz wprowadzić liczbę naturalną",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.1, self.H * 0.1))
+
+    def zapisz_karte_do_pliku(self):
+        with open("data/karty.txt", "a", encoding="utf-8") as plik:
+            # Zapisz dane karty
+            plik.write(
+                f"\n{self.typ_karty}\n{self.tresc_karty}\n{self.wartosc_karty}\n"
+            )
+        self.typ_karty = ""
+        self.tresc_karty = ""
+        self.wartosc_karty = ""
+
     def wyswietl_napis_pionek(self, screen, pionek, tekst):
         screen.blit(tekst, (self.W * 0.1, self.H * 0.12))
-
         pionek_wyswietlany = pygame.transform.scale(
             pionek, (0.12 * self.W, 0.12 * self.W)
         )
