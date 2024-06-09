@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 3000
+KWOTA_POCZATKOWA = 15000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -389,7 +389,9 @@ class Gra:
                 == "porusza_sie_o_1_pole_wiecej"
             ):
                 umiejetnosc = 1
-                self._kontroler_wiadomosci.dodaj_wiadomosc(f"Korzystasz z umiejętności: ruch +1")
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Korzystasz z umiejętności: ruch +1"
+                )
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
@@ -756,11 +758,17 @@ class Gra:
         with open("save/waiter.pickle", "wb") as handle:
             pickle.dump(self.waiter, handle, protocol=pickle.HIGHEST_PROTOCOL)
         with open("save/czas_gry.pickle", "wb") as handle:
-            pickle.dump(self.main.uplyniety_czas_gry, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(
+                self.main.uplyniety_czas_gry, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
         with open("save/limit_gra.pickle", "wb") as handle:
-            pickle.dump(self.main.LIMIT_CZASU_GRY, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(
+                self.main.LIMIT_CZASU_GRY, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
         with open("save/limit_tura.pickle", "wb") as handle:
-            pickle.dump(self.main.LIMIT_CZASU_TURY, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(
+                self.main.LIMIT_CZASU_TURY, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
 
     def wczytaj_gre(self):
         with open("save/gracze.pickle", "rb") as handle:
