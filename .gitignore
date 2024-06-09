@@ -6,3 +6,9 @@
 **/.pytest_cache
 
 **/.mutmut-cache
+*bak
+forwarder.py
+mutmut_result*
+html/
+
+save/
