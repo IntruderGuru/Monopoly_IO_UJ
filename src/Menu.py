@@ -211,9 +211,8 @@ class Menu:
                     self.stan = "wczytaj_tresc_karty" 
                 elif self.przyciski.cofnij_do_wiezienia.is_clicked(event):
                     self.typ_karty = "cofnij_do_wiezienia"
-                    self.stan = "wczytaj_tresc_karty"    
-                
-                if self.przyciski.powrot.is_clicked(event):
+                    self.stan = "wczytaj_tresc_karty"     
+                elif self.przyciski.powrot.is_clicked(event):
                     self.typ_karty=""
                     self.tresc_karty = ""
                     self.wartosc_karty = ""
@@ -229,6 +228,18 @@ class Menu:
                     self.wartosc_karty = ""
                     self.stan = "tutorial2"
                 
+            elif self.stan == "wczytaj_tresc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty=""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+            elif self.stan == "wczytaj_wartosc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty=""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
                 
         elif event.type == pygame.KEYDOWN:
 
@@ -264,7 +275,6 @@ class Menu:
                 if event.key == pygame.K_RETURN:
                     if self.wartosc_karty == "":
                         self.stan = "blad"
-                        self.wczytana_posiadlosc = ""
                     else:
                         self.stan = "zaakceptuj"
                 elif event.key == pygame.K_BACKSPACE:
@@ -272,6 +282,13 @@ class Menu:
                         self.wartosc_karty = self.wartosc_karty[:-1]
                 elif event.unicode.isdigit():
                     self.wartosc_karty += event.unicode
+                    
+            elif self.stan == "blad":
+                    self.stan = "wczytaj_wartosc_karty"
+                    self.typ_karty=""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    
 
 
         elif event.type == pygame.DROPFILE:
@@ -525,6 +542,14 @@ class Menu:
                 self.wizualizator.kolor_czcionki,
             )
             screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+            
+        elif self.stan == "blad":
+                text = self.font.render(
+                    f"Wpisano złą wartość karty. Musisz wprowadzić liczbę naturalną",
+                    True,
+                    self.wizualizator.kolor_czcionki,
+                )
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
             
     def zapisz_karte_do_pliku(self):
         with open("data/karty.txt", 'a', encoding='utf-8') as plik:
