@@ -133,3 +133,7 @@ W KSI spaliła się mikrofalówka, na kupno nowej pobierasz 200
 oplata_za_domki
 Zapłać za domki 200
 200
+
+pobierz
+fsd
+55

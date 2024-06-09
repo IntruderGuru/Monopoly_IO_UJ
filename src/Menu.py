@@ -69,6 +69,9 @@ class Menu:
         self.font_gracze = pygame.font.Font(
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
+        self.font_wpisywanie = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
+        )
 
         self.typ_karty = ""
         self.tresc_karty = ""
@@ -79,6 +82,9 @@ class Menu:
         self.W = W
         self.H = H
         self.przyciski.aktualizuj_rozmiar(self.W, self.H)
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.stan == "witaj":
@@ -339,6 +345,9 @@ class Menu:
         self.font_gracze = pygame.font.Font(
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
+        self.font_wpisywanie = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 15))
+        )
 
         if self.stan == "witaj":
             self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
@@ -523,7 +532,7 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (self.W * 0.1, self.H * 0.1))
+            screen.blit(text, (self.W * 0.15, self.H * 0.15))
 
         elif self.stan == "wczytaj_tresc_karty":
             self.przyciski.powrot.draw(screen)
@@ -532,13 +541,13 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (self.W * 0.2, self.H * 0.1))
-            text = self.font.render(
+            screen.blit(text, (self.W * 0.37, self.H * 0.1))
+            text = self.font_wpisywanie.render(
                 str(self.tresc_karty),
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+            screen.blit(text, (self.W * 0.1, self.H * (0.5)))
 
         elif self.stan == "wczytaj_wartosc_karty":
             self.przyciski.powrot.draw(screen)
@@ -547,13 +556,13 @@ class Menu:
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (self.W * 0.2, self.H * 0.1))
+            screen.blit(text, (self.W * 0.35, self.H * 0.1))
             text = self.font.render(
                 str(self.wartosc_karty),
                 True,
                 self.wizualizator.kolor_czcionki,
             )
-            screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+            screen.blit(text, (self.W * 0.47, self.H * (0.5)))
 
         elif self.stan == "blad":
             text = self.font.render(
