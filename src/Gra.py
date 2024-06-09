@@ -407,7 +407,7 @@ class Gra:
             self.zamknij_wszystkie_okna()
 
         if self.czy_zwyciezca():
-            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Zwycięża: {self._gracze[self._indeks_aktualnego_gracza].id}")
+            self._kontroler_wiadomosci.dodaj_wiadomosc(f"Zwycięża: {self._gracze[self.zwyciezca].id}")
             
         if (not self._kolejny_rzut_kostka) and self.zwyciezca == -1:
 
@@ -464,15 +464,16 @@ class Gra:
             event.type == pygame.KEYDOWN
             and event.key == pygame.K_SPACE
             and self.czy_akcja_zakonczona
+            and self.zwyciezca == -1
         ):
             self.tura()
-        if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
+        if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona and self.zwyciezca == -1:
             self.tura()
-        if self.zapisz_wyjdz.is_clicked(event) and self.czy_akcja_zakonczona:
+        if self.zapisz_wyjdz.is_clicked(event) and self.czy_akcja_zakonczona and self.zwyciezca == -1:
             self.input_text = ""
             self.zapisz_gre()
             pygame.quit()
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN and self.zwyciezca == -1:
             if event.key == pygame.K_RETURN:
                 # self.process_input(self.input_text)
                 self.input_text = ""
@@ -505,7 +506,6 @@ class Gra:
         self.akcja_zastaw_okno.aktualizacja_zdarzen(event)
         self.akcja_zagadek_okno.aktualizacja_zdarzen(event)
         self.akcja_wiezienie_okno.aktualizacja_zdarzen(event)
-
     # override
     def aktualizacja_zdarzenia(self, event: pygame.event.Event):
         self.wykonaj_zdarzenie(event)
@@ -622,7 +622,6 @@ class Gra:
         self.akcja_kart_okno.wyswietl(self._glowne_okno)
         self.akcja_zastaw_okno.wyswietl(self._glowne_okno)
         self.akcja_zagadek_okno.wyswietl(self._glowne_okno)
-
 
     def aktualizuj_rozmiar_okien(self):
         self.akcja_pola_okno.aktualizuj_rozmiar_okna(
@@ -761,20 +760,34 @@ class Gra:
             return True
         else:
             return False
-        
 
     def wyswietl_zwyciezce(self):
         
-        self.skalar_czcionki = 40 # im wiekszy tym mniejsza czcionka
+        self.skalar_czcionki = 15 # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki))
         zwyciezca_tekst = self.font.render(
-            f"Zwycięża: {self._gracze[self.zwyciezca].id}! ", 
+            f"Zwycięstwo", 
+            True, 
+            self.wizualizator.kolor_zlotego_napisu
+        )
+
+        self.font = pygame.font.Font(self.czcionka, int(self.aktualna_szerokosc_ekranu / (self.skalar_czcionki + 5)))
+        nazwa_gracza = self.font.render(
+            self._gracze[self.zwyciezca].id, 
             True, 
             self.kolor_czcionki
         )
-        self._glowne_okno.fill(self.wizualizator.kolor_tla)
-        self._glowne_okno.blit(zwyciezca_tekst, (self.aktualna_szerokosc_ekranu * 0.3, self.aktualna_wysokosc_ekranu * 0.4))
 
+        grafika_zwyciezcy = pygame.transform.scale(
+            pygame.image.load(self._gracze[self.zwyciezca].pionek.sciezka_do_grafiki),
+            (0.15 * self.aktualna_szerokosc_ekranu, 0.15 * self.aktualna_szerokosc_ekranu),
+        )
+
+
+        self._glowne_okno.fill(self.wizualizator.kolor_tla)
+        self._glowne_okno.blit(zwyciezca_tekst, (self.aktualna_szerokosc_ekranu * 0.25, self.aktualna_wysokosc_ekranu * 0.3))
+        self._glowne_okno.blit(grafika_zwyciezcy, (self.aktualna_szerokosc_ekranu * 0.55, self.aktualna_wysokosc_ekranu * 0.2))
+        self._glowne_okno.blit(nazwa_gracza, (self.aktualna_szerokosc_ekranu * 0.35, self.aktualna_wysokosc_ekranu * 0.5))
 
     def aktualizuj(self, czas):
         if self.zwyciezca != -1:
