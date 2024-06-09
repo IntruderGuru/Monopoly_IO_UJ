@@ -32,7 +32,7 @@ class AkcjaZastawOkno(Okno):
             self.wizualizator.kolor_gdy_kursor,
             "Zastaw",
             self.wizualizator.kolor_czcionki_na_przycisku,
-        )
+            )
         self.przycisk_wyjscie = Przycisk(
             self.W * 0.35,
             self.H * 0.64,
@@ -42,7 +42,7 @@ class AkcjaZastawOkno(Okno):
             self.wizualizator.kolor_gdy_kursor,
             "Wyjscie",
             self.wizualizator.kolor_czcionki_na_przycisku,
-        )
+            )
 
         self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(
@@ -108,8 +108,8 @@ class AkcjaZastawOkno(Okno):
             screen.fill(self.gra.kolor_tla)
 
             if (
-                self.stan == "czy_chcesz_zastawic"
-                and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci)
+                    self.stan == "czy_chcesz_zastawic"
+                    and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci)
             ):
                 self.przycisk_wyjscie.updateSize(
                     self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15

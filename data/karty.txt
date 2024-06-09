@@ -129,3 +129,7 @@ Wzrost cen prądu. Za każdy domek zapłać 400, a za każdy hotel 1200
 pobierz_od_graczy
 W KSI spaliła się mikrofalówka, na kupno nowej pobierasz 200
 200
+
+oplata_za_domki
+Zapłać za domki 200
+200

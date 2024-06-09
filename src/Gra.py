@@ -57,22 +57,6 @@ class Gra:
     ):
         random.shuffle(umiejetnosci)
         self._glowne_okno: pygame.Surface = glowne_okno
-        self._gracze = [
-            Gracz(
-                name,
-                KWOTA_POCZATKOWA,
-                Pionek(
-                    0,
-                    PIECE_COLORS[i],
-                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
-                    szerokosc_ekranu,
-                    wysokosc_ekranu,
-                    liczba_graczy,
-                ),
-                umiejetnosci[i],
-            )
-            for i, name in enumerate(gracze)
-        ]
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
@@ -83,6 +67,7 @@ class Gra:
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
+        self._gracze = self.stworz_graczy(gracze)
         self.main = main_ref
 
         # sekcja wizualna
@@ -152,6 +137,26 @@ class Gra:
         self.gracz_poprzedniej_tury = -1
         self.zwyciezca = -1
         self.waiter = 4
+
+    def stworz_graczy(self, nazwy_graczy) -> list[Gracz]:
+        lista_graczy = [
+            Gracz(
+                name,
+                KWOTA_POCZATKOWA,
+                Pionek(
+                    0,
+                    PIECE_COLORS[i],
+                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                    self.aktualna_szerokosc_ekranu,
+                    self.aktualna_wysokosc_ekranu,
+                    self._liczba_graczy,
+                ),
+                umiejetnosci[i],
+            )
+            for i, name in enumerate(nazwy_graczy)
+        ]
+
+        return lista_graczy
 
     def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
         self._kolejny_rzut_kostka = False
@@ -450,6 +455,10 @@ class Gra:
                 self.przygotuj_graczy()
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Naciśnij spację, aby rzucić kostką"
+                )
+            else:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Nieprawidłowa liczba graczy."
                 )
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
