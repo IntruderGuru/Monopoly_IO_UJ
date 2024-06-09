@@ -110,18 +110,22 @@ class Main:
             pygame.time.get_ticks() - self.turn_start_time
         ) / Main._SEC_TO_MS
 
-        if self.uplyniety_czas_gry >= self.LIMIT_CZASU_GRY:
-            self._running = False
-            self._kontroler_wiadomosci.dodaj_wiadomosc("Czas gry minął! Koniec gry.")
+        if self.LIMIT_CZASU_GRY != 999:
+            if self.uplyniety_czas_gry >= self.LIMIT_CZASU_GRY:
+                self._running = False
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Czas gry minął! Koniec gry."
+                )
 
-        if self.uplyniety_czas_tury >= self.LIMIT_CZASU_TURY:
-            self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Czas tury minął! Przechodzimy do następnego gracza."
-            )
-            self._gra.zamknij_wszystkie_okna()
-            self._wyswietlaj()
-            self.wait_flag = 0
-            self.turn_start_time = pygame.time.get_ticks()
+        if self.LIMIT_CZASU_TURY != 999:
+            if self.uplyniety_czas_tury >= self.LIMIT_CZASU_TURY:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Czas tury minął! Przechodzimy do następnego gracza."
+                )
+                self._gra.zamknij_wszystkie_okna()
+                self._wyswietlaj()
+                self.wait_flag = 0
+                self.turn_start_time = pygame.time.get_ticks()
 
     def _petla_zdarzen(self, events_list):
         for event in events_list:
@@ -146,7 +150,7 @@ class Main:
             self._gra.aktualizacja_zdarzenia(event)
 
     def _aktualizuj(self, delta_time):
-        pass  # Aktualizacja gry, jeśli jest taka potrzeba
+        self._gra.aktualizuj(delta_time)
 
     def render_text(self, text, pos):
         text_surface = self.font.render(text, True, self.wizualizator.kolor_czcionki)
@@ -235,7 +239,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 10000
+KWOTA_POCZATKOWA = 16000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -274,22 +278,6 @@ class Gra:
     ):
         random.shuffle(umiejetnosci)
         self._glowne_okno: pygame.Surface = glowne_okno
-        self._gracze = [
-            Gracz(
-                name,
-                KWOTA_POCZATKOWA,
-                Pionek(
-                    0,
-                    PIECE_COLORS[i],
-                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
-                    szerokosc_ekranu,
-                    wysokosc_ekranu,
-                    liczba_graczy,
-                ),
-                umiejetnosci[i],
-            )
-            for i, name in enumerate(gracze)
-        ]
         self._kwota_poczatkowa = KWOTA_POCZATKOWA
         self._liczba_graczy = liczba_graczy
         self._suma_oczek = 0
@@ -300,6 +288,7 @@ class Gra:
         self.aktualna_wysokosc_ekranu = wysokosc_ekranu
         self._kontroler_wiadomosci = kontroler_wiadomosci
         self.wizualizator = wizualizator
+        self._gracze = self.stworz_graczy(gracze)
         self.main = main_ref
 
         # sekcja wizualna
@@ -313,6 +302,7 @@ class Gra:
         self.kolor_nakladki = self.wizualizator.kolor_nakladki
         self.przezroczystosc_nakladki = self.wizualizator.przezroczystosc_nakladki
         self.font = pygame.font.Font(self.czcionka, 20)
+        self.end_game_flag = 1
 
         # sekcja okien
         self._plansza = Plansza()
@@ -366,8 +356,30 @@ class Gra:
         )
 
         self.gracz_poprzedniej_tury = -1
+        self.zwyciezca = -1
+        self.waiter = 4
 
-    def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
+    def stworz_graczy(self, nazwy_graczy) -> list[Gracz]:
+        lista_graczy = [
+            Gracz(
+                name,
+                KWOTA_POCZATKOWA,
+                Pionek(
+                    0,
+                    PIECE_COLORS[i],
+                    "graphics/pionek/PionekColor" + str(i + 1) + ".png",
+                    self.aktualna_szerokosc_ekranu,
+                    self.aktualna_wysokosc_ekranu,
+                    self._liczba_graczy,
+                ),
+                umiejetnosci[i],
+            )
+            for i, name in enumerate(nazwy_graczy)
+        ]
+
+        return lista_graczy
+
+    def analizuj_rzut(self, kostka_pierwsza, kostka_druga, bonus):
         self._kolejny_rzut_kostka = False
 
         if kostka_pierwsza + kostka_druga == 7:
@@ -378,7 +390,7 @@ class Gra:
 
         if self._suma_oczek == 21:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
+                "Uzyskałeś logarytmiczne przyspieszenie. Idziesz do więzienia"
             )
             self.przesun_gracza_bez_raportu(
                 self._gracze[self._indeks_aktualnego_gracza], 10
@@ -389,7 +401,7 @@ class Gra:
         else:
             self.przesun_gracza(
                 self._gracze[self._indeks_aktualnego_gracza],
-                kostka_pierwsza + kostka_druga,
+                kostka_pierwsza + kostka_druga + bonus,
             )
 
     def wyswietl_kostki(self, screen, dice1, dice2):
@@ -460,7 +472,7 @@ class Gra:
             return
         if not gracz.caly_kolor(posiadlosc.kolor):
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku"
+                "Nie posiadasz wszystkich kart z koloru"
             )
             return
         if posiadlosc.czy_zastawiona:
@@ -472,12 +484,13 @@ class Gra:
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}"
+                f"Masz już 4 domki na tym polu. Kup domy na innych polach {posiadlosc.kolor}"
             )
             return
 
         self.akcja_nieruchomosci_okno.czy_kupno = True
         self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
+        self.czy_akcja_zakonczona = False
 
     def wykup_z_wiezienia_rzutem(self):
         liczba_siodemek = 0
@@ -495,11 +508,11 @@ class Gra:
 
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Idziesz do więzienia"
+                f"Wyrzuciłeś {liczba_siodemek} siódemek. Idziesz do więzienia"
             )
             return False
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gratulacje! Wyrzuciłeś {liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
+            f"Wyrzuciłeś {liczba_siodemek} siódemek. Unikasz więzienia"
         )
         return True
 
@@ -547,12 +560,6 @@ class Gra:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
                 elif posiadlosc.wlasciciel == gracz:
-                    self.akcja_nieruchomosci_okno.nieruchomosc = (
-                        "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
-                    )
-                    self.akcja_nieruchomosci_okno.czy_kupno = True
-                    self.czy_akcja_zakonczona = False
-                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
@@ -581,13 +588,10 @@ class Gra:
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                    f"{self._gracze[self._indeks_aktualnego_gracza].id} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
                 )
 
         else:
-            # self._kontroler_wiadomosci.dodaj_wiadomosc(
-            #     f"Ruch gracza: {self._gracze[self._indeks_aktualnego_gracza].id}"
-            # )
             kostka_pierwsza, kostka_druga = self.symuluj_rzut()
 
             self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -596,29 +600,50 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
             #
-            # kostka_druga = 5
-            # kostka_pierwsza = 5
+            # kostka_druga = 6
+            # kostka_pierwsza = 6
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
-
+            umiejetnosc = 0
             if (
                 self._gracze[self._indeks_aktualnego_gracza].umiejetnosc
                 == "porusza_sie_o_1_pole_wiecej"
             ):
-                self._suma_oczek += 1
+                umiejetnosc = 1
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    f"Korzystasz z umiejętności: ruch +1"
+                )
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
-            self.analizuj_rzut(kostka_pierwsza, kostka_druga)
+            self.analizuj_rzut(kostka_pierwsza, kostka_druga, umiejetnosc)
 
-        if not self._kolejny_rzut_kostka:
-            self._indeks_aktualnego_gracza = (
-                self._indeks_aktualnego_gracza + 1
-            ) % self._liczba_graczy
-            self._suma_oczek = 0
+        # self._gracze[self._indeks_aktualnego_gracza].kwota -= 1000
+        # self._gracze[self._indeks_aktualnego_gracza].statystyka.aktualizuj_stan_pieniedzy(self._gracze[self._indeks_aktualnego_gracza].kwota)
+        self.kto_zbankrutowal()
+
+        if self._gracze[self._indeks_aktualnego_gracza].czy_aktywny == False:
+            self.zamknij_wszystkie_okna()
+
+        if self.czy_zwyciezca():
+            self._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Zwycięża: {self._gracze[self.zwyciezca].id}"
+            )
+
+        if (not self._kolejny_rzut_kostka) and self.zwyciezca == -1:
+
+            while True:
+                self._indeks_aktualnego_gracza = (
+                    self._indeks_aktualnego_gracza + 1
+                ) % self._liczba_graczy
+                self._suma_oczek = 0
+
+                if self._gracze[self._indeks_aktualnego_gracza].czy_aktywny == True:
+                    break
+                # zapetla sie gdy bedzie 1 gracz i zbankrutuje (wtedy powinno sie pokazac info o wygranej)
 
         self.main.turn_start_time = pygame.time.get_ticks()
 
@@ -650,6 +675,10 @@ class Gra:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
                     "Naciśnij spację, aby rzucić kostką"
                 )
+            else:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Nieprawidłowa liczba graczy."
+                )
         else:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Nieznana komenda: {input_text}"
@@ -662,15 +691,24 @@ class Gra:
             event.type == pygame.KEYDOWN
             and event.key == pygame.K_SPACE
             and self.czy_akcja_zakonczona
+            and self.zwyciezca == -1
         ):
             self.tura()
-        if self.nastepna_tura.is_clicked(event) and self.czy_akcja_zakonczona:
+        if (
+            self.nastepna_tura.is_clicked(event)
+            and self.czy_akcja_zakonczona
+            and self.zwyciezca == -1
+        ):
             self.tura()
-        if self.zapisz_wyjdz.is_clicked(event) and self.czy_akcja_zakonczona:
+        if (
+            self.zapisz_wyjdz.is_clicked(event)
+            and self.czy_akcja_zakonczona
+            and self.zwyciezca == -1
+        ):
             self.input_text = ""
             self.zapisz_gre()
             pygame.quit()
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN and self.zwyciezca == -1:
             if event.key == pygame.K_RETURN:
                 # self.process_input(self.input_text)
                 self.input_text = ""
@@ -759,10 +797,21 @@ class Gra:
             self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
         )
 
-        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
-        tekst = self.font1.render(
-            game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
+        pozostaly_czas_gry = self.main.LIMIT_CZASU_GRY - int(
+            self.main.uplyniety_czas_gry
         )
+        game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
+        if pozostaly_czas_gry <= 300:
+            text_color = pygame.Color("red")
+            if self.end_game_flag == 1:
+                self._kontroler_wiadomosci.dodaj_wiadomosc(
+                    "Zostało mniej niż 5 minut do końca gry"
+                )
+                self.end_game_flag = 0
+        else:
+            text_color = self.wizualizator.kolor_napisu_gracz_tury
+
+        tekst = self.font1.render(game_time_text, True, text_color)
         self._glowne_okno.blit(
             tekst,
             (
@@ -772,33 +821,37 @@ class Gra:
         )
 
     def render_turn_time(self):
+        if self.main.LIMIT_CZASU_TURY != 999:
+            self.font1 = pygame.font.Font(
+                self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
+            )
 
-        self.font1 = pygame.font.Font(
-            self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
-        )
+            pozostaly_czas_tury = self.main.LIMIT_CZASU_TURY - int(
+                self.main.uplyniety_czas_tury
+            )
+            turn_time_text = f"Czas tury: {pozostaly_czas_tury:02}"
+            if pozostaly_czas_tury <= 10:
+                text_color = pygame.Color("red")
+            else:
+                text_color = self.wizualizator.kolor_napisu_gracz_tury
 
-        remaining_turn_time = self.main.LIMIT_CZASU_TURY - int(
-            self.main.uplyniety_czas_tury
-        )
-        turn_time_text = f"Czas tury: {remaining_turn_time:02}"
-        if remaining_turn_time <= 10:
-            text_color = pygame.Color("red")
-        else:
-            text_color = self.wizualizator.kolor_napisu_gracz_tury
-
-        tekst = self.font1.render(turn_time_text, True, text_color)
-        self._glowne_okno.blit(
-            tekst,
-            (
-                self.aktualna_szerokosc_ekranu * 0.418,
-                self.aktualna_wysokosc_ekranu * 0.85,
-            ),
-        )
+            tekst = self.font1.render(turn_time_text, True, text_color)
+            self._glowne_okno.blit(
+                tekst,
+                (
+                    self.aktualna_szerokosc_ekranu * 0.418,
+                    self.aktualna_wysokosc_ekranu * 0.85,
+                ),
+            )
 
     # override
     def wyswietl(self, okno: pygame.Surface, W, H):
 
         self.aktualizuj_rozmiar_okien()
+
+        if self.zwyciezca != -1 and self.waiter < 0:
+            self.wyswietl_zwyciezce()
+            return
 
         self.render_text(
             self.input_text,
@@ -810,7 +863,8 @@ class Gra:
         self.zapisz_wyjdz.draw(self._glowne_okno)
 
         for gracz in self._gracze:
-            gracz.pionek.wyswietl(self._glowne_okno, self)
+            if gracz.czy_aktywny:
+                gracz.pionek.wyswietl(self._glowne_okno, self)
 
         self.wypisz_nazwe_gracza_tury()
         self.akcja_statystyk_okno.wyswietl(self._glowne_okno)
@@ -920,6 +974,22 @@ class Gra:
             pickle.dump(
                 self.gracz_poprzedniej_tury, handle, protocol=pickle.HIGHEST_PROTOCOL
             )
+        with open("save/zwyciezca.pickle", "wb") as handle:
+            pickle.dump(self.zwyciezca, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/waiter.pickle", "wb") as handle:
+            pickle.dump(self.waiter, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open("save/czas_gry.pickle", "wb") as handle:
+            pickle.dump(
+                self.main.uplyniety_czas_gry, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
+        with open("save/limit_gra.pickle", "wb") as handle:
+            pickle.dump(
+                self.main.LIMIT_CZASU_GRY, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
+        with open("save/limit_tura.pickle", "wb") as handle:
+            pickle.dump(
+                self.main.LIMIT_CZASU_TURY, handle, protocol=pickle.HIGHEST_PROTOCOL
+            )
 
     def wczytaj_gre(self):
         with open("save/gracze.pickle", "rb") as handle:
@@ -934,6 +1004,99 @@ class Gra:
             self._plansza = pickle.load(handle)
         with open("save/gracz_poprzedniej_tury.pickle", "rb") as handle:
             self.gracz_poprzedniej_tury = pickle.load(handle)
+        with open("save/zwyciezca.pickle", "rb") as handle:
+            self.zwyciezca = pickle.load(handle)
+        with open("save/waiter.pickle", "rb") as handle:
+            self.waiter = pickle.load(handle)
+        with open("save/czas_gry.pickle", "rb") as handle:
+            self.main.uplyniety_czas_gry = pickle.load(handle)
+        with open("save/limit_gra.pickle", "rb") as handle:
+            self.main.LIMIT_CZASU_GRY = pickle.load(handle)
+        with open("save/limit_tura.pickle", "rb") as handle:
+            self.main.LIMIT_CZASU_TURY = pickle.load(handle)
+
+    def kto_zbankrutowal(self):
+        for gracz in self._gracze:
+            if gracz.kwota > 0:
+                continue
+            else:
+                if (
+                    len(gracz.lista_posiadlosci) == 0
+                    or len(gracz.lista_posiadlosci) == gracz.liczba_zastawionych
+                ) and gracz.czy_aktywny == True:
+                    gracz.czy_aktywny = False
+                    self._kontroler_wiadomosci.dodaj_wiadomosc(
+                        f"Gracz {gracz.id} bankrutuje"
+                    )
+
+    def czy_zwyciezca(self):
+        licznik = 0
+        licznik_indeksu = 0
+        zwyciezca = -1
+        for gracz in self._gracze:
+            if gracz.czy_aktywny:
+                licznik += 1
+                zwyciezca = licznik_indeksu
+            licznik_indeksu += 1
+
+        if licznik == 1:
+            self.zwyciezca = zwyciezca
+            return True
+        else:
+            return False
+
+    def wyswietl_zwyciezce(self):
+
+        self.skalar_czcionki = 15  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / self.skalar_czcionki)
+        )
+        zwyciezca_tekst = self.font.render(
+            f"Zwycięstwo", True, self.wizualizator.kolor_zlotego_napisu
+        )
+
+        self.font = pygame.font.Font(
+            self.czcionka,
+            int(self.aktualna_szerokosc_ekranu / (self.skalar_czcionki + 5)),
+        )
+        nazwa_gracza = self.font.render(
+            self._gracze[self.zwyciezca].id, True, self.kolor_czcionki
+        )
+
+        grafika_zwyciezcy = pygame.transform.scale(
+            pygame.image.load(self._gracze[self.zwyciezca].pionek.sciezka_do_grafiki),
+            (
+                0.15 * self.aktualna_szerokosc_ekranu,
+                0.15 * self.aktualna_szerokosc_ekranu,
+            ),
+        )
+
+        self._glowne_okno.fill(self.wizualizator.kolor_tla)
+        self._glowne_okno.blit(
+            zwyciezca_tekst,
+            (
+                self.aktualna_szerokosc_ekranu * 0.25,
+                self.aktualna_wysokosc_ekranu * 0.3,
+            ),
+        )
+        self._glowne_okno.blit(
+            grafika_zwyciezcy,
+            (
+                self.aktualna_szerokosc_ekranu * 0.55,
+                self.aktualna_wysokosc_ekranu * 0.2,
+            ),
+        )
+        self._glowne_okno.blit(
+            nazwa_gracza,
+            (
+                self.aktualna_szerokosc_ekranu * 0.35,
+                self.aktualna_wysokosc_ekranu * 0.5,
+            ),
+        )
+
+    def aktualizuj(self, czas):
+        if self.zwyciezca != -1:
+            self.waiter -= czas
 
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Gracz.py
@@ -953,6 +1116,7 @@ class Gracz:
         self.liczba_zastawionych = 0
         self.statystyka = Statystyka(kwota, self.id)
         self.umiejetnosc = umiejetnosc
+        self.czy_aktywny = True
         print(umiejetnosc)
 
         if umiejetnosc == "wiecej_pieniedzy_na_start":
@@ -973,6 +1137,7 @@ class Gracz:
                 f"Zastawiłeś posiadłość {self.lista_posiadlosci[nr_posiadlosci].nazwa}"
         )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+        gra.kto_zbankrutowal()
 
     def zdejmij_zastaw_posiadlosci(self, gra):
         if self.liczba_zastawionych == 0:
@@ -1003,6 +1168,7 @@ class Gracz:
                 "Nie masz wystarczająco dużo pieniędzy, aby zdjąć zastaw z posiadłości"
             )
         self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+        gra.kto_zbankrutowal()
 
     def zaplac_czynsz(self, gra, posiadlosc):
         if self.umiejetnosc == "placi_mniejsze_czynsze":
@@ -1011,11 +1177,12 @@ class Gracz:
             czynsz = posiadlosc.oblicz_czynsz(gra)
         self.wykonaj_oplate(gra, czynsz)
         posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
+        gra.kto_zbankrutowal()
 
     def ile_w_kolorze(self, kolor):
         liczba_w_kolorze = 0
         for posiadlosc in self.lista_posiadlosci:
-            if not posiadlosc.kolor == kolor:
+            if posiadlosc.kolor == kolor:
                 liczba_w_kolorze += 1
         return liczba_w_kolorze
 
@@ -1051,7 +1218,9 @@ class Gracz:
         else:
             self.kwota -= cena
             self.statystyka.aktualizuj_stan_pieniedzy(self.kwota)
+            gra.kto_zbankrutowal()
             return 1
+        gra.kto_zbankrutowal()
         return 0
 
     def dodaj_pieniadze(self, gra, cena):
@@ -1097,6 +1266,9 @@ class KartaSzansy:
 
         elif self.typ == "oplata":
             gracz.wykonaj_oplate(gra, self.wartosc)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} zapłacił {self.wartosc}"
+            )
 
         elif self.typ == "oplata_za_domki":
             liczba_domkow = 0
@@ -1107,15 +1279,24 @@ class KartaSzansy:
             cena = liczba_domkow * self.wartosc
             cena += liczba_hoteli * self.wartosc * 3
             gracz.wykonaj_oplate(gra, cena)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} zapłacił {self.cena} za wszystkie domki i hotele"
+            )
 
         elif self.typ == "przejdz_na_pole":
             stara_pozycja = gracz.pionek.numer_pola
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
             gracz.czy_przeszedl_przez_start(gra, stara_pozycja)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} został przesunięty na inne pole"
+            )
 
         # brak poboru oplaty za przejscie przez start
         elif self.typ == "cofnij_na_pole":
             gra.przesun_gracza_bez_raportu(gracz, self.wartosc)
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} został cofnięty na inne pole"
+            )
 
         elif self.typ == "cofnij_do_wiezienia":
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -1128,6 +1309,9 @@ class KartaSzansy:
 
         elif self.typ == "karta_wyjscie_z_wiezienia":
             gracz.liczba_kart_wyjdz_z_wiezienia += 1
+            gra._kontroler_wiadomosci.dodaj_wiadomosc(
+                f"Gracz {gracz.id} otrzymał kartę wyjście z więzienia"
+            )
 
 
 class Karty:
@@ -1245,10 +1429,8 @@ class KontrolerWiadomosci:
             i += 1
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Menu.py
-import os
 import shutil
 import pygame
-from src.Przycisk import Przycisk
 from src.PrzyciskiMenu import PrzyciskiMenu
 from src.Wizualizator import Wizualizator
 
@@ -1318,26 +1500,22 @@ class Menu:
         self.font_gracze = pygame.font.Font(
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
+        self.font_wpisywanie = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
+        )
 
-    # def reset_pionki(self):
-    #     pionek_default_dir = "graphics/pionek_default"
-    #     pionek_dir = "graphics/pionek"
-
-    #     for filename in os.listdir(pionek_dir):
-    #         file_path = os.path.join(pionek_dir, filename)
-    #         if os.path.isfile(file_path):
-    #             os.remove(file_path)
-
-    #     for filename in os.listdir(pionek_default_dir):
-    #         src_path = os.path.join(pionek_default_dir, filename)
-    #         dst_path = os.path.join(pionek_dir, filename)
-    #         shutil.copy(src_path, dst_path)
+        self.typ_karty = ""
+        self.tresc_karty = ""
+        self.wartosc_karty = ""
 
     def handle_event(self, event, W, H):
 
         self.W = W
         self.H = H
         self.przyciski.aktualizuj_rozmiar(self.W, self.H)
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.stan == "witaj":
@@ -1393,6 +1571,8 @@ class Menu:
             elif self.stan == "wybor_pionkow":
                 if self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "gracz_1"
 
@@ -1450,13 +1630,65 @@ class Menu:
                     self.stan = "gracz_" + str(self.liczba_graczy)
                 elif self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.nastepny.is_clicked(event):
                     self.stan = "tutorial2"
             elif self.stan == "tutorial2":
                 if self.przyciski.graj.is_clicked(event):
                     self.stan = "stop"
+                elif self.przyciski.personalizacja.is_clicked(event):
+                    self.stan = "personalizacja"
                 elif self.przyciski.poprzedni.is_clicked(event):
                     self.stan = "tutorial1"
+
+            elif self.stan == "personalizacja":
+                if self.przyciski.pobierz.is_clicked(event):
+                    self.typ_karty = "pobierz"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.pobierz_od_graczy.is_clicked(event):
+                    self.typ_karty = "pobierz_od_graczy"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.oplata.is_clicked(event):
+                    self.typ_karty = "oplata"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.oplata_za_domki.is_clicked(event):
+                    self.typ_karty = "oplata_za_domki"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.przejdz_na_pole.is_clicked(event):
+                    self.typ_karty = "przejdz_na_pole"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.cofnij_do_wiezienia.is_clicked(event):
+                    self.typ_karty = "cofnij_do_wiezienia"
+                    self.stan = "wczytaj_tresc_karty"
+                elif self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+
+            elif self.stan == "zaakceptuj":
+                if self.przyciski.zaakceptuj.is_clicked(event):
+                    self.zapisz_karte_do_pliku()
+                    self.stan = "tutorial2"
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+
+            elif self.stan == "wczytaj_tresc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
+            elif self.stan == "wczytaj_wartosc_karty":
+                if self.przyciski.powrot.is_clicked(event):
+                    self.typ_karty = ""
+                    self.tresc_karty = ""
+                    self.wartosc_karty = ""
+                    self.stan = "tutorial2"
 
         elif event.type == pygame.KEYDOWN:
 
@@ -1477,6 +1709,34 @@ class Menu:
                             self.gracze[-1] += event.unicode
                     else:
                         self.gracze[-1] += event.unicode
+            elif self.stan == "wczytaj_tresc_karty":
+                if event.key == pygame.K_RETURN:
+                    self.stan = "wczytaj_wartosc_karty"
+                elif event.key == pygame.K_BACKSPACE:
+                    self.tresc_karty = self.tresc_karty[:-1]
+                else:
+                    if event.key == pygame.K_SPACE:
+                        if len(self.tresc_karty) != 0 and self.tresc_karty[-1] != " ":
+                            self.tresc_karty += event.unicode
+                    else:
+                        self.tresc_karty += event.unicode
+            elif self.stan == "wczytaj_wartosc_karty":
+                if event.key == pygame.K_RETURN:
+                    if self.wartosc_karty == "":
+                        self.stan = "blad"
+                    else:
+                        self.stan = "zaakceptuj"
+                elif event.key == pygame.K_BACKSPACE:
+                    if len(self.wartosc_karty) > 0:
+                        self.wartosc_karty = self.wartosc_karty[:-1]
+                elif event.unicode.isdigit():
+                    self.wartosc_karty += event.unicode
+
+            elif self.stan == "blad":
+                self.stan = "wczytaj_wartosc_karty"
+                self.typ_karty = ""
+                self.tresc_karty = ""
+                self.wartosc_karty = ""
 
         elif event.type == pygame.DROPFILE:
             self.handle_drop_file(event.file)
@@ -1516,6 +1776,9 @@ class Menu:
         self.font_gracze = pygame.font.Font(
             self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 5))
         )
+        self.font_wpisywanie = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / (self.skalar_czcionki + 15))
+        )
 
         if self.stan == "witaj":
             self.logo = pygame.transform.scale(self.logo, (0.5 * W, 0.45 * H))
@@ -1528,17 +1791,24 @@ class Menu:
         elif self.stan == "tutorial1":
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.graj.draw(screen)
-            self.przyciski.poprzedni.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
+            self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.nastepny.draw(screen)
             self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
             screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
         elif self.stan == "tutorial2":
             screen.fill(self.wizualizator.kolor_tla)
             self.przyciski.graj.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny_szary.draw(screen)
             self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
             screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
+
+        elif self.stan == "zaakceptuj":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.zaakceptuj.draw(screen)
+            self.przyciski.powrot.draw(screen)
 
         elif self.stan == "czas_gry":
             self.przyciski.trzydziesci_minut.draw(screen)
@@ -1547,10 +1817,10 @@ class Menu:
             self.przyciski.bez_ograniczen.draw(screen)
 
             text = self.font.render(
-                "Wybierz czas gry", True, self.wizualizator.kolor_czcionki
+                "Wybierz czas gry w minutach", True, self.wizualizator.kolor_czcionki
             )
 
-            screen.blit(text, (W * 0.35, H * 0.3))
+            screen.blit(text, (W * 0.255, H * 0.3))
 
         elif self.stan == "czas_tury":
             self.przyciski.jedna_minuta.draw(screen)
@@ -1559,10 +1829,10 @@ class Menu:
             self.przyciski.bez_ograniczen.draw(screen)
 
             text = self.font.render(
-                "Wybierz czas tury", True, self.wizualizator.kolor_czcionki
+                "Wybierz czas tury w sekundach", True, self.wizualizator.kolor_czcionki
             )
 
-            screen.blit(text, (W * 0.35, H * 0.3))
+            screen.blit(text, (W * 0.255, H * 0.3))
 
         elif self.stan == "liczba_graczy":
             self.przyciski.two.draw(screen)
@@ -1604,6 +1874,7 @@ class Menu:
         elif self.stan == "wybor_pionkow":
             self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.graj.draw(screen)
+            self.przyciski.personalizacja.draw(screen)
             self.przyciski.nastepny.draw(screen)
 
             text = self.font.render(
@@ -1677,9 +1948,73 @@ class Menu:
             )
             self.wyswietl_napis_pionek(screen, self.pionek5, text)
 
+        elif self.stan == "personalizacja":
+            screen.fill(self.wizualizator.kolor_tla)
+            self.przyciski.pobierz.draw(screen)
+            self.przyciski.pobierz_od_graczy.draw(screen)
+            self.przyciski.oplata.draw(screen)
+            self.przyciski.oplata_za_domki.draw(screen)
+            self.przyciski.przejdz_na_pole.draw(screen)
+            self.przyciski.cofnij_do_wiezienia.draw(screen)
+            self.przyciski.powrot.draw(screen)
+
+            text = self.font.render(
+                "Wybierz typ Karty Szansy którą chcesz dodać",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.15, self.H * 0.15))
+
+        elif self.stan == "wczytaj_tresc_karty":
+            self.przyciski.powrot.draw(screen)
+            text = self.font.render(
+                f"Wpisz treść karty",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.37, self.H * 0.1))
+            text = self.font_wpisywanie.render(
+                str(self.tresc_karty),
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.1, self.H * (0.5)))
+
+        elif self.stan == "wczytaj_wartosc_karty":
+            self.przyciski.powrot.draw(screen)
+            text = self.font.render(
+                f"Wpisz wartość karty",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.35, self.H * 0.1))
+            text = self.font.render(
+                str(self.wartosc_karty),
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.47, self.H * (0.5)))
+
+        elif self.stan == "blad":
+            text = self.font.render(
+                f"Wpisano złą wartość karty. Musisz wprowadzić liczbę naturalną",
+                True,
+                self.wizualizator.kolor_czcionki,
+            )
+            screen.blit(text, (self.W * 0.1, self.H * 0.1))
+
+    def zapisz_karte_do_pliku(self):
+        with open("data/karty.txt", "a", encoding="utf-8") as plik:
+            # Zapisz dane karty
+            plik.write(
+                f"\n{self.typ_karty}\n{self.tresc_karty}\n{self.wartosc_karty}\n"
+            )
+        self.typ_karty = ""
+        self.tresc_karty = ""
+        self.wartosc_karty = ""
+
     def wyswietl_napis_pionek(self, screen, pionek, tekst):
         screen.blit(tekst, (self.W * 0.1, self.H * 0.12))
-
         pionek_wyswietlany = pygame.transform.scale(
             pionek, (0.12 * self.W, 0.12 * self.W)
         )
@@ -1826,20 +2161,30 @@ class Plansza:
         board.append(Posiadlosc(8, "Winda", "niebieski", 1000, 60, 500, 500))
         board.append(Posiadlosc(9, "Szatnia", "niebieski", 1200, 80, 500, 500))
         board.append(Pole(10, "Wiezienie"))
-        board.append(Posiadlosc(11, "Sala 1073 (sieci)", "rozowy", 1400, 100, 700, 1000))
+        board.append(
+            Posiadlosc(11, "Sala 1073 (sieci)", "rozowy", 1400, 100, 700, 1000)
+        )
         board.append(Posiadlosc(12, "Drążki za wydziałem", "pozaWmii", 1500, 0, 750))
         board.append(Posiadlosc(13, "Sala 0056 (laby)", "rozowy", 1400, 100, 700, 1000))
-        board.append(Posiadlosc(14, "Sala 1072 (macbooki)", "rozowy", 1600, 120, 800, 1000))
+        board.append(
+            Posiadlosc(14, "Sala 1072 (macbooki)", "rozowy", 1600, 120, 800, 1000)
+        )
         board.append(Posiadlosc(15, "KNMF", "kolo", 2000, 250, 1000))
         board.append(Posiadlosc(16, "Ślimak", "pomaranczowy", 1800, 140, 900, 1000))
         board.append(Pole(17, "Szansa"))
-        board.append(Posiadlosc(18, "Serwerownia", "pomaranczowy", 1800, 140, 900, 1000))
-        board.append(Posiadlosc(19, "Pokój samorządu", "pomaranczowy", 2000, 160, 1000, 1000))
+        board.append(
+            Posiadlosc(18, "Serwerownia", "pomaranczowy", 1800, 140, 900, 1000)
+        )
+        board.append(
+            Posiadlosc(19, "Pokój samorządu", "pomaranczowy", 2000, 160, 1000, 1000)
+        )
         board.append(Pole(20, "Parking"))
         board.append(Posiadlosc(21, "Recepcja", "czerwony", 2200, 180, 1100, 1500))
         board.append(Pole(22, "Szansa"))
-        board.append(Posiadlosc(23, "Dziekanat","czerwony", 2200, 180, 1100, 1500))
-        board.append(Posiadlosc(24, "Muzeum komputerów", "czerwony", 2400, 200, 1200, 1500))
+        board.append(Posiadlosc(23, "Dziekanat", "czerwony", 2200, 180, 1100, 1500))
+        board.append(
+            Posiadlosc(24, "Muzeum komputerów", "czerwony", 2400, 200, 1200, 1500)
+        )
         board.append(Posiadlosc(25, "KMS", "kolo", 2000, 250, 1000))
         board.append(Posiadlosc(26, "Mural", "zolty", 2600, 220, 1300, 1500))
         board.append(Posiadlosc(27, "Pomnik Kopernika", "zolty", 2600, 220, 1300, 1500))
@@ -1888,12 +2233,8 @@ class Plansza:
         extension = ".png"
 
         for pole in self.plansza:
-            pole.sciezka_do_grafiki = (path + str(i) + extension) 
+            pole.sciezka_do_grafiki = path + str(i) + extension
             i += 1
-
-
-
-    
 
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\PodatekDochodowy.py
@@ -1963,7 +2304,7 @@ class PodatekDochodowy(Pole):
         do_zaplaty = self.podatek
         if czy_dobra:
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Udzieliłeś/udzieliłaś poprawnej odpowiedzi, koszt zostaje pomniejszony")
+                f"Udzieliłeś/aś poprawnej odpowiedzi, koszt zostaje pomniejszony")
             do_zaplaty //= 2
 
         if gracz.wykonaj_oplate(gra, do_zaplaty):
@@ -2062,6 +2403,7 @@ class Pole:
         self.pozycja: Vector2 = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
         self.sciezka_do_grafiki = "..."
         self.ilosc_graczy_na_polu = 0
+        self.czy_zastawiona = False
 
     def zwroc_info(self) -> str:
         return f"Nazwa: {self.typ}"
@@ -2110,14 +2452,15 @@ class Pole:
         pole_surface = pygame.transform.scale(pygame.image.load(self.sciezka_do_grafiki), (nowa_szerokosc, nowa_wysokosc))
         pole_surface = pygame.transform.rotate(pole_surface, obrot)
 
-        self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
-        screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
+        if self.czy_zastawiona:
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
+            self.renderuj_zastaw(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+        else:
+            self.renderuj_otoczke(screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek)
+            screen.blit(pole_surface, (self.pozycja.x, self.pozycja.y))
         
 
     def renderuj_otoczke(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
-        
-        color = (0, 0, 0)
-        
 
         if self.kupione_przez == 0:
             return
@@ -2133,6 +2476,28 @@ class Pole:
             color = (184, 3, 255)
 
         pygame.draw.rect(screen, color, pygame.Rect(self.pozycja.x- 2.5, self.pozycja.y - 2.5, szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5), width = 100)
+
+
+    def renderuj_zastaw(self, screen, szerokosc_aktualny_kierunek, wysokosc_aktualny_kierunek):
+        
+        nakladka = pygame.Surface((szerokosc_aktualny_kierunek + 5, wysokosc_aktualny_kierunek + 5))
+        nakladka.set_alpha(100)  
+
+        if self.kupione_przez == 0:
+            return
+        elif self.kupione_przez == 1:
+            color = (183, 132, 132 )
+        elif self.kupione_przez == 2:
+            color = (140, 183, 132 )
+        elif self.kupione_przez == 3:
+            color = (132, 151, 183 )
+        elif self.kupione_przez == 4:
+            color = (180, 183, 132 )
+        elif self.kupione_przez == 5:
+            color = (178, 132, 183 )
+
+        nakladka.fill(color)
+        screen.blit(nakladka, (self.pozycja.x- 2.5, self.pozycja.y - 2.5))
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Posiadlosc.py
 from src.Pole import Pole
@@ -2153,7 +2518,6 @@ class Posiadlosc(Pole):
         self.zastaw_kwota = zastaw
         self.cena_domu = cena_domu
         self.wlasciciel = None
-        self.czy_zastawiona = False
         self.liczba_domow = 0
         self.liczba_hoteli = 0
 
@@ -2244,20 +2608,25 @@ class Posiadlosc(Pole):
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
             gra.akcja_pola_okno.czy_akcja_pola = False
             gra.czy_akcja_zakonczona = True
+
         return
 
     def kup_dom(self, gra, gracz, ile_domow):
         if gracz.wykonaj_oplate(gra, self.cena_domu * ile_domow):
-            self.liczba_domow += ile_domow
-            gracz.statystyka.dodaj_domek(ile_domow)
-            while self.liczba_domow >= 5:
-                self.liczba_domow -= 5
-                gracz.statystyka.odejmij_dom(5)
+            if ile_domow == 1 and self.liczba_domow == 4:
+                self.liczba_domow = 0
+                self.liczba_hoteli += 1
+                gracz.statystyka.dodaj_hotel(1)
+                gracz.statystyka.odejmij_domek(4)
+            elif ile_domow == 1:
+                self.liczba_domow += 1
+                gracz.statystyka.dodaj_domek(1)
+            elif ile_domow == 5:
                 self.liczba_hoteli += 1
                 gracz.statystyka.dodaj_hotel(1)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
                 f"Zakup domu się udał posiadasz {self.liczba_domow} domów i {self.liczba_hoteli} hoteli"
-            )
+            )           
         else:
             gra._kontroler_wiadomosci.dodaj_wiadomosc("Wycofałeś się z zakupu")
 
@@ -2276,7 +2645,8 @@ class Posiadlosc(Pole):
         if self.liczba_hoteli > 0:
 
             if gracz.umiejetnosc == "sprzedaje_nieruchomosci_za_oryginalna_ceny":
-                gracz.kwota = gracz.kwota + (self.liczba_hoteli * 5 * self.cena_domu)
+                gracz.kwota = gracz.kwota + \
+                    (self.liczba_hoteli * 5 * self.cena_domu)
             else:
                 gracz.kwota = (
                     gracz.kwota
@@ -2377,7 +2747,7 @@ class PrzyciskiMenu:
         )
 
         self.trzydziesci_minut = Przycisk(
-            W * 0.3,
+            W * 0.25,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2388,7 +2758,7 @@ class PrzyciskiMenu:
         )
 
         self.szescdziesiat_minut = Przycisk(
-            W * 0.4,
+            W * 0.35,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2399,7 +2769,7 @@ class PrzyciskiMenu:
         )
 
         self.dziewiecdziesiat_minut = Przycisk(
-            W * 0.5,
+            W * 0.45,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2410,7 +2780,7 @@ class PrzyciskiMenu:
         )
 
         self.jedna_minuta = Przycisk(
-            W * 0.3,
+            W * 0.25,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2418,10 +2788,11 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "60",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.dwie_minuty = Przycisk(
-            W * 0.4,
+            W * 0.35,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2429,10 +2800,11 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "120",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.trzy_minuty = Przycisk(
-            W * 0.5,
+            W * 0.45,
             H * 0.5,
             H * 0.1,
             H * 0.1,
@@ -2440,17 +2812,19 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor,
             "180",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            28
         )
 
         self.bez_ograniczen = Przycisk(
-            W * 0.6,
+            W * 0.55,
             H * 0.5,
-            W * 0.3,
+            W * 0.2,
             H * 0.1,
             self.wizualizator.kolor_przycisku,
             self.wizualizator.kolor_gdy_kursor,
-            "Bez ograniczeń",
+            "Bez limitu",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            25,
         )
 
         self.two = Przycisk(
@@ -2498,7 +2872,7 @@ class PrzyciskiMenu:
         )
 
         self.poprzedni = Przycisk(
-            W * 0.3,
+            W * 0.2,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -2509,7 +2883,7 @@ class PrzyciskiMenu:
         )
 
         self.nastepny = Przycisk(
-            W * 0.4,
+            W * 0.3,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -2520,7 +2894,7 @@ class PrzyciskiMenu:
         )
 
         self.poprzedni_szary = Przycisk(
-            W * 0.3,
+            W * 0.2,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -2531,7 +2905,7 @@ class PrzyciskiMenu:
         )
 
         self.nastepny_szary = Przycisk(
-            W * 0.4,
+            W * 0.3,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -2542,7 +2916,7 @@ class PrzyciskiMenu:
         )
 
         self.graj = Przycisk(
-            W * 0.5,
+            W * 0.4,
             H * 0.5,
             W * 0.1,
             H * 0.1,
@@ -2550,6 +2924,109 @@ class PrzyciskiMenu:
             self.wizualizator.kolor_gdy_kursor_przycisku_graj,
             "graj",
             (40, 40, 40),
+        )
+
+        self.personalizacja = Przycisk(
+            W * 0.5,
+            H * 0.5,
+            W * 0.1,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "Dodaj karte",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+
+        # cofnij na pole. karta wyjście z więznienia
+
+        self.pobierz = Przycisk(
+            W * 0.15,
+            H * 0.3,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "pobierz",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.pobierz_od_graczy = Przycisk(
+            W * 0.15,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "pobierz od graczy",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.oplata = Przycisk(
+            W * 0.15,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "oplata",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.oplata_za_domki = Przycisk(
+            W * 0.5,
+            H * 0.3,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "oplata za domki",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.przejdz_na_pole = Przycisk(
+            W * 0.5,
+            H * 0.5,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "przejdz na pole",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+        self.cofnij_do_wiezienia = Przycisk(
+            W * 0.5,
+            H * 0.7,
+            W * 0.25,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "cofnij do wiezienia",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+            20,
+        )
+
+        self.powrot = Przycisk(
+            W * 0.8,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_przycisku,
+            self.wizualizator.kolor_gdy_kursor,
+            "powrot",
+            self.wizualizator.kolor_czcionki_na_przycisku,
+        )
+
+        self.zaakceptuj = Przycisk(
+            W * 0.8,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,
+            self.wizualizator.kolor_akceptacji_nazwy_gracza,
+            self.wizualizator.kolor_gdy_kursor_przycisku_graj,
+            "zaakceptuj",
+            (40, 40, 40)
         )
 
     def aktualizuj_rozmiar(self, W, H):
@@ -2567,21 +3044,52 @@ class PrzyciskiMenu:
         self.four.updateSize(W * 0.5, H * 0.5, H * 0.1, H * 0.1)
         self.five.updateSize(W * 0.6, H * 0.5, H * 0.1, H * 0.1)
 
-        self.trzydziesci_minut.updateSize(W * 0.3, H * 0.5, H * 0.1, H * 0.1)
-        self.szescdziesiat_minut.updateSize(W * 0.4, H * 0.5, H * 0.1, H * 0.1)
-        self.dziewiecdziesiat_minut.updateSize(W * 0.5, H * 0.5, H * 0.1, H * 0.1)
+        self.trzydziesci_minut.updateSize(W * 0.25, H * 0.5, H * 0.1, H * 0.1)
+        self.szescdziesiat_minut.updateSize(W * 0.35, H * 0.5, H * 0.1, H * 0.1)
+        self.dziewiecdziesiat_minut.updateSize(W * 0.45, H * 0.5, H * 0.1, H * 0.1)
 
-        self.jedna_minuta.updateSize(W * 0.3, H * 0.5, H * 0.1, H * 0.1)
-        self.dwie_minuty.updateSize(W * 0.4, H * 0.5, H * 0.1, H * 0.1)
-        self.trzy_minuty.updateSize(W * 0.5, H * 0.5, H * 0.1, H * 0.1)
+        self.jedna_minuta.updateSize(W * 0.25, H * 0.5, H * 0.1, H * 0.1)
+        self.dwie_minuty.updateSize(W * 0.35, H * 0.5, H * 0.1, H * 0.1)
+        self.trzy_minuty.updateSize(W * 0.45, H * 0.5, H * 0.1, H * 0.1)
 
-        self.bez_ograniczen.updateSize(W * 0.6, H * 0.5, H * 0.3, H * 0.1)
+        self.bez_ograniczen.updateSize(W * 0.55, H * 0.5, W * 0.2, H * 0.1)
 
         self.nastepny.updateSize(W * 0.4, H * 0.8, W * 0.2, H * 0.1)
         self.poprzedni.updateSize(W * 0.15, H * 0.8, W * 0.2, H * 0.1)
         self.graj.updateSize(W * 0.65, H * 0.8, W * 0.2, H * 0.1)
         self.nastepny_szary.updateSize(W * 0.4, H * 0.8, W * 0.2, H * 0.1)
         self.poprzedni_szary.updateSize(W * 0.15, H * 0.8, W * 0.2, H * 0.1)
+        self.nowa_gra.updateSize(W * 0.35, H * 0.5, W * 0.3, H * 0.1)
+        self.wczytaj_gre.updateSize(W * 0.35, H * 0.62, W * 0.3, H * 0.1)
+        self.wyjscie.updateSize(W * 0.35, H * 0.74, W * 0.3, H * 0.1)
+        self.two.updateSize(W * 0.3, H * 0.5, H * 0.1, H * 0.1)
+        self.three.updateSize(W * 0.4, H * 0.5, H * 0.1, H * 0.1)
+        self.four.updateSize(W * 0.5, H * 0.5, H * 0.1, H * 0.1)
+        self.five.updateSize(W * 0.6, H * 0.5, H * 0.1, H * 0.1)
+
+        self.nastepny.updateSize(W * 0.28, H * 0.8, W * 0.2, H * 0.1)
+        self.poprzedni.updateSize(W * 0.05, H * 0.8, W * 0.2, H * 0.1)
+        self.graj.updateSize(W * 0.51, H * 0.8, W * 0.2, H * 0.1)
+        self.personalizacja.updateSize(
+            W * 0.75,
+            H * 0.8,
+            W * 0.2,
+            H * 0.1,
+        )
+        self.nastepny_szary.updateSize(W * 0.28, H * 0.8, W * 0.2, H * 0.1)
+        self.poprzedni_szary.updateSize(W * 0.05, H * 0.8, W * 0.2, H * 0.1)
+
+        #karty szansy
+        self.pobierz.updateSize(W * 0.2, H * 0.3, W * 0.25, H * 0.1)
+        self.pobierz_od_graczy.updateSize(W * 0.2, H * 0.45, W * 0.25, H * 0.1)
+        self.oplata.updateSize(W * 0.2, H * 0.6, W * 0.25, H * 0.1)
+
+        self.oplata_za_domki.updateSize(W * 0.55, H * 0.3, W * 0.25, H * 0.1)
+        self.przejdz_na_pole.updateSize(W * 0.55, H * 0.45, W * 0.25, H * 0.1)
+        self.cofnij_do_wiezienia.updateSize(W * 0.55, H * 0.6, W * 0.25, H * 0.1)
+
+        self.powrot.updateSize(W * 0.4, H * 0.77, W * 0.2, H * 0.1)
+        self.zaakceptuj.updateSize(W * 0.378, H * 0.4, W * 0.25, H * 0.15)
 
 
 C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\src\Statystyka.py
@@ -2737,6 +3245,7 @@ class Wizualizator:
         self.kolor_czcionki_tyl_karty = (255, 255, 255)
         self.kolor_nakladki = (77, 77, 115)
         self.przezroczystosc_nakladki = 100
+        self.kolor_zlotego_napisu = (255, 198, 26)
 
         #kolory wypisywania komunikatow
         self.kolor_wiadomosci = (255, 255, 255)
@@ -2790,7 +3299,7 @@ class AkcjaKartOkno(Okno):
             self.H * 0.1,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
 
@@ -2909,7 +3418,7 @@ class AkcjaNieruchomosciOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
         self.przycisk_kup_hotel = Przycisk(
@@ -3123,7 +3632,7 @@ class AkcjaPolaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "kupuję",
+            "kupuje",
             self.gra.kolor_tekstu,
         )
         self.wyjscie = Przycisk(
@@ -3330,6 +3839,11 @@ class AkcjaStatystykOkno(Okno):
 
         if self.czy_akcja_statystyk:
             
+            self.bankrut = pygame.transform.scale(
+                pygame.image.load("graphics/bankrut.png"),
+                (0.02 * self.W, 0.022 * self.W)
+            )
+
             i = 0
             self.ramka = pygame.transform.scale(
                 pygame.image.load("graphics/tlo_do_statystyk.png"),
@@ -3364,13 +3878,21 @@ class AkcjaStatystykOkno(Okno):
                 )
 
                 screen.blit(self.umiejetnosc, (self.W * (self.mnoznik_szerokosci), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
-                screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+                if gracz.czy_aktywny:
+                    screen.blit(self.zdjecie_pionek, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.005))))
+                else:
+                    screen.blit(self.bankrut, (self.W * (self.mnoznik_szerokosci - 0.03), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa - 0.002))))
 
                 screen.blit(self.nazwa, (self.W * (self.mnoznik_szerokosci + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
-                screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                if gracz.czy_aktywny:
+                    screen.blit(self.pieniadze, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.posiadlosci, (self.W * (self.mnoznik_szerokosci + 0.22 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.domki, (self.W * (self.mnoznik_szerokosci + 0.26 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                    screen.blit(self.hotele, (self.W * (self.mnoznik_szerokosci + 0.3 + self.miejsce_na_zdjecie), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+                else:
+                    screen.blit(self.bankrut_tekst, (self.W * (self.mnoznik_szerokosci + 0.17), self.H * (self.mnoznik_wysokosci + (i * self.odleglosc_pionowa))))
+
+                
                 i += 1
 
 
@@ -3391,6 +3913,9 @@ class AkcjaStatystykOkno(Okno):
     def zaktualizuj_tekst_i_rozmiar(self, gracz, nazwa_gracza):
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
 
+        self.bankrut_tekst = self.font.render(
+            "BANKRUT", True, (255, 77, 77)
+        )
         self.nazwa = self.font.render(
             str(nazwa_gracza), True, self.gra.kolor_czcionki
         )
@@ -3432,14 +3957,14 @@ class AkcjaWiezieniaOkno(Okno):
             self.H * 0.15,
             self.gra.kolor_przycisku,
             self.gra.kolor_gdy_kursor,
-            "wyjście",
+            "wyjscie",
             self.gra.kolor_tekstu,
         )
         self.czy_wiezienie = False
 
         self.skalar_czcionki = 24  # im wiekszy tym mniejsza czcionka
         self.font = pygame.font.Font(self.gra.czcionka, int(self.W / self.skalar_czcionki))
-        self.informacja_o_wiezeniu = "idziesz do więzienia, stoisz 2 tury"
+        self.informacja_o_wiezeniu = "Idziesz do więzienia, stoisz 2 tury."
 
     def aktualizacja(self):
         pass
@@ -3455,19 +3980,15 @@ class AkcjaWiezieniaOkno(Okno):
         W = self.W
 
         if self.czy_wiezienie:
-            
-            nakladka = pygame.Surface(screen.get_size())
-            nakladka.set_alpha(self.gra.przezroczystosc_nakladki)  # Ustaw przezroczystość (0-255)
-            nakladka.fill(self.gra.kolor_nakladki)
-            screen.blit(nakladka, (0, 0))
+            screen.fill(self.gra.kolor_tla)
 
             self.zaktualizuj_rozmiar_czcionki()
             self.wyswietl_teksty(screen)
 
             self.zdjecie = pygame.transform.scale(
-                self.zdjecie, (0.45 * self.H, 0.45 * self.H)
+                self.zdjecie, (0.6 * self.H, 0.6 * self.H)
             )
-            screen.blit(self.zdjecie, (W * 0.2, H * 0.15))
+            screen.blit(self.zdjecie, (W * 0.15, H * 0.08))
             self.wyjscie.updateSize(W * 0.6, H * 0.3, W * 0.2, H * 0.15)
             self.wyjscie.draw(screen)
 
@@ -3726,9 +4247,6 @@ class AkcjaZastawOkno(Okno):
         self.gra = gra
         self.gracz = None
         self.cena = 0
-        self.zastaw_png = pygame.transform.scale(
-            pygame.image.load("graphics/zastaw.jpg"), (0.28 * self.W, 0.64 * self.H)
-        )
         self.czy_zastaw = False
         self.wczytana_posiadlosc = ""
         self.ile_do_zastawienia = 0
@@ -3742,7 +4260,7 @@ class AkcjaZastawOkno(Okno):
             self.wizualizator.kolor_gdy_kursor,
             "Zastaw",
             self.wizualizator.kolor_czcionki_na_przycisku,
-        )
+            )
         self.przycisk_wyjscie = Przycisk(
             self.W * 0.35,
             self.H * 0.64,
@@ -3752,6 +4270,11 @@ class AkcjaZastawOkno(Okno):
             self.wizualizator.kolor_gdy_kursor,
             "Wyjscie",
             self.wizualizator.kolor_czcionki_na_przycisku,
+            )
+
+        self.skalar_czcionki = 40  # im wiekszy tym mniejsza czcionka
+        self.font = pygame.font.Font(
+            self.wizualizator.czcionka, int(self.W / self.skalar_czcionki)
         )
 
     def aktualizacja(self):
@@ -3805,12 +4328,16 @@ class AkcjaZastawOkno(Okno):
 
     def wyswietl(self, screen: pygame.Surface):
 
+        self.font = pygame.font.Font(
+            self.gra.czcionka, int(self.W / self.skalar_czcionki)
+        )
+
         if self.czy_zastaw:
             screen.fill(self.gra.kolor_tla)
 
             if (
-                self.stan == "czy_chcesz_zastawic"
-                and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci)
+                    self.stan == "czy_chcesz_zastawic"
+                    and self.gracz.liczba_zastawionych >= len(self.gracz.lista_posiadlosci)
             ):
                 self.przycisk_wyjscie.updateSize(
                     self.W * 0.6, self.H * 0.4, self.W * 0.2, self.H * 0.15
@@ -3837,8 +4364,13 @@ class AkcjaZastawOkno(Okno):
                 self.przycisk_zastaw.draw(screen)
                 self.przycisk_wyjscie.draw(screen)
 
+                if self.cena - self.gracz.kwota <= 0:
+                    tekst = "Masz już wystarczającą ilość pieniędzy. Czy chcesz zastawić posiadłość? Masz poniższe do wyboru"
+                else:
+                    tekst = f"Brakuje Ci {self.cena - self.gracz.kwota}. Czy chcesz zastawić jakąś posiadłość? Masz poniższe do wyboru"
+
                 text = self.font.render(
-                    f"Brakuje Ci {self.cena - self.gracz.kwota}. Czy chcesz zastawić jakąś posiadłość? Masz poniższe do wyboru",
+                    tekst,
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
@@ -3851,14 +4383,14 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
                 self.wyswietl_do_zastawu(screen)
                 text = self.font.render(
                     str(self.wczytana_posiadlosc),
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.45, self.H * (0.5)))
+                screen.blit(text, (self.W * 0.1, self.H * 0.8))
 
             elif self.stan == "blad":
                 text = self.font.render(
@@ -3866,7 +4398,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
 
             elif self.stan == "zastawiono":
                 text = self.font.render(
@@ -3874,7 +4406,7 @@ class AkcjaZastawOkno(Okno):
                     True,
                     self.wizualizator.kolor_czcionki,
                 )
-                screen.blit(text, (self.W * 0.2, self.H * 0.1))
+                screen.blit(text, (self.W * 0.1, self.H * 0.1))
 
     def wyswietl_do_zastawu(self, screen):
         odstep = 0.25
@@ -4012,7 +4544,190 @@ class GraProxy(IGra):
 
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Gra.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_scenariuszowy.py
+import pytest
+import pygame
+import os
+import itertools
+
+from Main import Main
+from src.Gracz import Gracz
+from src.Gra import Gra
+from src.interface.IGra import IGra
+from src.proxy.GraProxy import GraProxy
+from src.Wizualizator import Wizualizator
+from src.KontrolerWiadomosci import KontrolerWiadomosci
+
+from unittest.mock import MagicMock
+
+
+class MockMain(Main):
+    def __init__(self):
+        super()
+
+
+class TestScenariuszowy:
+    def setup_method(self):
+        pygame.init()
+        pygame.font.init()
+        os.environ["SDL_VIDEO_CENTERED"] = "1"
+
+        self.font = pygame.font.Font(None, 20)
+        self.wizualizator = Wizualizator()
+
+        self.kontroler_wiadomosci = KontrolerWiadomosci(self.font, self.wizualizator)
+        self.okno = pygame.display.set_mode((1200, 800), pygame.RESIZABLE)
+
+        self.liczba_graczy = 2
+        self.lista_nazw_graczy = ["test1", "test2"]
+
+        self.szerokosc = 1200
+        self.wysokosc = 800
+
+        self.mock_main = MockMain()
+
+        self.gra = GraProxy(
+            Gra(
+                self.okno,
+                self.kontroler_wiadomosci,
+                self.liczba_graczy,
+                self.lista_nazw_graczy,
+                self.wizualizator,
+                self.szerokosc,
+                self.wysokosc,
+                self.mock_main
+            )
+        )
+
+    def test_kolejnosc_gracz(self):
+        lista_graczy_z_gry: Gracz = self.gra.pobierz_instancje_gry()._gracze
+        lista_graczy_z_konstruktora: [str] = self.lista_nazw_graczy
+
+        for (gracz_z_gry, gracz_z_listy) in zip(lista_graczy_z_gry, lista_graczy_z_konstruktora):
+            assert gracz_z_gry.id is gracz_z_listy
+
+
+    # Scenariusz 1
+    # def test_scenariusz_jeden(self):
+    #     self.gra.dodaj_zdarzenie_do_kolejki()
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\smoke\test_smoke.py
+import time
+
+import pytest
+import pygame
+
+from Main import Main
+from src.KontrolerWiadomosci import KontrolerWiadomosci
+from src.Wizualizator import Wizualizator
+from src.Gra import Gra
+
+
+class MockMain(Main):
+    def __init__(self):
+        super()
+
+
+class TestSmoke:
+    def setup_method(self):
+        pygame.init()
+        pygame.font.init()
+
+        time.sleep(3)
+
+        self.wizualizator = Wizualizator()
+        self._screen = pygame.display.set_mode((1200, 660), pygame.RESIZABLE)
+        self._screen_info = pygame.display.Info()
+        self._screen_width = self._screen_info.current_w
+        self._screen_height = self._screen_info.current_h
+        self.kontroler_wiadomosci = KontrolerWiadomosci(None, self.wizualizator)
+        self.liczba_graczy = 2
+        self.gracze = ["test_1", "test_2"]
+        self.mock_main = MockMain()
+
+        self.gra = Gra(self._screen, self.kontroler_wiadomosci, self.liczba_graczy, self.gracze, self.wizualizator, self._screen_width, self._screen_height, self.mock_main)
+
+    def test_inicjalizacji(self):
+        assert isinstance(self.gra._glowne_okno, (pygame.Surface, pygame.SurfaceType))
+        assert isinstance(self.gra._gracze, list)
+        assert isinstance(self.gra.wizualizator, Wizualizator)
+        assert isinstance(self.gra._kontroler_wiadomosci, KontrolerWiadomosci)
+
+    MIN_LICZBA_GRACZY = 2
+    MAX_LICZBA_GRACZY_PRAWOSTRONNIE_OTWARTY = 6
+
+    @pytest.mark.parametrize("liczba_graczy", list(range(MIN_LICZBA_GRACZY, MAX_LICZBA_GRACZY_PRAWOSTRONNIE_OTWARTY)))
+    def test_liczba_graczy(self, liczba_graczy):
+        nazwy_graczy = []
+
+        gracz_id = 0
+        while gracz_id < liczba_graczy:
+            nazwy_graczy.append(str(f"test_{gracz_id}"))
+            gracz_id += 1
+
+        gra = Gra(self._screen, self.kontroler_wiadomosci, liczba_graczy, nazwy_graczy, self.wizualizator, self._screen_width, self._screen_height, MockMain())
+
+        gra.tura()
+
+    def test_tura_jednego_gracza(self):
+        self.gra.tura()
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_AkcjaStatystykOkno.py
+from src.okno.AkcjaStatystykOkno import AkcjaStatystykOkno, MAKSYMALNA_DLUGOSC_NAZWY_GRACZA
+
+
+class TestAkcjaStatystykOkno:
+    def setup_method(self):
+        pass
+
+    def test_sprawdz_czy_nazwa_gracza_nie_za_dluga_jest_za_dluga(self):
+        AkcjaStatystykOkno.sprawdz_czy_nazwa_gracza_nie_za_dluga(self, nazwa='{message: <{width}}'.format(
+            message=' ',
+            width=MAKSYMALNA_DLUGOSC_NAZWY_GRACZA + 1,
+        ))
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_AkcjaZastawOkno.py
+import pygame
+import pytest
+
+from src.Wizualizator import Wizualizator
+from src.Gracz import Gracz
+from src.okno.AkcjaZastawOkno import AkcjaZastawOkno
+from unittest.mock import MagicMock
+
+
+class TestAkcjaZastawOkno:
+    def setup_method(self):
+        pygame.init()
+
+        mock_gra = MagicMock()
+        mock_gra.wizualizator = Wizualizator()
+
+        self.akcja_zastaw_okno = AkcjaZastawOkno(gra=mock_gra)
+
+    def test_typ_zmiennych_zainicjalizowanych(self):
+        assert isinstance(self.akcja_zastaw_okno.gracz, (type(None), Gracz))
+        assert isinstance(self.akcja_zastaw_okno.czy_zastaw, bool)
+        assert isinstance(self.akcja_zastaw_okno.zastaw_png, (pygame.Surface | pygame.SurfaceType))
+
+    @pytest.mark.xfail(reason="Po ustawieniu gracza, gracz nie moze byc typu None")
+    def test_czy_gracz_null(self):
+        event = pygame.event.Event(type=pygame.MOUSEBUTTONDOWN)
+        self.akcja_zastaw_okno.aktualizacja_zdarzen(event)
+
+        assert self.akcja_zastaw_okno.gracz is not None
+
+    @pytest.mark.xfail(reason="Gracz nie moze byc typu None, podczas wykonywania akcja na nim")
+    def test_zastaw_gracz_none(self):
+        self.akcja_zastaw_okno.gracz = None
+        self.akcja_zastaw_okno.gracz.zastaw_posiadlosci()
+
+    @pytest.mark.skip
+    def test_klik_event_zastaw(self):
+        # magic mock here
+        pass
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Gra.py
 import os
 import pytest
 import pygame
@@ -4053,22 +4768,207 @@ class TestGra:
     # ten test powinien wyrzucić wyjątek, "out of index"
     # Podawany event w metodzie gra.aktualizacja_zdarzen(event), event= jest rowny None, poniewaz korzystamy z wewnetrznie zorganizowanej kolejki eventow
     # python -m pytest ./tests -k "test_no_players_quantity_given"
+    @pytest.mark.xfail
     def test_brak_podanej_ilosci_graczy(self):
         try:
-            self.gra.dodaj_zdarzenie_do_kolejki(
-                event=pygame.event.Event(
-                    pygame.KEYDOWN, {"unicode": 32, "key": pygame.K_SPACE}
-                )
-            )
+            self.gra.dodaj_zdarzenie_do_kolejki(event=pygame.event.Event(pygame.KEYDOWN, {"unicode": 32, "key": pygame.K_SPACE}))
             self.gra.pozwol_wykonac_zdarzenie_z_kolejki()
             self.gra.aktualizacja_zdarzenia(event=None)
         except Exception as e:
-            pytest.fail(
-                f"Test nie powinien rzucac wyjatku, problem ze spacja na poczatku gry! {e}"
-            )
+            pytest.fail(f"Test nie powinien rzucac wyjatku, problem ze spacja na poczatku gry! {e}")
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_KontrolerWiadomosci.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Gracz.py
+import pytest
+
+from src.Gracz import Gracz, UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O
+from unittest.mock import MagicMock, patch
+
+
+class MockKontrolerWiadomosci:
+    def dodaj_wiadomosc(self):
+        pass
+
+
+class MockWlasciciel:
+    def dodaj_pieniadze(self, gra, czynsz):
+        pass
+
+
+class MockPosiadlosc:
+    NAZWA = "mock_posiadlosc"
+    DOMYSLNA_ZASTAW_KWOTA = 2_000
+    DOMYSLNA_CZYNSZ_KWOTA = 1_000
+
+    def __init__(self):
+        self.cz_zastawiona: bool
+        self.zastaw_kwota = MockPosiadlosc.DOMYSLNA_ZASTAW_KWOTA
+        self.nazwa = MockPosiadlosc.NAZWA
+        self.wlasciciel = MockWlasciciel()
+
+    def oblicz_czynsz(self, czynsz):
+        return MockPosiadlosc.DOMYSLNA_CZYNSZ_KWOTA
+
+
+class MockAkcjaZastawOkno:
+    def __init__(self):
+        self.czy_zdejmij_zestaw: bool
+
+
+class TestGracz:
+    DOMYSLNE_ID = 0
+    DOMYSLNA_KWOTA = 10_000
+    DOMYSLNA_UMIEJETNOSC = "none"
+
+    def setup_method(self):
+        self.gracz = Gracz(TestGracz.DOMYSLNE_ID, TestGracz.DOMYSLNA_KWOTA, MagicMock(), TestGracz.DOMYSLNA_UMIEJETNOSC)
+
+    def test_umiejetnosc_wiecej_pieniedzy_na_start(self):
+        umiejetnosc = "wiecej_pieniedzy_na_start"
+        gracz = Gracz(0, TestGracz.DOMYSLNA_KWOTA, MagicMock(), umiejetnosc)
+
+        nowa_kwota = gracz.kwota
+
+        assert TestGracz.DOMYSLNA_KWOTA < nowa_kwota
+
+    def test_umiejetnosc_karta_wyjscia_z_wiezienia(self):
+        umiejetnosc = "karta_wyjscia_z_wiezienia"
+        gracz = Gracz(0, TestGracz.DOMYSLNA_KWOTA, MagicMock(), umiejetnosc)
+
+        stara_liczba_kart_wyjdz_z_wiezienia = 0
+        nowa_liczba_kart_wyjdz_z_wiezienia = gracz.liczba_kart_wyjdz_z_wiezienia
+
+        assert stara_liczba_kart_wyjdz_z_wiezienia < nowa_liczba_kart_wyjdz_z_wiezienia
+
+    def test_zastaw_posiadlosc(self):
+        mock_gra = MagicMock()
+        mock_posiadlosc = MockPosiadlosc()
+
+        self.gracz.lista_posiadlosci.append(mock_posiadlosc)
+        numer_ostatniej_posiadlosci = len(self.gracz.lista_posiadlosci) - 1
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            przewidywana_nowa_liczba_zastawionych = 1
+            przewidywana_nowa_kwota = self.gracz.kwota
+
+            self.gracz.zastaw_posiadlosci(mock_gra, numer_ostatniej_posiadlosci)
+
+            przewidywana_nowa_kwota += MockPosiadlosc.DOMYSLNA_ZASTAW_KWOTA
+
+            nowa_kwota_gracza = self.gracz.kwota
+            nowa_liczba_zastawionych_gracza = self.gracz.liczba_zastawionych
+
+            assert przewidywana_nowa_liczba_zastawionych == nowa_liczba_zastawionych_gracza
+            assert przewidywana_nowa_kwota == nowa_kwota_gracza
+
+    def test_zdejmij_zastaw_liczba_zastawionych_zero(self):
+        mock_gra = MagicMock()
+
+        with (patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci),
+              patch.object(mock_gra, 'akcja_zastaw_okno', new=MockAkcjaZastawOkno)):
+            self.gracz.zdejmij_zastaw_posiadlosci(mock_gra)
+
+            assert mock_gra.akcja_zastaw_okno.czy_zdejmij_zastaw is False
+
+    def test_zdejmij_zastaw_liczba_zastawionych_rozna_od_zera(self):
+        mock_gra = MagicMock()
+
+        with (patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci),
+              patch.object(mock_gra, 'akcja_zastaw_okno', new=MockAkcjaZastawOkno)):
+            mock_posiadlosc = MockPosiadlosc()
+
+            self.gracz.lista_posiadlosci.append(mock_posiadlosc)
+            numer_ostatniej_posiadlosci = len(self.gracz.lista_posiadlosci) - 1
+
+            self.gracz.zastaw_posiadlosci(mock_gra, numer_ostatniej_posiadlosci)
+            self.gracz.zdejmij_zastaw_posiadlosci(mock_gra)
+
+        przewidywana_kwota_gracza = MockPosiadlosc.DOMYSLNA_ZASTAW_KWOTA + TestGracz.DOMYSLNA_KWOTA - MockPosiadlosc.DOMYSLNA_ZASTAW_KWOTA * 1.2
+        nowa_kwota_gracza = self.gracz.kwota
+
+        assert nowa_kwota_gracza == przewidywana_kwota_gracza
+
+    def test_zaplac_czynsz_posiada_umiejetnosc_placi_mniejsze_czynsze(self):
+        umiejetnosci = "placi_mniejsze_czynsze"
+        gracz = Gracz(TestGracz.DOMYSLNE_ID, TestGracz.DOMYSLNA_KWOTA, MagicMock(), umiejetnosci)
+
+        mock_gra = MagicMock()
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            gracz.zaplac_czynsz(mock_gra, MockPosiadlosc())
+
+            # Ktos dodaj 2k?
+            przewidywana_nowa_kwota_gracza = TestGracz.DOMYSLNA_KWOTA - (MockPosiadlosc.oblicz_czynsz(MockPosiadlosc, None) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O + 2000)
+
+            assert przewidywana_nowa_kwota_gracza == gracz.kwota
+
+    @pytest.mark.parametrize("kwota_dodana", [5_000, -5_000, 0, 1, -1, -0])
+    def test_dodaj_pieniadze_dodatnia(self, kwota_dodana):
+        mock_gra = MagicMock()
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            self.gracz.dodaj_pieniadze(mock_gra, kwota_dodana)
+
+            przewidywana_nowa_kwota_gracza = TestGracz.DOMYSLNA_KWOTA + kwota_dodana
+
+            assert self.gracz.kwota == przewidywana_nowa_kwota_gracza
+
+    def test_czy_przeszedl_przez_start_posiada_umiejetnosc_dostaje_wiecej_za_przejscie_przez_start(self):
+        mock_gra = MagicMock()
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            mock_pionek = MagicMock()
+            mock_pionek.numer_pola = 10
+            stara_pozycja = 20
+            umiejetnosc = "dostaje_wiecej_za_przejscie_przez_start"
+
+            gracz = Gracz(TestGracz.DOMYSLNE_ID, TestGracz.DOMYSLNA_KWOTA, mock_pionek, umiejetnosc)
+            stara_kwota_gracza = gracz.kwota
+
+            gracz.czy_przeszedl_przez_start(mock_gra, stara_pozycja)
+
+            assert stara_kwota_gracza + 2200 == gracz.kwota
+
+    def test_czy_przeszedl_przez_start_nie_posiada_umiejetnosc_dostaje_wiecej_za_przejscie_przez_start(self):
+        mock_gra = MagicMock()
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            mock_pionek = MagicMock()
+            mock_pionek.numer_pola = 10
+            stara_pozycja = 20
+            umiejetnosc = "none"
+
+            gracz = Gracz(TestGracz.DOMYSLNE_ID, TestGracz.DOMYSLNA_KWOTA, mock_pionek, umiejetnosc)
+            stara_kwota_gracza = gracz.kwota
+
+            gracz.czy_przeszedl_przez_start(mock_gra, stara_pozycja)
+
+            assert stara_kwota_gracza + 2000 == gracz.kwota
+
+    def test_czy_przeszedl_przez_start_nie_przeszedl(self):
+        mock_gra = MagicMock()
+
+        with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
+            mock_pionek = MagicMock()
+            mock_pionek.numer_pola = 10
+            self.gracz.pionek = mock_pionek
+
+            stara_pozycja = 5
+
+            stara_kwota_gracza = self.gracz.kwota
+            self.gracz.czy_przeszedl_przez_start(mock_gra, stara_pozycja)
+
+            assert stara_kwota_gracza == self.gracz.kwota
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_KartaSzansy.py
+from src.KartaSzansy import KartaSzansy
+
+
+class TestKartaSzansy:
+    def setup_method(self):
+        pass
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_KontrolerWiadomosci.py
 import pytest
 import pygame
 
@@ -4136,11 +5036,16 @@ class TestKontrolerWiadomosci:
                przewidywana_wartosc_dla_wszystkich
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Pionek.py
-
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Pionek.py
 import pytest
-from unittest.mock import MagicMock
 from src.Pionek import Pionek
+from src.Plansza import Plansza
+from unittest.mock import MagicMock, patch
+
+
+class MockPlansza:
+    def __init__(self):
+        self.plansza = Plansza.inicializacja_planszy()
 
 
 # Komenda aby uruchomic testy: python -m pytest ./tests
@@ -4153,14 +5058,22 @@ class TestPionek:
 
     @pytest.mark.parametrize("liczba_pol", list(range(Pionek.MIN_LICZBA_OCZEK, Pionek.MAX_LICZBA_OCZEK)))
     def test_ruch_prawidlowa_ilosc_oczek(self, liczba_pol):
-        assert self.pionek.przesun(self.pionek, liczba_pol) is True
+        mock_gra = MagicMock()
+        mock_plansza = MockPlansza()
+
+        with patch.object(mock_gra, '_plansza', new=mock_plansza):
+            assert self.pionek.przesun(self.pionek, liczba_pol, mock_gra) is True
 
     @pytest.mark.parametrize("liczba_pol", [-1, -2, -50, -100])
     def test_ruch_nieprawidlowa_ilosc_oczek(self, liczba_pol):
-        assert self.pionek.przesun(self.pionek, liczba_pol) is False
+        mock_gra = MagicMock()
+        mock_plansza = MockPlansza()
+
+        with patch.object(mock_gra, '_plansza', new=mock_plansza):
+            assert self.pionek.przesun(self.pionek, liczba_pol, mock_gra) is False
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Plansza.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Plansza.py
 import pygame
 import pytest
 
@@ -4202,7 +5115,36 @@ class TestPlansza:
             assert pole.sciezka_do_grafiki == tekst_sciezki
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Pole.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_PodatekDochodowy.py
+import pygame
+import pytest
+
+from src.PodatekDochodowy import PodatekDochodowy
+
+
+class TestPodatekDochodowy:
+    DOMYSLNA_KWOTA = 1000
+
+    def setup_method(self):
+        self.podatek_dochodowy = PodatekDochodowy(0, TestPodatekDochodowy.DOMYSLNA_KWOTA)
+
+    def test_typ_zmiennych(self):
+        assert isinstance(self.podatek_dochodowy.podatek, int)
+        assert self.podatek_dochodowy.typ == "Podatek dochodowy"
+
+    @pytest.mark.skip
+    def test_wyswietl_info(self):
+        informacja_zwrotna = self.podatek_dochodowy.wyswietl_info()
+        oczekiwany_tekst = f"Stanąłeś na polu podatek dochodowy. Musisz zapłacić podatek w wysokości {TestPodatekDochodowy.DOMYSLNA_KWOTA}"
+
+        assert oczekiwany_tekst == informacja_zwrotna
+
+    @pytest.mark.skip
+    def test_zaplac_podatek_poprawna_odpowiedz_wystarczajaca_kwota(self):
+        pass
+
+
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Pole.py
 import pygame
 import pytest
 
@@ -4279,7 +5221,7 @@ class TestPole:
 
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Posiadlosc.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Posiadlosc.py
 import pygame
 import pytest
 from unittest.mock import Mock, patch, MagicMock
@@ -4376,7 +5318,7 @@ class TestPosiadlosc:
         assert przewidywana_kwota_po_zakupie == kwota_gracza_po_zakupie
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Przycisk.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Przycisk.py
 import pytest
 import pygame
 from typing import Collection
@@ -4508,7 +5450,7 @@ class TestPrzycisk:
         assert wymiary[1] != nowe_wymiary.height
 
 
-C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\test_Statystyka.py
+C:\Users\barte\OneDrive\Pulpit\Studia\ROK II\Semestr 4\IO\ProjektFUN\Monopoly_IO_UJ\tests\unit\test_Statystyka.py
 from src.Statystyka import Statystyka
 
 
