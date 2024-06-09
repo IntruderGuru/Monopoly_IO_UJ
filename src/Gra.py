@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 5000
+KWOTA_POCZATKOWA = 3000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -384,8 +384,8 @@ class Gra:
             self._kontroler_wiadomosci.dodaj_wiadomosc(f"Kostka druga: {kostka_druga}")
 
             #
-            kostka_druga = 4
-            kostka_pierwsza = 6
+            # kostka_druga = 4
+            # kostka_pierwsza = 6
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
 

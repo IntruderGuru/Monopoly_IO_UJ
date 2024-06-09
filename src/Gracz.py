@@ -70,9 +70,9 @@ class Gracz:
 
     def zaplac_czynsz(self, gra, posiadlosc):
         if self.umiejetnosc == "placi_mniejsze_czynsze":
-            czynsz = (posiadlosc.oblicz_czynsz(gra) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O + 2000)
+            czynsz = (posiadlosc.oblicz_czynsz(gra) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O)
         else:
-            czynsz = posiadlosc.oblicz_czynsz(gra) + 2000
+            czynsz = posiadlosc.oblicz_czynsz(gra)
         self.wykonaj_oplate(gra, czynsz)
         posiadlosc.wlasciciel.dodaj_pieniadze(gra, czynsz)
         gra.kto_zbankrutowal()
