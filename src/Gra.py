@@ -18,7 +18,7 @@ from src.interface.IGra import IGra
 from src.Przycisk import Przycisk
 
 
-KWOTA_POCZATKOWA = 3000
+KWOTA_POCZATKOWA = 20000
 MIN_LICZBA_GRACZY = 2
 MAX_LICZBA_GRACZY = 5
 LICZBA_POL = 40
@@ -158,7 +158,7 @@ class Gra:
 
         return lista_graczy
 
-    def analizuj_rzut(self, kostka_pierwsza, kostka_druga):
+    def analizuj_rzut(self, kostka_pierwsza, kostka_druga, bonus):
         self._kolejny_rzut_kostka = False
 
         if kostka_pierwsza + kostka_druga == 7:
@@ -169,7 +169,7 @@ class Gra:
 
         if self._suma_oczek == 21:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Uzyskałeś logarytmiczne przyspieszenie i jesteś szybszy od logarytmu z gwiazdką. Idziesz do więzienia"
+                "Uzyskałeś logarytmiczne przyspieszenie. Idziesz do więzienia"
             )
             self.przesun_gracza_bez_raportu(
                 self._gracze[self._indeks_aktualnego_gracza], 10
@@ -180,7 +180,7 @@ class Gra:
         else:
             self.przesun_gracza(
                 self._gracze[self._indeks_aktualnego_gracza],
-                kostka_pierwsza + kostka_druga,
+                kostka_pierwsza + kostka_druga + bonus,
             )
 
     def wyswietl_kostki(self, screen, dice1, dice2):
@@ -251,7 +251,7 @@ class Gra:
             return
         if not gracz.caly_kolor(posiadlosc.kolor):
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                "Nie posiadasz wszystkich kart z koloru, dlatego nie możesz jeszcze kupić domku"
+                "Nie posiadasz wszystkich kart z koloru"
             )
             return
         if posiadlosc.czy_zastawiona:
@@ -263,12 +263,13 @@ class Gra:
         nieruchomosc = gracz.czy_cztery_domki(posiadlosc)
         if nieruchomosc == "nie":
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Masz już 4 domki na tej posiadłości, aby kupić hotel, musisz mieć 4 domki na każdej posiadłości w kolorze {posiadlosc.kolor}"
+                f"Masz już 4 domki na tym polu. Kup domy na innych polach {posiadlosc.kolor}"
             )
             return
 
         self.akcja_nieruchomosci_okno.czy_kupno = True
         self.akcja_nieruchomosci_okno.nieruchomosc = nieruchomosc
+        self.czy_akcja_zakonczona = False
 
     def wykup_z_wiezienia_rzutem(self):
         liczba_siodemek = 0
@@ -286,11 +287,11 @@ class Gra:
 
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Idziesz do więzienia"
+                f"Wyrzuciłeś {liczba_siodemek} siódemek. Idziesz do więzienia"
             )
             return False
         self._kontroler_wiadomosci.dodaj_wiadomosc(
-            f"Gratulacje! Wyrzuciłeś {liczba_siodemek} siódemek. Udało Ci się wykupić z więzienia"
+            f"Wyrzuciłeś {liczba_siodemek} siódemek. Unikasz więzienia"
         )
         return True
 
@@ -338,12 +339,6 @@ class Gra:
                     self.akcja_pola_okno.czy_akcja_pola = True
                     self.akcja_pola_okno.akcja_kupowania(posiadlosc, gracz)
                 elif posiadlosc.wlasciciel == gracz:
-                    self.akcja_nieruchomosci_okno.nieruchomosc = (
-                        "domek" if gracz.statystyka.ilosc_domkow < 4 else "hotel"
-                    )
-                    self.akcja_nieruchomosci_okno.czy_kupno = True
-                    self.czy_akcja_zakonczona = False
-                    self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                     self.akcja_kupienia_nieruchomosci(gracz, posiadlosc)
                     self.akcja_nieruchomosci_okno.akcja_kupowania(posiadlosc, gracz)
                 else:
@@ -372,7 +367,7 @@ class Gra:
                 )
             else:
                 self._kontroler_wiadomosci.dodaj_wiadomosc(
-                    f"Gracz {self._indeks_aktualnego_gracza + 1} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
+                    f"{self._gracze[self._indeks_aktualnego_gracza].id} jest w więzieniu. Zostało {self._gracze[self._indeks_aktualnego_gracza].tury_w_wiezieniu} tur."
                 )
 
         else:
@@ -388,19 +383,20 @@ class Gra:
             # kostka_pierwsza = 6
             #
             self._suma_oczek += kostka_pierwsza + kostka_druga
-
+            umiejetnosc = 0
             if (
                 self._gracze[self._indeks_aktualnego_gracza].umiejetnosc
                 == "porusza_sie_o_1_pole_wiecej"
             ):
-                self._suma_oczek += 1
+                umiejetnosc = 1
+                self._kontroler_wiadomosci.dodaj_wiadomosc(f"Korzystasz z umiejętności: ruch +1")
 
             # Wyświetl kostki
             self.wyswietl_kostki(self._glowne_okno, kostka_pierwsza, kostka_druga)
             pygame.display.update()  # Aktualizuj ekran po wyświetleniu kostek
             pygame.time.wait(1000)
 
-            self.analizuj_rzut(kostka_pierwsza, kostka_druga)
+            self.analizuj_rzut(kostka_pierwsza, kostka_druga, umiejetnosc)
 
         # self._gracze[self._indeks_aktualnego_gracza].kwota -= 1000
         # self._gracze[self._indeks_aktualnego_gracza].statystyka.aktualizuj_stan_pieniedzy(self._gracze[self._indeks_aktualnego_gracza].kwota)

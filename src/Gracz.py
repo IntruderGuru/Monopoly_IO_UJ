@@ -80,7 +80,7 @@ class Gracz:
     def ile_w_kolorze(self, kolor):
         liczba_w_kolorze = 0
         for posiadlosc in self.lista_posiadlosci:
-            if not posiadlosc.kolor == kolor:
+            if posiadlosc.kolor == kolor:
                 liczba_w_kolorze += 1
         return liczba_w_kolorze
 
