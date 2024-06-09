@@ -278,7 +278,7 @@ class Gra:
 
         if liczba_siodemek < 2:
             self._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Nie udało Ci się wykupić z więzienia, musisz odsiedzieć wyrok"
+                f"Niestety, wyrzuciłeś tylko {liczba_siodemek} siódemek. Idziesz do więzienia"
             )
             return False
         self._kontroler_wiadomosci.dodaj_wiadomosc(
@@ -537,28 +537,38 @@ class Gra:
         self._glowne_okno.blit(text_surface, pos)
 
     def render_game_time(self):
+
+        self.font1 = pygame.font.Font(
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
+        )
+
         game_time_text = f"Czas gry: {int(self.main.uplyniety_czas_gry // 60):02}:{int(self.main.uplyniety_czas_gry % 60):02}"
-        tekst = self.font.render(
+        tekst = self.font1.render(
             game_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
         )
         self._glowne_okno.blit(
             tekst,
             (
-                self.aktualna_szerokosc_ekranu * 0.21,
-                self.aktualna_wysokosc_ekranu * 0.20,
+                self.aktualna_szerokosc_ekranu * 0.078,
+                self.aktualna_wysokosc_ekranu * 0.85,
             ),
         )
 
     def render_turn_time(self):
+
+        self.font1 = pygame.font.Font(
+            self.czcionka, int(self.aktualna_szerokosc_ekranu / 80)
+        )
+
         turn_time_text = f"Czas tury: {int(self.main.uplyniety_czas_tury):02}"
-        tekst = self.font.render(
+        tekst = self.font1.render(
             turn_time_text, True, self.wizualizator.kolor_napisu_gracz_tury
         )
         self._glowne_okno.blit(
             tekst,
             (
-                self.aktualna_szerokosc_ekranu * 0.21,
-                self.aktualna_wysokosc_ekranu * 0.25,
+                self.aktualna_szerokosc_ekranu * 0.418,
+                self.aktualna_wysokosc_ekranu * 0.85,
             ),
         )
 
