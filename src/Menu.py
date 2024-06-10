@@ -363,7 +363,7 @@ class Menu:
             self.przyciski.personalizacja.draw(screen)
             self.przyciski.poprzedni_szary.draw(screen)
             self.przyciski.nastepny.draw(screen)
-            self.strona1_temp = pygame.transform.scale(self.strona1, (0.6 * W, 0.7 * H))
+            self.strona1_temp = pygame.transform.scale(pygame.image.load("graphics/tutorial/strona1.png"), (0.6 * W, 0.7 * H))
             screen.blit(self.strona1_temp, (W * 0.20, H * 0.05))
         elif self.stan == "tutorial2":
             screen.fill(self.wizualizator.kolor_tla)
@@ -371,7 +371,7 @@ class Menu:
             self.przyciski.personalizacja.draw(screen)
             self.przyciski.poprzedni.draw(screen)
             self.przyciski.nastepny_szary.draw(screen)
-            self.strona2_temp = pygame.transform.scale(self.strona2, (0.6 * W, 0.7 * H))
+            self.strona2_temp = pygame.transform.scale(pygame.image.load("graphics/tutorial/strona2.png"), (0.6 * W, 0.7 * H))
             screen.blit(self.strona2_temp, (W * 0.20, H * 0.05))
 
         elif self.stan == "zaakceptuj":
