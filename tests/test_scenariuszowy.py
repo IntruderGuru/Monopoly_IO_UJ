@@ -21,6 +21,8 @@ class MockMain(Main):
 
 class TestScenariuszowy:
     def setup_method(self):
+        self.mock_main = MockMain()
+
         pygame.init()
         pygame.font.init()
         os.environ["SDL_VIDEO_CENTERED"] = "1"
@@ -36,8 +38,6 @@ class TestScenariuszowy:
 
         self.szerokosc = 1200
         self.wysokosc = 800
-
-        self.mock_main = MockMain()
 
         self.gra = GraProxy(
             Gra(
@@ -59,7 +59,10 @@ class TestScenariuszowy:
         for (gracz_z_gry, gracz_z_listy) in zip(lista_graczy_z_gry, lista_graczy_z_konstruktora):
             assert gracz_z_gry.id is gracz_z_listy
 
-
     # Scenariusz 1
-    # def test_scenariusz_jeden(self):
-    #     self.gra.dodaj_zdarzenie_do_kolejki()
+    @pytest.mark.skip
+    def test_scenariusz_jeden(self):
+        pass
+        # event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_SPACE})
+
+        # self.gra.dodaj_zdarzenie_do_kolejki(event)
