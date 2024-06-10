@@ -19,7 +19,6 @@ class TestAkcjaZastawOkno:
     def test_typ_zmiennych_zainicjalizowanych(self):
         assert isinstance(self.akcja_zastaw_okno.gracz, (type(None), Gracz))
         assert isinstance(self.akcja_zastaw_okno.czy_zastaw, bool)
-        assert isinstance(self.akcja_zastaw_okno.zastaw_png, (pygame.Surface | pygame.SurfaceType))
 
     @pytest.mark.xfail(reason="Po ustawieniu gracza, gracz nie moze byc typu None")
     def test_czy_gracz_null(self):

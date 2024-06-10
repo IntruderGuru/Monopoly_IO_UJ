@@ -116,8 +116,7 @@ class TestGracz:
         with patch.object(mock_gra, '_kontroler_wiadomosci', new=MockKontrolerWiadomosci):
             gracz.zaplac_czynsz(mock_gra, MockPosiadlosc())
 
-            # Ktos dodaj 2k?
-            przewidywana_nowa_kwota_gracza = TestGracz.DOMYSLNA_KWOTA - (MockPosiadlosc.oblicz_czynsz(MockPosiadlosc, None) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O + 2000)
+            przewidywana_nowa_kwota_gracza = TestGracz.DOMYSLNA_KWOTA - (MockPosiadlosc.oblicz_czynsz(MockPosiadlosc, None) - UMIEJETNOSC_ZMIEJSZENIA_CZYNSZU_O)
 
             assert przewidywana_nowa_kwota_gracza == gracz.kwota
 

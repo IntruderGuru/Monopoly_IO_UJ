@@ -16,6 +16,8 @@ class MockMain(Main):
 
 class TestSmoke:
     def setup_method(self):
+        self.mock_main = MockMain()
+
         pygame.init()
         pygame.font.init()
 
@@ -29,7 +31,6 @@ class TestSmoke:
         self.kontroler_wiadomosci = KontrolerWiadomosci(None, self.wizualizator)
         self.liczba_graczy = 2
         self.gracze = ["test_1", "test_2"]
-        self.mock_main = MockMain()
 
         self.gra = Gra(self._screen, self.kontroler_wiadomosci, self.liczba_graczy, self.gracze, self.wizualizator, self._screen_width, self._screen_height, self.mock_main)
 
