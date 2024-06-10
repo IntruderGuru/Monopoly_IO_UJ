@@ -87,7 +87,9 @@ class Main:
                 )
                 self._gra.wczytaj_gre()
                 self._petla_gry()
-            pygame.display.flip()
+
+            if self._running is True:
+                pygame.display.flip()
 
     def _petla_gry(self):
         while self._running:
@@ -97,6 +99,9 @@ class Main:
             if self.wait_flag == 1:
                 self._aktualizuj_czas_gry()
             # self._petla_zdarzen(pygame.event.get())
+            if self._running is False:
+                return
+
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
 

@@ -770,6 +770,8 @@ class Gra:
                 self.main.LIMIT_CZASU_TURY, handle, protocol=pickle.HIGHEST_PROTOCOL
             )
 
+        self.main._running = False
+
     def wczytaj_gre(self):
         with open("save/gracze.pickle", "rb") as handle:
             self._gracze = pickle.load(handle)
