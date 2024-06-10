@@ -39,7 +39,7 @@ class KartaSzansy:
             cena += liczba_hoteli * self.wartosc * 3
             gracz.wykonaj_oplate(gra, cena)
             gra._kontroler_wiadomosci.dodaj_wiadomosc(
-                f"Gracz {gracz.id} zapłacił {self.cena} za wszystkie domki i hotele"
+                f"Gracz {gracz.id} zapłacił {cena} za wszystkie domki i hotele"
             )
 
         elif self.typ == "przejdz_na_pole":
