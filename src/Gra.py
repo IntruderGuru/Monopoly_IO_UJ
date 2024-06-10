@@ -486,7 +486,6 @@ class Gra:
         ):
             self.input_text = ""
             self.zapisz_gre()
-            pygame.quit()
         elif event.type == pygame.KEYDOWN and self.zwyciezca == -1:
             if event.key == pygame.K_RETURN:
                 # self.process_input(self.input_text)
@@ -496,7 +495,6 @@ class Gra:
             elif event.key == pygame.K_s:
                 self.input_text = ""
                 self.zapisz_gre()
-                pygame.quit()
             else:
                 self.input_text += event.unicode
         elif event.type == pygame.VIDEORESIZE:
