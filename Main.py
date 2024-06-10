@@ -43,9 +43,17 @@ class Main:
             pygame.time.get_ticks()
         )  # Inicjalizacja czasu startu tury
 
+        self._zaladuj_ikonke_gry()
+
     def __del__(self):
         pygame.quit()
         # del self._gra
+
+    def _zaladuj_ikonke_gry(self):
+        ikonka_sciezka = 'graphics/logo.png'
+        ikonka_img = pygame.image.load(ikonka_sciezka)
+
+        pygame.display.set_icon(ikonka_img)
 
     def start(self):
         self._kontroler_wiadomosci.dodaj_wiadomosc("Witaj w UJpoly!")
