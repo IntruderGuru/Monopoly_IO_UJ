@@ -20,7 +20,7 @@ def save_files_content_to_text(python_files, output_file):
 
 
 def main():
-    directory = "C:/Users/barte/OneDrive/Pulpit/Studia/ROK II/Semestr 4/IO/ProjektFUN/Monopoly_IO_UJ"  # Zmień na właściwą ścieżkę do katalogu
+    directory = "C:\\Users\piotr\Desktop\projektIO\Monopoly_IO_UJ"  # Zmień na właściwą ścieżkę do katalogu
     output_file = "output.txt"
 
     python_files = get_all_python_files(directory)

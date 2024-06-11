@@ -9,8 +9,18 @@
 
 # mutmut
 **/.mutmut-cache
-mut*
+mutmut_result
 /html
 *.bak
 
 forwarder.py
+
+# pliki virtualne
+.venv/
+
+# searcher files
+output.txt
+
+# pickle files
+save.pickle
+save/

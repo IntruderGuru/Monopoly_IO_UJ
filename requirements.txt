@@ -1,0 +1,4 @@
+pygame==2.5.2
+mutmut==2.5.0
+pytest==8.2.0
+numpy==1.26.4

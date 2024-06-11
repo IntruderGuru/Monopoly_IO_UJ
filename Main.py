@@ -47,7 +47,6 @@ class Main:
 
     def __del__(self):
         pygame.quit()
-        # del self._gra
 
     def _zaladuj_ikonke_gry(self):
         ikonka_sciezka = 'graphics/logo.png'

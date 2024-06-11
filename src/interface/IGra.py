@@ -14,3 +14,4 @@ class IGra:
     @abstractmethod
     def wyswietl(self):
         pass
+
