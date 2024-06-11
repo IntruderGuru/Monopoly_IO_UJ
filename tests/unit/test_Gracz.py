@@ -16,7 +16,7 @@ class MockWlasciciel:
 
 class MockPosiadlosc:
     NAZWA = "mock_posiadlosc"
-    DOMYSLNA_ZASTAW_KWOTA = 2_000
+    DOMYSLNA_ZASTAW_KWOTA = 2001
     DOMYSLNA_CZYNSZ_KWOTA = 1_000
 
     def __init__(self):

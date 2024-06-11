@@ -16,12 +16,11 @@ class MockMain(Main):
 
 class TestSmoke:
     def setup_method(self):
+        pygame.init()
+
         self.mock_main = MockMain()
 
-        pygame.init()
         pygame.font.init()
-
-        time.sleep(3)
 
         self.wizualizator = Wizualizator()
         self._screen = pygame.display.set_mode((1200, 660), pygame.RESIZABLE)

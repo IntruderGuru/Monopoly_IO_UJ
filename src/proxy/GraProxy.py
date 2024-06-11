@@ -25,7 +25,10 @@ class Kolejka:
 
 class GraProxy(IGra):
     def __init__(self, gra: Gra):
+
         self._kolejka_test_zdarzen: Kolejka = Kolejka()
+
+
         self._instancja_gra: Gra = gra
         self._czy_moze_wykonac_nastepne_zdarzenie = False
 

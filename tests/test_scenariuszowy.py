@@ -25,6 +25,7 @@ class TestScenariuszowy:
 
         pygame.init()
         pygame.font.init()
+
         os.environ["SDL_VIDEO_CENTERED"] = "1"
 
         self.font = pygame.font.Font(None, 20)
@@ -63,6 +64,6 @@ class TestScenariuszowy:
     @pytest.mark.skip
     def test_scenariusz_jeden(self):
         pass
-        # event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_SPACE})
+        event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_SPACE})
 
-        # self.gra.dodaj_zdarzenie_do_kolejki(event)
+        self.gra.dodaj_zdarzenie_do_kolejki(event)
