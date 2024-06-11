@@ -95,7 +95,6 @@ class AkcjaKartOkno(Okno):
 
         maksymalna_szerokosc = int(self.gra.aktualna_szerokosc_ekranu * 0.8)
         x, y = start_x, start_y
-        # ze stacka xD
         for line in wyrazy:
             for word in line:
                 word_surface = self.font.render(word, 0, self.gra.kolor_czcionki)

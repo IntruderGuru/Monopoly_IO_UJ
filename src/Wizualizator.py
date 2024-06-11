@@ -27,6 +27,5 @@ class Wizualizator:
         self.kolor_ostatniej_wiadomosci = (255, 255, 255)
 
         #czcionka
-        #self.czcionka = "fonts/Lato-Black.ttf"
         self.czcionka = None
         self.czcionka_przycisku = "fonts/Gameplay.ttf"

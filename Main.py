@@ -47,7 +47,6 @@ class Main:
 
     def __del__(self):
         pygame.quit()
-        # del self._gra
 
     def _zaladuj_ikonke_gry(self):
         ikonka_sciezka = 'graphics/logo.png'
@@ -105,7 +104,6 @@ class Main:
             self._petla_zdarzen(pygame.event.get())
             if self.wait_flag == 1:
                 self._aktualizuj_czas_gry()
-            # self._petla_zdarzen(pygame.event.get())
             self._aktualizuj(delta_time=self._delta_time)
             self._wyswietlaj()
 

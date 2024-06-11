@@ -28,7 +28,6 @@ class GraProxy(IGra):
         self._kolejka_test_zdarzen: Kolejka = Kolejka()
         self._instancja_gra: Gra = gra
         self._czy_moze_wykonac_nastepne_zdarzenie = False
-        print("HELLO from GraProxy")
 
     def _zablokuj_wykonywanie_zdarzen(self):
         self._czy_moze_wykonac_nastepne_zdarzenie = False

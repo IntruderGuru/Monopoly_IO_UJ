@@ -105,7 +105,7 @@ class Pionek:
             maska = pygame.transform.scale(
                 pygame.image.load(f"graphics/pionek/pionek{self.ilosc_graczy_na_polu}mask.png"), (self.W / skalar, self.W / skalar)
             )
-        # zdjecie_pionek_transformed = pygame.transform.scale(self.zdjecie_pionek, (self.wymiary.x * self.szerokosc_ratio, self.wymiary.y * self.wysokosc_ratio))
+        
         okno.blit(zdjecie_pionek, (self.pozycja.x, self.pozycja.y))
         if self.ilosc_graczy_na_polu > 1:
             okno.blit(maska, (self.pozycja.x, self.pozycja.y))

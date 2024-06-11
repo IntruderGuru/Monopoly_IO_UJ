@@ -107,7 +107,6 @@ class Gra:
 
         # feature_testingMechanism
         self.input_text = ""
-        print("HELLO from Gra")
         self._plansza.plansza[0].ilosc_graczy_na_polu = liczba_graczy
 
         # nowa tura
@@ -333,7 +332,6 @@ class Gra:
         elif pole.typ == "Posiadlosc":
             if isinstance(pole, Posiadlosc):
                 posiadlosc = pole
-                # posiadlosc.wyswietl_info(self)
                 if posiadlosc.wlasciciel is None:
                     self.czy_akcja_zakonczona = False
                     self.akcja_pola_okno.czy_akcja_pola = True
@@ -541,7 +539,6 @@ class Gra:
         self.akcja_zastaw_okno.zamknij()
 
         if self.akcja_zagadek_okno.czy_zagadka:
-            print(self._gracze[self._indeks_aktualnego_gracza].kwota)
             if 1500 > self._gracze[self._indeks_aktualnego_gracza].kwota:
                 if self.pobierz_info_tak_nie(
                     "Nie masz wystarczająco dużo pieniędzy, aby zapłacić podatek. Czy chcesz zastawić którąś z nieruchmości? Jeśli tego nie zrobisz przegrywasz."

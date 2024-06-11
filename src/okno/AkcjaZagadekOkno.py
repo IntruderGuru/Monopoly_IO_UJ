@@ -166,7 +166,6 @@ class AkcjaZagadekOkno(Okno):
 
         maksymalna_szerokosc = self.gra.aktualna_szerokosc_ekranu
         x, y = start_x, start_y
-        # ze stacka xD
         for line in wyrazy:
             for word in line:
                 word_surface = self.font.render(word, 0, self.gra.kolor_czcionki)

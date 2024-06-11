@@ -77,9 +77,6 @@ class Plansza:
         else:
             raise Exception("Bledny numer pola")
 
-    # def wysrodkuj_pionki(self):
-    #
-    # def wysrodkuj_plansze(self):
 
     def aktualizacja_rozmiaru(self, szerokosc, wysokosc):
         for pole in self.plansza:

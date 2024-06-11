@@ -3,8 +3,7 @@ from typing import NamedTuple
 from enum import Enum
 
 
-# TODO: Do usuniecia, korzystanie z jednego enuma z Pionka, problem z kolejnoscia wystepowania
-# TODO: atrybutow w enumie w Pionku, zla kolejnosc, poprawna ponizej
+
 class KierunekPol(Enum):
     Gora = 0
     Prawo = 1
@@ -97,7 +96,6 @@ class Pole:
         self.szerokosc_ratio = szerokosc / szerokosc_ekranu
         self.wysokosc_ratio = wysokosc / wysokosc_ekranu
 
-        # print((szerokosc, wysokosc))
 
         self.pozycja = self.inicjalizacja_pozycji(self.numer, self.kierunek_sciany)
 
