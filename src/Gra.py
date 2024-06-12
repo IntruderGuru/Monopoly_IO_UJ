@@ -1,6 +1,7 @@
 import random
 import pygame
 import pickle
+import os
 
 from src.okno.AkcjaPolaOkno import AkcjaPolaOkno
 from src.okno.AkcjaNieruchomosciOkno import AkcjaNieruchomosciOkno
@@ -727,6 +728,8 @@ class Gra:
         )
 
     def zapisz_gre(self):
+        if not os.path.isdir('./save'):
+            os.makedirs('./save')
         with open("save/gracze.pickle", "wb") as handle:
             pickle.dump(self._gracze, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
